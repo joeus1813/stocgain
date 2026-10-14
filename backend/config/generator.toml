@@ -26,3 +26,330 @@ history_end = "2026-09-30"
 
 [events]
 enabled = true
+
+[simulation]
+velocity_ranges = [[4.0,25.0],[1.0,6.0],[0.2,1.0],[0.02,0.2]]
+dispersion_values = [20.0,5.0,1.5]
+region_affinity_sigma = 0.08
+trend_range = [-0.20,0.20]
+policy_buffer_range = [0.95,1.45]
+supplier_ontime_beta = [18.0,2.5]
+supplier_ontime_clip = [0.60,0.98]
+supplier_late_lambda_range = [1.0,3.5]
+early_probability = 0.08
+fill_probabilities = [0.92,0.05,0.03]
+split_fraction_range = [0.60,0.90]
+short_fraction_range = [0.60,0.95]
+split_delay_range = [3,7]
+review_period_days = 7
+sales_lookback_days = 28
+initial_buffer = 1.2
+secondary_supplier_probability = 0.20
+lane_extra_day_probability = 0.30
+adjustment_probabilities = [0.004,0.001,0.002,0.0003]
+adjustment_max_units = [3,2,3,4]
+
+[promotion_model]
+cadence_days = [12,18]
+duration_days = [7,14]
+chain_probability = 0.4
+products_small = [2,3]
+products_standard = [4,8]
+discount_range = [0.10,0.30]
+discount_step = 0.05
+elasticity_range = [1.5,3.0]
+realized_multiplier_range = [0.85,1.15]
+future_days = 42
+
+[events.storm]
+start = "2026-09-17"
+end = "2026-09-30"
+start_multiplier = 1.5
+end_multiplier = 3.0
+[events.electrical_delay]
+start = "2026-08-20"
+probability = 0.6
+days = 5
+[events.plumbing]
+on_time_probability = 0.70
+late_lambda = 3.5
+
+[[regions]]
+code = "SE"
+name = "Southeast"
+season_shift = -14
+lead_time_offset = 0
+
+[[regions]]
+code = "NE"
+name = "Northeast"
+season_shift = 10
+lead_time_offset = 1
+
+[[regions]]
+code = "MW"
+name = "Midwest"
+season_shift = 14
+lead_time_offset = 1
+
+[[regions]]
+code = "SW"
+name = "Southwest"
+season_shift = -21
+lead_time_offset = 2
+
+[[stores]]
+store_id = 1
+code = "S01"
+name = "Atlanta Northside"
+city = "Atlanta"
+state = "GA"
+region = "SE"
+volume = 1.25
+sqft = 128000
+opened = "2008-03-15"
+
+[[stores]]
+store_id = 2
+code = "S02"
+name = "Charlotte University"
+city = "Charlotte"
+state = "NC"
+region = "SE"
+volume = 1.0
+sqft = 108000
+opened = "2012-09-08"
+
+[[stores]]
+store_id = 3
+code = "S03"
+name = "Tampa Westshore"
+city = "Tampa"
+state = "FL"
+region = "SE"
+volume = 1.1
+sqft = 112000
+opened = "2011-05-14"
+
+[[stores]]
+store_id = 4
+code = "S04"
+name = "Philadelphia Northeast"
+city = "Philadelphia"
+state = "PA"
+region = "NE"
+volume = 1.15
+sqft = 118000
+opened = "2006-04-22"
+
+[[stores]]
+store_id = 5
+code = "S05"
+name = "Hartford West"
+city = "Hartford"
+state = "CT"
+region = "NE"
+volume = 0.8
+sqft = 98000
+opened = "2014-06-07"
+
+[[stores]]
+store_id = 6
+code = "S06"
+name = "Albany Colonie"
+city = "Albany"
+state = "NY"
+region = "NE"
+volume = 0.75
+sqft = 96000
+opened = "2015-10-03"
+
+[[stores]]
+store_id = 7
+code = "S07"
+name = "Chicago Lakeview"
+city = "Chicago"
+state = "IL"
+region = "MW"
+volume = 1.3
+sqft = 131000
+opened = "2005-08-20"
+
+[[stores]]
+store_id = 8
+code = "S08"
+name = "Columbus Easton"
+city = "Columbus"
+state = "OH"
+region = "MW"
+volume = 0.95
+sqft = 104000
+opened = "2013-03-30"
+
+[[stores]]
+store_id = 9
+code = "S09"
+name = "Minneapolis Bloomington"
+city = "Bloomington"
+state = "MN"
+region = "MW"
+volume = 0.9
+sqft = 102000
+opened = "2010-07-17"
+
+[[stores]]
+store_id = 10
+code = "S10"
+name = "Dallas Preston"
+city = "Dallas"
+state = "TX"
+region = "SW"
+volume = 1.2
+sqft = 124000
+opened = "2007-11-10"
+
+[[stores]]
+store_id = 11
+code = "S11"
+name = "Houston Westchase"
+city = "Houston"
+state = "TX"
+region = "SW"
+volume = 1.05
+sqft = 110000
+opened = "2009-02-28"
+
+[[stores]]
+store_id = 12
+code = "S12"
+name = "Phoenix Camelback"
+city = "Phoenix"
+state = "AZ"
+region = "SW"
+volume = 0.85
+sqft = 100000
+opened = "2016-04-09"
+
+[[categories]]
+code = "PT"
+name = "Power Tools"
+price = [39, 449, 129]
+margin = [0.28, 0.38]
+velocity_mix = [5, 35, 45, 15]
+season = [0.95, 0.15, 150, 60]
+dow = [0.9, 0.88, 0.9, 0.95, 1.05, 1.25, 1.07]
+dispersion_mix = [30, 50, 20]
+lead_time_range = [8, 14]
+brands = ["Torvane", "Kestrel Pro"]
+items = ["20V Cordless Drill Kit", "Impact Driver", "Circular Saw", "Reciprocating Saw", "Oscillating Multi-Tool", "Random Orbit Sander", "Battery Pack", "Rapid Charger", "Brad Nailer", "Angle Grinder", "Rotary Hammer", "Jigsaw"]
+
+[[categories]]
+code = "HT"
+name = "Hand Tools"
+price = [6, 79, 19]
+margin = [0.38, 0.5]
+velocity_mix = [15, 40, 35, 10]
+season = [1, 0, 1, 1]
+dow = [0.95, 0.93, 0.95, 0.97, 1.03, 1.15, 1.02]
+dispersion_mix = [40, 45, 15]
+lead_time_range = [6, 10]
+brands = ["Ironvale", "Haldane"]
+items = ["Claw Hammer", "Tape Measure", "Screwdriver Set", "Adjustable Wrench", "Utility Knife", "Level", "Pliers Set", "Socket Set", "Pry Bar", "Hand Saw", "Chisel Set", "Clamps"]
+
+[[categories]]
+code = "EL"
+name = "Electrical"
+price = [3, 899, 24]
+margin = [0.32, 0.46]
+velocity_mix = [15, 35, 35, 15]
+season = [0.95, 0.1, 200, 50]
+dow = [1.05, 1.03, 1.02, 1.02, 1.03, 1, 0.85]
+dispersion_mix = [40, 40, 20]
+lead_time_range = [5, 12]
+brands = ["Voltrane", "Lumenwright"]
+items = ["7500-Watt Portable Generator", "50 ft Outdoor Extension Cord", "25 ft Extension Cord", "LED Flashlight", "AA Batteries", "Outlet Pack", "LED A19 Bulb", "NM-B Wire", "Single-Pole Switch", "Surge Protector", "Weatherproof Outlet Cover", "Cable Ties"]
+
+[[categories]]
+code = "PL"
+name = "Plumbing"
+price = [4, 349, 22]
+margin = [0.34, 0.46]
+velocity_mix = [15, 35, 35, 15]
+season = [1, 0, 1, 1]
+dow = [1.08, 1.04, 1.02, 1, 1, 1, 0.86]
+dispersion_mix = [40, 40, 20]
+lead_time_range = [6, 12]
+brands = ["Aquaveld", "Pipestone"]
+items = ["PEX Crimp Fitting Kit", "Push-to-Connect Coupling", "Toilet Fill Valve", "Wax Ring", "Kitchen Faucet", "40 Gal Electric Water Heater", "PVC Primer Kit", "Supply Line", "Shut-Off Valve", "Drain Snake", "Pipe Clamp", "Hose Bibb"]
+
+[[categories]]
+code = "BM"
+name = "Building Materials"
+price = [3, 59, 9]
+margin = [0.18, 0.28]
+velocity_mix = [30, 40, 25, 5]
+season = [0.85, 0.35, 180, 50]
+dow = [1.12, 1.08, 1.05, 1.05, 1.05, 0.95, 0.7]
+dispersion_mix = [50, 40, 10]
+lead_time_range = [3, 7]
+brands = ["Stonemere", "Truframe"]
+items = ["Plywood Sheathing", "Heavy-Duty Tarp", "Stud", "Drywall Panel", "Concrete Mix", "Landscape Timber", "Joint Compound", "Cement Board", "Furring Strip", "Construction Adhesive", "Roofing Felt", "Paver"]
+
+[[categories]]
+code = "LG"
+name = "Lawn & Garden"
+price = [4, 399, 24]
+margin = [0.3, 0.42]
+velocity_mix = [20, 35, 30, 15]
+season = [0.65, 1.15, 135, 35]
+dow = [0.85, 0.85, 0.88, 0.92, 1.05, 1.3, 1.15]
+dispersion_mix = [20, 50, 30]
+lead_time_range = [5, 10]
+brands = ["Verdalis", "Greenhollow"]
+items = ["Garden Hose", "Mulch", "Potting Mix", "Lawn Fertilizer", "Grass Seed", "Gas Push Mower", "String Trimmer", "Hose Nozzle", "Pruning Shears", "Sprinkler", "Garden Rake", "Planter"]
+
+[[categories]]
+code = "PA"
+name = "Paint"
+price = [8, 69, 34]
+margin = [0.4, 0.52]
+velocity_mix = [15, 40, 35, 10]
+season = [0.85, 0.35, 165, 45]
+dow = [0.88, 0.88, 0.9, 0.92, 1.05, 1.27, 1.1]
+dispersion_mix = [40, 45, 15]
+lead_time_range = [4, 8]
+brands = ["Pigmenta", "Coverly"]
+items = ["Interior Eggshell Paint", "Exterior Satin Paint", "Primer", "Roller Cover", "Angled Sash Brush", "Painters Tape", "Drop Cloth", "Paint Tray Kit", "Spackling", "Spray Paint", "Paint Scraper", "Mixing Paddle"]
+
+[[categories]]
+code = "HW"
+name = "Hardware"
+price = [1.5, 29, 6]
+margin = [0.45, 0.58]
+velocity_mix = [20, 35, 35, 10]
+season = [1, 0, 1, 1]
+dow = [0.98, 0.96, 0.97, 0.98, 1.02, 1.08, 1.01]
+dispersion_mix = [40, 45, 15]
+lead_time_range = [5, 9]
+brands = ["Boltright", "Anchorline"]
+items = ["Deck Screws", "Galvanized Turnbuckle", "Cabinet Hinge", "Picture Hanging Kit", "Padlock", "Corner Brace", "Wood Screws", "Drywall Anchors", "Hex Bolts", "Door Stop", "Gate Latch", "Shelf Bracket"]
+
+[events.fall_promotions]
+start = "2026-10-05"
+categories = ["PA", "PL"]
+
+[[holiday_windows]]
+start = "2026-05-22"
+end = "2026-05-25"
+categories = ["LG", "PA", "BM", "PT"]
+factor = 1.30
+[[holiday_windows]]
+start = "2026-09-04"
+end = "2026-09-07"
+categories = ["LG", "PA", "BM", "PT"]
+factor = 1.25
+[[holiday_windows]]
+start = "2026-07-04"
+end = "2026-07-04"
+categories = ["PT", "HT", "EL", "PL", "BM", "LG", "PA", "HW"]
+factor = 0.80

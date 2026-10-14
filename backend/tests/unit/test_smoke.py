@@ -79,7 +79,7 @@ def test_settings_parse_comma_separated_origins(
     ]
 
 
-@pytest.mark.parametrize("group", ["data", "db", "analytics", "pipeline"])
+@pytest.mark.parametrize("group", ["analytics", "pipeline"])
 def test_unimplemented_commands_do_not_succeed(group: str) -> None:
     result = CliRunner().invoke(cli, [group])
     assert result.exit_code == 2
@@ -115,3 +115,10 @@ def test_validation_errors_use_the_envelope() -> None:
         response = test_client.get("/test-validation?value=wrong")
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.parametrize("group", ["data", "db"])
+def test_implemented_command_groups_show_help(group: str) -> None:
+    result = CliRunner().invoke(cli, [group, "--help"])
+    assert result.exit_code == 0
+    assert "Commands" in result.output

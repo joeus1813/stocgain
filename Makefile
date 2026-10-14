@@ -3,6 +3,7 @@ UV ?= uv
 NPM ?= npm
 PRESET ?= standard
 SEED ?= 42
+LOAD_FLAGS ?=
 BACKEND = $(UV) run --project backend --locked
 
 .PHONY: help setup db-up db-down db-reset migrate seed analytics pipeline api web dev demo-docker test test-backend test-frontend e2e lint typecheck openapi check-openapi explain schema-dump verify
@@ -11,9 +12,10 @@ help:
 	@echo 'Setup: make setup; make db-up; make api and make web in separate terminals'
 	@echo 'Verify: make lint typecheck test; make e2e requires running API, web and PostgreSQL'
 	@echo 'Types: make openapi; make check-openapi'
-	@echo 'Stage 1 incomplete: migrate, seed, analytics, pipeline, dev, demo-docker, explain, db-reset are not implemented.'
+	@echo 'Phase 1: make migrate; make seed PRESET=standard SEED=42; stocgain data validate/profile'
+	@echo 'Loading preserves existing data unless LOAD_FLAGS=--replace is explicitly supplied.'
+	@echo 'Later-phase commands and db-reset remain unimplemented.'
 	@echo 'Schema: make schema-dump writes sql/schema/current.sql from the running PostgreSQL container.'
-	@echo 'Future seed interface: make seed PRESET=standard SEED=42'
 
 setup:
 	@node -e 'if (process.versions.node.split(".")[0] !== "22") { console.error("Node 22 is required; run nvm use"); process.exit(1); }'
@@ -72,6 +74,17 @@ verify:
 schema-dump:
 	docker compose exec -T db pg_dump --schema-only --no-owner --no-privileges --restrict-key=stocgainSchemaDump42 -U stocksense stocksense > sql/schema/current.sql
 
-db-reset migrate seed analytics pipeline dev demo-docker explain:
-	@echo 'Not implemented in the current Phase 0 checkpoint: $@. See IMPLEMENTATION_STATUS.md.' >&2
+migrate:
+	$(BACKEND) alembic -c backend/alembic.ini upgrade head
+	$(BACKEND) stocgain db apply-views
+
+seed:
+	$(BACKEND) stocgain data generate --preset $(PRESET) --seed $(SEED)
+	$(BACKEND) stocgain data load --path data/generated/$(PRESET) $(LOAD_FLAGS)
+	$(BACKEND) stocgain db apply-views
+	$(BACKEND) stocgain data validate
+	$(BACKEND) stocgain db refresh
+
+db-reset analytics pipeline dev demo-docker explain:
+	@echo 'Not implemented in the current Phase 1 checkpoint: $@. See IMPLEMENTATION_STATUS.md.' >&2
 	@exit 2

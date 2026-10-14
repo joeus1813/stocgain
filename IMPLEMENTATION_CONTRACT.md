@@ -1,6 +1,6 @@
 # stocgain implementation interface
 
-Updated 2026-10-09. **Implemented scope: Phase 0 complete; Phase 1 in progress.** Schema/data/SQL contracts below are planned, not claims of existing database objects.
+Updated 2026-10-10. **Implemented scope: Phases 0–1 complete; Phase 2 not started.** Operational schema/data interfaces below are implemented; analytics interfaces remain planned.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 
@@ -14,7 +14,7 @@ Backend public skeleton interfaces: `Settings`, `create_app(settings: Settings |
 
 Frontend imports API types from `src/lib/api/schema.ts`, generated from `frontend/openapi.json`. Do not hand-edit either. SQL/query/business calculations must not move into components.
 
-## Ownership and canonical operational definitions (planned)
+## Ownership and canonical operational definitions (implemented)
 
 Exact columns, types, nullability, checks, keys, indexes and delete behavior remain binding in docs/03 §§4–7. Physical quantities are integer; unit money numeric(10,2); extended money numeric(12,2); ratios use 0–1. Preserve these exact table names and grains:
 
@@ -40,19 +40,19 @@ Exact columns, types, nullability, checks, keys, indexes and delete behavior rem
 
 The simulator writes CSV; the transactional loader owns writes to ops and hidden truth. Receipts occur at day start, sales next, adjustments last. `closing = opening + received - sold + net_adjustment`; `sold <= opening + received`; next opening equals previous closing. Fix generator/loader if DQ fails, never adjust outputs by hand.
 
-26 tables total: 17 ops + 8 analytics + 1 sim_truth. No operational or analytic table is created in this checkpoint.
+26 tables total: 17 ops + 8 analytics + 1 sim_truth. All 26 tables exist at Alembic revision 0004. Operational/truth data is loaded; analytics tables remain empty.
 
 ## Analytics and SQL contracts (planned)
 
 Eight analytics tables: analytics_runs, demand_forecasts, demand_forecast_daily, forecast_evaluations, supplier_lane_estimates, inventory_risk_snapshots, risk_checkpoints, replenishment_recommendations. Outputs are versioned by run_id and deleted through run cascades as specified. Daily forecasts are current-run only (42 days). Risk snapshots preserve inputs, probability, exposure and explanation; recommendations never create or modify purchase orders.
 
-Twelve ordered repeatable views: 010_v_current_run, 020_mv_daily_position (the one materialized view), 030_v_po_line_status, 040_v_po_status, 050_v_supplier_lane_performance, 060_v_supplier_performance, 070_v_category_dow_profile, 080_v_product_abc_class, 090_v_stockout_episodes, 100_v_inventory_reconciliation, 110_v_current_risk, 120_v_risk_trend. `mv_daily_position` derives in_stock/sold_out/out_all_day and censoring. See docs/04 for exact semantics.
+Only `100_v_inventory_reconciliation` is implemented for Phase 1. The complete Phase 2 contract has twelve ordered repeatable views: 010_v_current_run, 020_mv_daily_position (the one materialized view), 030_v_po_line_status, 040_v_po_status, 050_v_supplier_lane_performance, 060_v_supplier_performance, 070_v_category_dow_profile, 080_v_product_abc_class, 090_v_stockout_episodes, 100_v_inventory_reconciliation, 110_v_current_risk, 120_v_risk_trend. `mv_daily_position` derives in_stock/sold_out/out_all_day and censoring. See docs/04 for exact semantics.
 
 Fifteen standalone analyses (docs/04 §5), eighteen DQ checks (docs/03 §10). Headers state file, purpose, grain, constructs, business question. Multi-line SQL lives in files; bind query parameters; whitelist sort keys. Views apply in filename order in one transaction, after Alembic. Never edit applied revisions.
 
 ## Historical isolation and reproducibility
 
-Default analysis cutoff is 2026-09-30 end of day, not wall-clock time. Standard history is 2026-04-04 through 2026-09-30 (180 days); small is 2026-06-03 through 2026-09-30 (120 days). Seed 42; burn-in 35 days. Small = 3 stores × 60 products = 21,600 rows per dense table; standard = 12 × 400 = 864,000. These are target counts, not generated counts.
+Default analysis cutoff is 2026-09-30 end of day, not wall-clock time. Standard history is 2026-04-04 through 2026-09-30 (180 days); small is 2026-06-03 through 2026-09-30 (120 days). Seed 42; burn-in 35 days. Small = 3 stores × 60 products = 21,600 rows per dense table; standard = 12 × 400 = 864,000. These counts have been generated, loaded and independently verified.
 
 All pipeline extraction uses `:as_of`; operational facts after cutoff are excluded. Planned promotion schedules may extend into the forecast window per docs/04; observed future sales/receipts must never leak. Reconstruct open PO quantities/status using cutoff-bounded facts. The future-row deletion test must leave historical extraction unchanged.
 
@@ -60,24 +60,21 @@ All pipeline extraction uses `:as_of`; operational facts after cutoff are exclud
 
 ## Commands and cross-stage gates
 
-Implemented now: `make setup`, `db-up`, `db-down`, `api`, `web`, `lint`, `typecheck`, `test`, `test-frontend`, `openapi`, `check-openapi`, `verify`, `e2e`. Database-dependent commands/tests require Docker. `make setup` installs locked dependencies and preserves existing .env. PostgreSQL binds localhost:5433; initdb creates stocksense_test on first volume initialization. API/web use 8000/3000.
+Implemented: setup, db-up/down, migrate, seed, schema-dump, api/web health, lint/typecheck/test, OpenAPI checks and Phase 0 e2e. `make migrate` applies four existing revisions and delivered views. `make seed PRESET=small|standard SEED=42` runs generation → load → apply views → validate → refresh. Database identifiers and localhost:5433 remain unchanged.
 
-Configured Alembic shell only: `uv run --project backend alembic -c backend/alembic.ini ...`. No revisions exist; empty migration success is not schema verification.
+- `stocgain data generate --preset standard --seed 42 [--output PATH]`
+- `stocgain data load --path data/generated/standard [--replace]`
+- `stocgain data validate` / `stocgain data profile`
+- `stocgain db apply-views` / `stocgain db refresh`
 
-Required future interfaces (currently explicit nonzero failures):
-- `make migrate`: revisions 0001_schemas_and_reference, 0002_operational_facts, 0003_analytics_outputs, 0004_sim_truth, then views.
-- `make seed PRESET=small SEED=42` (or standard): generate → transactional COPY load → validate → materialized-view refresh.
-- `stocgain db apply-views`, `stocgain db refresh`, `stocgain db run-analysis 06`.
-- `stocgain data generate --preset standard --seed 42`, `load --path data/generated/standard`, `validate`, `profile`.
-- `make schema-dump`: actual migrated PostgreSQL schema only; never fabricate a reference dump.
-- Stage 2 / original Phase 3: `make analytics` = backfill 12 weeks + current run with evaluation; `stocgain analytics run --as-of YYYY-MM-DD --evaluate`. Not implemented or authorized this session.
+Loader validates CSV hashes, counts and headers before writing. Same-checksum data is revalidated without replacement. Different existing data is refused unless `--replace` (or `make seed LOAD_FLAGS=--replace`) is explicitly supplied; that operation transactionally truncates all application tables, loads, validates and rolls back on failure. It never deletes the database or Docker volume. Replacement discards existing analytics outputs and requires owner authorization in agent sessions. Default tests populate only the existing test DB and do not silently replace a different dataset.
 
-Do not bypass Phase 0 to start schema/data work. Before Stage 2, prove migrations up/down/up, small+standard load, checksums, DQ/integrity, SQL execution, historical isolation and measured EXPLAIN plans; record real results in PROGRESS. Preserve table/API/config boundaries so forecasting can be added without redesign. New schema changes require new reversible migrations and documented compatibility changes.
+`make db-reset`, analytics, pipeline, dev, demo-docker and explain remain explicit nonzero failures. `db refresh` reports zero MVs at Phase 1. Optional large generation is not implemented. Stage 2 / original Phase 3 forecasting is not authorized. Phase 2 must first prove SQL execution, historical isolation and measured EXPLAIN plans. New schema changes require new reversible migrations; never edit applied revisions.
 
 ## Rebrand compatibility addendum (2026-10-09)
 
 Official product name is `stocgain.`; full description is “Predictive Retail Inventory Intelligence Platform”; tagline is “Predict stockouts. Replenish smarter.” Name origin: “Stock Again” + “Stock + Gain”. Python package and CLI are `stocgain`; npm package is `stocgain-web`. Keep the active checkout path unchanged. The PostgreSQL database/user/password `stocksense`, `stocksense_test`, and Compose project/volume `stocksense` are retained intentionally to avoid a second database or destructive migration. `STOCGAIN_ENV` supersedes `STOCKSENSE_ENV`, which remains an accepted compatibility alias. Documentation references to SQL database identifiers must retain their actual names.
 
-## Verified partial Phase 1 interface
+## Verified Phase 1 interface
 
-Alembic revisions `0001`–`0004` are applied to the existing PostgreSQL database, with 17 `ops`, 8 `analytics`, and 1 `sim_truth` physical tables. The test database completed an upgrade/downgrade/re-upgrade round trip. `make schema-dump` writes `sql/schema/current.sql` using the existing Docker container and a fixed pg_dump restrict key. `backend/config/generator.toml` defines the normative small, standard, and large presets; `stocgain.generator.rng.stream` provides independent deterministic NumPy streams. The ORM model declarations, generation/loading commands, views, and data-quality runner remain planned; treat the SQL schema as empty until a real dataset is loaded and validated.
+All SQLAlchemy metadata matches the existing PostgreSQL schema. Config paths are normalized against the repository root. Generator streams, stable row ordering and IDs produce deterministic CSV checksums. Atomic output publication avoids partial files. All 18 DQ SQL files return zero violations on small and standard datasets. The serial DQ/profile session setting avoids Docker shared-memory exhaustion without changing checks. See `docs/PHASE1_VERIFICATION.md` for actual commands, row counts, checksums, runtimes and calibration limits. Historical operational consistency is verified; future Phase 2 pipeline isolation remains unimplemented.

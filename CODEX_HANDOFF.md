@@ -1,3 +1,5 @@
+> Current checkpoint update — 2026-10-10: Phases 0–1 complete; stop before Phase 2 until owner authorizes it. Resume the existing implementation, never restart. Read IMPLEMENTATION_STATUS.md, IMPLEMENTATION_CONTRACT.md, docs/PROGRESS.md and docs/PHASE1_VERIFICATION.md. Main PostgreSQL holds verified standard seed 42; test DB holds small seed 42. Existing 0001–0004 migrations and database/volume identifiers are preserved. No Phase 2 or Stage 2 work has begun. Original project-wide requirements below remain binding for later phases.
+
 # CODEX_HANDOFF — stocgain Implementation Contract
 
 > **You are implementing stocgain from scratch.** This document is the binding contract. It is self-contained for planning and day-to-day decisions; the numbered documents in `docs/` contain the exhaustive detail (exact SQL, every formula, every component) and are equally binding. If this file and a numbered doc disagree, `docs/00_DESIGN_SUMMARY.md` §4 (Canonical Constants) wins, then the numbered doc, then this file — and you must record the conflict in `docs/DECISIONS_LOG.md`.

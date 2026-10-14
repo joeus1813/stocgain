@@ -36,7 +36,7 @@ plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--strict-markers"
+addopts = "--strict-markers -m 'not slow'"
 markers = ["unit: no database required", "db: real PostgreSQL required", "api: API against real PostgreSQL", "slow: standard dataset", "requires_run: analytics run required in Phase 3"]
 
 [tool.uv]

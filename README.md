@@ -8,13 +8,13 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stage 1 is incomplete.** Phase 0 is verified, and the 26-table PostgreSQL schema is migrated. The temporary service-health page is the only UI. The data generator, loader, quality checks, SQL analyses, forecasting, business API, and dashboard remain unfinished. See [implementation status](IMPLEMENTATION_STATUS.md) and [phase progress](docs/PROGRESS.md).
+**Stage 1 is incomplete.** Phases 0–1 are verified: the 26-table schema, deterministic retail generator, loader and all 18 quality checks work with PostgreSQL. The temporary service-health page is the only UI. Phase 2 SQL analytics, forecasting, business API and dashboard remain unfinished. See [implementation status](IMPLEMENTATION_STATUS.md) and [phase progress](docs/PROGRESS.md).
 
 ## Prerequisites
 
 - Python 3.12 and uv (lockfile created with uv 0.13.0)
 - Node 22 (`nvm use`; `.nvmrc` selects the supported major) and npm
-- Docker Desktop with Compose v2, installed and running
+- Docker Desktop with Compose v2 or later, installed and running
 
 ## Local setup
 
@@ -23,6 +23,8 @@ Run from the repository root:
 ```bash
 make setup                       # root .env, locked Python + npm dependencies
 make db-up                       # PostgreSQL 17, localhost:5433, test database too
+make migrate                     # four revisions, then delivered views
+make seed PRESET=standard SEED=42 # deterministic data, safe load and validation
 make api                         # terminal 1: http://localhost:8000/api/v1/health
 make web                         # terminal 2: http://localhost:3000
 ```
@@ -61,15 +63,23 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 - `backend/src/stocgain/`: settings, logging, FastAPI health/errors, SQLAlchemy engine, CLI namespaces.
 - `backend/migrations/`: four reversible Alembic revisions for the 26 specified physical tables.
 - `frontend/`: Next App Router health client, Tailwind v4 tokens, shadcn configuration, generated API types, Vitest/Playwright tests.
-- `sql/`: reserved directories for Phase 1 quality checks and Phase 2 SQL.
+- `sql/`: Phase 1 reconciliation, 18 quality checks, calibration SQL and schema dump; Phase 2 SQL remains pending.
 - `docs/00`–`docs/11`: authoritative product and engineering specifications.
 - `IMPLEMENTATION_CONTRACT.md`: compact compatibility contract and planned data interfaces.
 
-`make migrate`, `seed`, `db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`, and `explain` fail explicitly until their required implementations exist. `make schema-dump` writes the current database DDL to `sql/schema/current.sql`. No populated dashboard setup is claimed. Phase 1 follows the verified Phase 0 gate; Phase 2 follows Phase 1. Stop before original Phase 3 in this stage.
+`make seed` revalidates identical content without replacement and refuses to overwrite a different dataset. To intentionally replace application rows, use `LOAD_FLAGS=--replace` only after reviewing the destination and backing it up; this also clears analytics outputs. Databases and volumes are retained. `make db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`, and `explain` remain unimplemented. `make schema-dump` writes actual DDL to `sql/schema/current.sql`.
+
+Standard verification after seeding:
+```bash
+uv run --project backend --locked stocgain data profile
+uv run --project backend --locked pytest backend/tests/db/test_standard_dataset.py -m slow -q
+```
+
+Default tests seed the existing test database with the small preset; they refuse a different existing dataset. The explicit slow acceptance test reads the standard dataset in the main database. See [Phase 1 evidence](docs/PHASE1_VERIFICATION.md) for actual counts and timings.
 
 ## Known limitations
 
-Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Four schema revisions passed an empty-test-database downgrade/re-upgrade round trip, and were applied to the existing project database. The schema is empty of retail facts; Compose image builds, data loading, reconciliation, analytical SQL, and query timings remain unverified.
+Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Four schema revisions passed an empty-test-database downgrade/re-upgrade round trip, and were applied to the existing project database. The standard dataset is loaded and reconciles. Phase 2 analytical SQL, historical as-of pipeline isolation and query benchmarks remain unimplemented. Optional large generation and full Compose image builds are unverified. Two on-time calibration deviations are documented in the decisions log.
 
 npm reports five high-severity development-only advisory entries rooted in `braces` through the Next ESLint plugin; latest available braces 3.0.3 is affected. ESLint 9 is deprecated upstream but currently required by the selected React/import lint plugins. No forced incompatible downgrade or hidden warning suppression was applied. Track these in `docs/DECISIONS_LOG.md`.
 

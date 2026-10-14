@@ -370,9 +370,9 @@ Rules (enforced by code review and a simple import-lint test in `tests/unit/test
 
 | Variable | Default (local) | Used by |
 |----------|-----------------|---------|
-| `POSTGRES_USER` | `stocgain` | compose |
-| `POSTGRES_PASSWORD` | `stocgain` | compose |
-| `POSTGRES_DB` | `stocgain` | compose |
+| `POSTGRES_USER` | `stocksense` | compose |
+| `POSTGRES_PASSWORD` | `stocksense` | compose |
+| `POSTGRES_DB` | `stocksense` | compose |
 | `POSTGRES_HOST_PORT` | `5433` | compose |
 | `DATABASE_URL` | `postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense` | backend |
 | `TEST_DATABASE_URL` | `postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense_test` | tests |
@@ -437,7 +437,7 @@ Two supported modes:
 | `make db-down` | `docker compose down` |
 | `make db-reset` | Planned developer-only command; would recreate local `stocksense` and `stocksense_test` databases, then `make migrate`. Not implemented or used in this session. |
 | `make migrate` | `alembic upgrade head` then `stocgain db apply-views` |
-| `make seed PRESET=standard SEED=42` | generate → load → validate → refresh views |
+| `make seed PRESET=standard SEED=42` | generate → load → apply views → validate → refresh views |
 | `make analytics` | `stocgain analytics backfill --weeks 12` then `stocgain analytics run --evaluate` |
 | `make pipeline` | `make migrate seed analytics` |
 | `make api` | `uvicorn stocgain.api.app:app --reload --port 8000` |
@@ -453,19 +453,12 @@ Two supported modes:
 | `make openapi` | Export OpenAPI JSON from the app (no server) to `frontend/openapi.json`, then `npm run gen:api` |
 | `make check-openapi` | Fails if regenerated `schema.ts` differs from committed version |
 | `make explain` | Run `sql/explain/*.sql` and write output to `docs/perf/raw/` |
-| `make schema-dump` | `pg_dump --schema-only` → `sql/schema/ddl_reference.sql` |
+| `make schema-dump` | `pg_dump --schema-only` → `sql/schema/current.sql` |
 | `make verify` | `lint typecheck test check-openapi` (the "everything green" gate) |
 
-### 9.3 Current Phase 0 checkpoint commands (2026-10-09)
+### 9.3 Current Phase 1 checkpoint commands (2026-10-10)
 
-The runnable setup currently stops at the health page: `make setup`, `make db-up`, then
-`make api` and `make web` in separate terminals. Setup uses locked dependencies and
-preserves the root `.env`. OpenAPI commands currently generate/check health-only types.
-`make migrate`, `seed`, `db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`,
-`explain`, and `schema-dump` explicitly fail until their phase implementation exists.
-`make verify` includes real PostgreSQL tests and must not be reported passing without
-Docker. See README and IMPLEMENTATION_STATUS.md for observed results. The target
-interfaces in §9.2 remain binding as their phases are implemented.
+Run `make setup`, `make db-up`, `make migrate`, `make seed PRESET=standard SEED=42`, then API/web in separate terminals. Only the health UI exists. Seed refuses different existing data unless explicit `LOAD_FLAGS=--replace` is supplied; replacement clears application rows in one transaction, never databases or volumes. Same-checksum loads revalidate without replacement. `make schema-dump` is implemented. `db-reset`, analytics, pipeline, dev, demo-docker and explain remain unimplemented. Default tests use small data in `stocksense_test`; run the standard slow acceptance test separately as documented in README. OpenAPI remains health-only. See PHASE1_VERIFICATION.md for observed results.
 
 ### 9.4 Full-project fresh-clone procedure (future target)
 

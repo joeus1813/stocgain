@@ -52,118 +52,31 @@ def test_all_26_specified_tables_exist() -> None:
         engine.dispose()
 
 
-def test_reference_tables_and_constraints() -> None:
-    """The reference schema rejects malformed codes, prices, and duplicate primary sourcing."""
-    engine = create_engine(Settings().test_database_url)
-    try:
-        with engine.begin() as connection:
-            assert connection.scalar(
-                text("SELECT to_regclass('ops.product_suppliers') IS NOT NULL")
+def test_reference_tables_and_constraints(db_tx) -> None:
+    """Existing small-preset rows reject invalid price and primary sourcing."""
+    with pytest.raises(IntegrityError), db_tx.begin_nested():
+        db_tx.execute(
+            text("UPDATE ops.products SET unit_price=unit_cost WHERE product_id=1")
+        )
+    with pytest.raises(IntegrityError), db_tx.begin_nested():
+        db_tx.execute(
+            text(
+                "INSERT INTO ops.product_suppliers SELECT product_id, (SELECT max(supplier_id) FROM ops.suppliers), true, 6, 12 FROM ops.products WHERE product_id=1"
             )
-
-        with engine.connect() as connection, connection.begin() as transaction:
-            connection.execute(
-                text("INSERT INTO ops.regions VALUES (1, 'SE', 'Southeast')")
-            )
-            connection.execute(
-                text(
-                    "INSERT INTO ops.product_categories VALUES (1, 'PT', 'Power Tools')"
-                )
-            )
-            connection.execute(
-                text("""
-                    INSERT INTO ops.suppliers VALUES
-                    (1, 'SUP-001', 'Fictional Supply One', 1, true),
-                    (2, 'SUP-002', 'Fictional Supply Two', 1, true)
-                """)
-            )
-            connection.execute(
-                text("""
-                    INSERT INTO ops.products VALUES
-                    (1, 'PT-10001', 'Fictional Drill', 1, 'Torvane', 'each',
-                     20.00, 10.00, DATE '2023-01-01', true)
-                """)
-            )
-            connection.execute(
-                text("INSERT INTO ops.product_suppliers VALUES (1, 1, true, 6, 12)")
-            )
-            with pytest.raises(IntegrityError):
-                with connection.begin_nested():
-                    connection.execute(
-                        text(
-                            "INSERT INTO ops.product_suppliers VALUES (1, 2, true, 6, 12)"
-                        )
-                    )
-            with pytest.raises(IntegrityError):
-                with connection.begin_nested():
-                    connection.execute(
-                        text("""
-                            INSERT INTO ops.products VALUES
-                            (2, 'PT-10002', 'Bad Price', 1, 'Torvane', 'each',
-                             10.00, 10.00, DATE '2023-01-01', true)
-                        """)
-                    )
-            transaction.rollback()
-    finally:
-        engine.dispose()
+        )
 
 
-def test_operational_fact_tables_and_constraints() -> None:
-    """Dense facts and procurement events enforce core row-level invariants."""
-    engine = create_engine(Settings().test_database_url)
-    try:
-        with engine.connect() as connection, connection.begin() as transaction:
-            connection.execute(
-                text("INSERT INTO ops.regions VALUES (1, 'SE', 'Southeast')")
+def test_operational_fact_tables_and_constraints(db_tx) -> None:
+    """Dense facts reject negative stock and sales on real loaded records."""
+    with pytest.raises(IntegrityError), db_tx.begin_nested():
+        db_tx.execute(
+            text(
+                "UPDATE ops.inventory_snapshots SET closing_on_hand=-1 WHERE store_id=1 AND product_id=1"
             )
-            connection.execute(
-                text(
-                    "INSERT INTO ops.product_categories VALUES (1, 'PT', 'Power Tools')"
-                )
+        )
+    with pytest.raises(IntegrityError), db_tx.begin_nested():
+        db_tx.execute(
+            text(
+                "UPDATE ops.daily_sales SET units_sold=-1 WHERE store_id=1 AND product_id=1"
             )
-            connection.execute(
-                text("""
-                INSERT INTO ops.stores
-                (store_id, store_code, store_name, city, state_code, region_id,
-                 opened_date, sales_area_sqft)
-                VALUES (1, 'S01', 'Fictional Store', 'Atlanta', 'GA', 1,
-                        DATE '2020-01-01', 100000)
-            """)
-            )
-            connection.execute(
-                text("""
-                INSERT INTO ops.products
-                (product_id, sku, product_name, category_id, brand_name,
-                 unit_of_measure, unit_price, unit_cost, introduced_date)
-                VALUES (1, 'PT-10001', 'Fictional Drill', 1, 'Torvane',
-                        'each', 20.00, 10.00, DATE '2023-01-01')
-            """)
-            )
-            connection.execute(
-                text("""
-                INSERT INTO ops.calendar
-                (calendar_date, iso_year, iso_week, iso_day_of_week, day_name,
-                 month, month_name, quarter, week_start_date, is_weekend)
-                VALUES (DATE '2026-09-30', 2026, 40, 3, 'Wednesday',
-                        9, 'September', 3, DATE '2026-09-28', false)
-            """)
-            )
-            with pytest.raises(IntegrityError):
-                with connection.begin_nested():
-                    connection.execute(
-                        text("""
-                        INSERT INTO ops.inventory_snapshots VALUES
-                        (1, 1, DATE '2026-09-30', 0, -1)
-                    """)
-                    )
-            with pytest.raises(IntegrityError):
-                with connection.begin_nested():
-                    connection.execute(
-                        text("""
-                        INSERT INTO ops.daily_sales VALUES
-                        (1, 1, DATE '2026-09-30', -1, 0, 0)
-                    """)
-                    )
-            transaction.rollback()
-    finally:
-        engine.dispose()
+        )

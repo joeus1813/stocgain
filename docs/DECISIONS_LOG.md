@@ -75,3 +75,35 @@ Decision: use `/Applications/Docker.app/Contents/Resources/bin/docker` on PATH a
 Reason: the Docker executable was installed but absent from the shell PATH; default sandbox blocked the socket and localhost until local permission was granted. No Docker reinstall was needed.
 Alternatives: a second database or changing ports; rejected.
 Impact: Phase 0 acceptance was re-run against PostgreSQL 17.11 in the existing Compose project; results recorded in PROGRESS.md.
+
+## 2026-10-10 · Phase 1 implementation and safe loading
+Decision: mirror the four applied revisions in explicit SQLAlchemy table/model declarations; retain migration history. Implement the small/standard simulator and required Phase 1 reconciliation view only. Normalize generator config paths against the repository root.
+Reason: preserve the verified schema and phase boundaries. PostgreSQL metadata comparison and schema-dump table-definition comparison pass; the ERD remains unchanged.
+Alternatives: redesigning tables, editing applied revisions or implementing all Phase 2 views now; rejected.
+Impact: no new dependency or schema revision; optional large preset remains an explicit unsupported operation.
+
+Decision: default loading is non-destructive: verify files, no-op/revalidate identical content, refuse different content. Explicit `--replace` transactionally truncates application rows, COPY-loads, validates and rolls back on errors.
+Reason: owner prohibited unapproved database resets. Existing test DB uses small data and main DB uses standard data; no database/volume was recreated. The roadmap's `make db-reset` verification command was intentionally not used.
+Alternatives: unconditional truncation or another database; rejected.
+Impact: after price regression repair, automatic approval initially blocked standard replacement; owner subsequently authorized continuation. Created a custom-format backup, checked `pg_restore --list`, then reloaded successfully. Existing DB/schema/volume identifiers are unchanged. Recovery file is ignored at `data/backups/pre-phase1-corrected-reload.dump`.
+
+Decision: execute DQ/profile queries with transaction-local parallel workers disabled.
+Reason: the standard profile exhausted Docker's 64 MB shared-memory mount with parallel workers. Serial execution passed against the unchanged dataset.
+Alternatives: changing Docker storage or loosening checks; rejected.
+Impact: bounded local resource use; check semantics unchanged. Runtimes are recorded in PHASE1_VERIFICATION.md.
+
+## 2026-10-10 · Generator corrections and calibration interpretation
+Decision: enforce .97/.98/.99 price points inside configured bounds and reserve pinned demo supplier names before randomly choosing other names.
+Reason: standard seed 42 exposed four integer-price lower-bound clamps; seed 89 exposed a duplicate pinned supplier name. Regression tests reproduce the cases and pass after correction.
+Alternatives: editing output CSVs, changing seed or dropping uniqueness; rejected.
+Impact: corrected standard checksum recorded in PHASE1_VERIFICATION.md. Final generation remains deterministic; small seed 42 checksum unchanged.
+
+Decision: retain docs/06 §7 fulfillment probabilities and record two §10 plausibility deviations rather than silently tune product behavior. This uses docs/09 Phase 1's explicit allowance for explained calibration deviations.
+Reason: the early branch has probability 0.08, followed by on-time when u < 0.08 + p_s. Thus early-or-on-time probability is min(1, 0.08 + p_s), not p_s alone. Standard median 90-day supplier OTR is 0.977102 (target 0.80–0.92). Demo Plumbing p_s=0.70 gives theoretical 0.78 early-or-on-time before finite sampling and cutoff censoring; observed received-PO 90-day OTR is 0.819355 (target <0.80). Conditioning on received POs excludes some late unreceived orders at the endpoint. The prescribed small-preset event unit test still passes its <0.80 assertion; it has not been weakened.
+Alternatives: lowering p_s below prescribed settings or changing the early/ontime branch; rejected because exact simulation rules take precedence over approximate calibration expectations.
+Impact: operational DQ is clean. Supplier rankings and downstream recommendation outcomes are not guaranteed or claimed before their later-phase verification. No generated rows were edited by hand.
+
+Decision: follow the explicit promotion cadence over burn-in, history and future-planning horizon, rather than the approximate supporting-volume estimate.
+Reason: 8 categories × approximately 257/15 starts implies about 137 promotions plus scheduled events; actual standard count is 143 versus the rough 70–90 estimate. Receipts are 55,583 versus approximate 60k–75k, consistent with 55,415 lines, partial shipments and unreceived orders at cutoff.
+Alternatives: arbitrary extra receipts or fewer promotion events to match approximate counts; rejected.
+Impact: all 18 DQ checks and required dense counts pass. These are documented plausibility differences, not hidden acceptance failures. Post-analytics risk calibration remains outside Phase 1.

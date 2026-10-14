@@ -482,6 +482,141 @@ CREATE TABLE analytics.supplier_lane_estimates (
 
 
 --
+-- Name: daily_sales; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.daily_sales (
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    sales_date date NOT NULL,
+    units_sold integer NOT NULL,
+    net_sales_amount numeric(12,2) NOT NULL,
+    cogs_amount numeric(12,2) NOT NULL,
+    CONSTRAINT daily_sales_check CHECK (((units_sold > 0) OR ((net_sales_amount = (0)::numeric) AND (cogs_amount = (0)::numeric)))),
+    CONSTRAINT daily_sales_cogs_amount_check CHECK ((cogs_amount >= (0)::numeric)),
+    CONSTRAINT daily_sales_net_sales_amount_check CHECK ((net_sales_amount >= (0)::numeric)),
+    CONSTRAINT daily_sales_units_sold_check CHECK ((units_sold >= 0))
+);
+
+
+--
+-- Name: inventory_adjustments; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_adjustments (
+    adjustment_id integer NOT NULL,
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    adjustment_date date NOT NULL,
+    quantity_delta integer NOT NULL,
+    reason_code ops.adjustment_reason NOT NULL,
+    CONSTRAINT inventory_adjustments_check CHECK (((reason_code = 'cycle_count_correction'::ops.adjustment_reason) OR (quantity_delta < 0))),
+    CONSTRAINT inventory_adjustments_quantity_delta_check CHECK ((quantity_delta <> 0))
+);
+
+
+--
+-- Name: inventory_receipts; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_receipts (
+    receipt_id integer NOT NULL,
+    po_line_id integer NOT NULL,
+    received_date date NOT NULL,
+    quantity_received integer NOT NULL,
+    CONSTRAINT inventory_receipts_quantity_received_check CHECK ((quantity_received > 0))
+);
+
+
+--
+-- Name: inventory_snapshots; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_snapshots (
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    snapshot_date date NOT NULL,
+    opening_on_hand integer NOT NULL,
+    closing_on_hand integer NOT NULL,
+    CONSTRAINT inventory_snapshots_closing_on_hand_check CHECK ((closing_on_hand >= 0)),
+    CONSTRAINT inventory_snapshots_opening_on_hand_check CHECK ((opening_on_hand >= 0))
+);
+
+
+--
+-- Name: purchase_order_lines; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.purchase_order_lines (
+    po_line_id integer NOT NULL,
+    purchase_order_id integer NOT NULL,
+    line_number smallint NOT NULL,
+    product_id integer NOT NULL,
+    quantity_ordered integer NOT NULL,
+    quantity_cancelled integer DEFAULT 0 NOT NULL,
+    unit_cost numeric(10,2) NOT NULL,
+    CONSTRAINT purchase_order_lines_check CHECK (((quantity_cancelled >= 0) AND (quantity_cancelled <= quantity_ordered))),
+    CONSTRAINT purchase_order_lines_line_number_check CHECK ((line_number >= 1)),
+    CONSTRAINT purchase_order_lines_quantity_ordered_check CHECK ((quantity_ordered > 0)),
+    CONSTRAINT purchase_order_lines_unit_cost_check CHECK ((unit_cost > (0)::numeric))
+);
+
+
+--
+-- Name: purchase_orders; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.purchase_orders (
+    purchase_order_id integer NOT NULL,
+    po_number character varying(12) NOT NULL,
+    supplier_id smallint NOT NULL,
+    store_id smallint NOT NULL,
+    order_date date NOT NULL,
+    promised_delivery_date date NOT NULL,
+    CONSTRAINT purchase_orders_check CHECK ((promised_delivery_date > order_date)),
+    CONSTRAINT purchase_orders_po_number_check CHECK (((po_number)::text ~ '^PO-[0-9]{6}$'::text))
+);
+
+
+--
+-- Name: v_inventory_reconciliation; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_inventory_reconciliation AS
+ WITH rec AS (
+         SELECT po.store_id,
+            pol.product_id,
+            r.received_date AS d,
+            (sum(r.quantity_received))::integer AS units_received
+           FROM ((ops.inventory_receipts r
+             JOIN ops.purchase_order_lines pol ON ((pol.po_line_id = r.po_line_id)))
+             JOIN ops.purchase_orders po ON ((po.purchase_order_id = pol.purchase_order_id)))
+          GROUP BY po.store_id, pol.product_id, r.received_date
+        ), adj AS (
+         SELECT inventory_adjustments.store_id,
+            inventory_adjustments.product_id,
+            inventory_adjustments.adjustment_date AS d,
+            (sum(inventory_adjustments.quantity_delta))::integer AS net_adjustment
+           FROM ops.inventory_adjustments
+          GROUP BY inventory_adjustments.store_id, inventory_adjustments.product_id, inventory_adjustments.adjustment_date
+        )
+ SELECT i.store_id,
+    i.product_id,
+    i.snapshot_date,
+    i.opening_on_hand,
+    COALESCE(rec.units_received, 0) AS units_received,
+    s.units_sold,
+    COALESCE(adj.net_adjustment, 0) AS net_adjustment,
+    i.closing_on_hand,
+    (((i.opening_on_hand + COALESCE(rec.units_received, 0)) - s.units_sold) + COALESCE(adj.net_adjustment, 0)) AS expected_closing,
+    (i.closing_on_hand - (((i.opening_on_hand + COALESCE(rec.units_received, 0)) - s.units_sold) + COALESCE(adj.net_adjustment, 0))) AS discrepancy
+   FROM (((ops.inventory_snapshots i
+     JOIN ops.daily_sales s ON (((s.store_id = i.store_id) AND (s.product_id = i.product_id) AND (s.sales_date = i.snapshot_date))))
+     LEFT JOIN rec ON (((rec.store_id = i.store_id) AND (rec.product_id = i.product_id) AND (rec.d = i.snapshot_date))))
+     LEFT JOIN adj ON (((adj.store_id = i.store_id) AND (adj.product_id = i.product_id) AND (adj.d = i.snapshot_date))));
+
+
+--
 -- Name: calendar; Type: TABLE; Schema: ops; Owner: -
 --
 
@@ -501,24 +636,6 @@ CREATE TABLE ops.calendar (
     CONSTRAINT calendar_iso_week_check CHECK (((iso_week >= 1) AND (iso_week <= 53))),
     CONSTRAINT calendar_month_check CHECK (((month >= 1) AND (month <= 12))),
     CONSTRAINT calendar_quarter_check CHECK (((quarter >= 1) AND (quarter <= 4)))
-);
-
-
---
--- Name: daily_sales; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.daily_sales (
-    store_id smallint NOT NULL,
-    product_id integer NOT NULL,
-    sales_date date NOT NULL,
-    units_sold integer NOT NULL,
-    net_sales_amount numeric(12,2) NOT NULL,
-    cogs_amount numeric(12,2) NOT NULL,
-    CONSTRAINT daily_sales_check CHECK (((units_sold > 0) OR ((net_sales_amount = (0)::numeric) AND (cogs_amount = (0)::numeric)))),
-    CONSTRAINT daily_sales_cogs_amount_check CHECK ((cogs_amount >= (0)::numeric)),
-    CONSTRAINT daily_sales_net_sales_amount_check CHECK ((net_sales_amount >= (0)::numeric)),
-    CONSTRAINT daily_sales_units_sold_check CHECK ((units_sold >= 0))
 );
 
 
@@ -567,22 +684,6 @@ ALTER SEQUENCE ops.dataset_manifest_dataset_id_seq OWNED BY ops.dataset_manifest
 
 
 --
--- Name: inventory_adjustments; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.inventory_adjustments (
-    adjustment_id integer NOT NULL,
-    store_id smallint NOT NULL,
-    product_id integer NOT NULL,
-    adjustment_date date NOT NULL,
-    quantity_delta integer NOT NULL,
-    reason_code ops.adjustment_reason NOT NULL,
-    CONSTRAINT inventory_adjustments_check CHECK (((reason_code = 'cycle_count_correction'::ops.adjustment_reason) OR (quantity_delta < 0))),
-    CONSTRAINT inventory_adjustments_quantity_delta_check CHECK ((quantity_delta <> 0))
-);
-
-
---
 -- Name: inventory_adjustments_adjustment_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -603,19 +704,6 @@ ALTER SEQUENCE ops.inventory_adjustments_adjustment_id_seq OWNED BY ops.inventor
 
 
 --
--- Name: inventory_receipts; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.inventory_receipts (
-    receipt_id integer NOT NULL,
-    po_line_id integer NOT NULL,
-    received_date date NOT NULL,
-    quantity_received integer NOT NULL,
-    CONSTRAINT inventory_receipts_quantity_received_check CHECK ((quantity_received > 0))
-);
-
-
---
 -- Name: inventory_receipts_receipt_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -633,21 +721,6 @@ CREATE SEQUENCE ops.inventory_receipts_receipt_id_seq
 --
 
 ALTER SEQUENCE ops.inventory_receipts_receipt_id_seq OWNED BY ops.inventory_receipts.receipt_id;
-
-
---
--- Name: inventory_snapshots; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.inventory_snapshots (
-    store_id smallint NOT NULL,
-    product_id integer NOT NULL,
-    snapshot_date date NOT NULL,
-    opening_on_hand integer NOT NULL,
-    closing_on_hand integer NOT NULL,
-    CONSTRAINT inventory_snapshots_closing_on_hand_check CHECK ((closing_on_hand >= 0)),
-    CONSTRAINT inventory_snapshots_opening_on_hand_check CHECK ((opening_on_hand >= 0))
-);
 
 
 --
@@ -793,25 +866,6 @@ ALTER SEQUENCE ops.promotions_promotion_id_seq OWNED BY ops.promotions.promotion
 
 
 --
--- Name: purchase_order_lines; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.purchase_order_lines (
-    po_line_id integer NOT NULL,
-    purchase_order_id integer NOT NULL,
-    line_number smallint NOT NULL,
-    product_id integer NOT NULL,
-    quantity_ordered integer NOT NULL,
-    quantity_cancelled integer DEFAULT 0 NOT NULL,
-    unit_cost numeric(10,2) NOT NULL,
-    CONSTRAINT purchase_order_lines_check CHECK (((quantity_cancelled >= 0) AND (quantity_cancelled <= quantity_ordered))),
-    CONSTRAINT purchase_order_lines_line_number_check CHECK ((line_number >= 1)),
-    CONSTRAINT purchase_order_lines_quantity_ordered_check CHECK ((quantity_ordered > 0)),
-    CONSTRAINT purchase_order_lines_unit_cost_check CHECK ((unit_cost > (0)::numeric))
-);
-
-
---
 -- Name: purchase_order_lines_po_line_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -829,22 +883,6 @@ CREATE SEQUENCE ops.purchase_order_lines_po_line_id_seq
 --
 
 ALTER SEQUENCE ops.purchase_order_lines_po_line_id_seq OWNED BY ops.purchase_order_lines.po_line_id;
-
-
---
--- Name: purchase_orders; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.purchase_orders (
-    purchase_order_id integer NOT NULL,
-    po_number character varying(12) NOT NULL,
-    supplier_id smallint NOT NULL,
-    store_id smallint NOT NULL,
-    order_date date NOT NULL,
-    promised_delivery_date date NOT NULL,
-    CONSTRAINT purchase_orders_check CHECK ((promised_delivery_date > order_date)),
-    CONSTRAINT purchase_orders_po_number_check CHECK (((po_number)::text ~ '^PO-[0-9]{6}$'::text))
-);
 
 
 --
