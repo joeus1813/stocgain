@@ -4,25 +4,25 @@ Updated 2026-10-09 (America/New_York).
 
 Official product: **stocgain.** — Predictive Retail Inventory Intelligence Platform. Tagline: *Predict stockouts. Replenish smarter.* The name combines “Stock Again” and “Stock + Gain”.
 
-**Overall: Stage 1 incomplete; Phase 0 is complete and Phase 1 is beginning.** The former Docker blocker was resolved after local socket permission was approved. Stage 2 / original Phase 3 forecasting has not started.
+**Overall: Stage 1 incomplete; Phase 0 is complete and Phase 1 is partly implemented.** The former Docker blocker was resolved after local socket permission was approved. Stage 2 / original Phase 3 forecasting has not started. The next two sections preserve pre-Docker checkpoint evidence; current results appear in the continuation sections below.
 
-## Completed foundation work
+## Historical Phase 0 foundation work
 
 - Preserved supplied documents in initial Git commit `e1e45fe`; branch `stage-1-foundation`.
 - Monorepo directories, `.gitignore`, `.env.example`, MIT license, README, Makefile.
 - Locked Python 3.12/uv environment; FastAPI health endpoint with actual `SELECT 1`, unavailable state, CORS, request IDs, error envelopes, lifecycle-owned SQLAlchemy engine.
-- Alembic environment configured, with **zero schema revisions**.
+- Alembic environment configured (zero schema revisions at that earlier checkpoint; four exist now).
 - PostgreSQL 17 Compose definition, test database init SQL, optional API/web Dockerfiles (not executed).
 - Next.js temporary health client using TanStack Query; generated health OpenAPI types; Tailwind v4 tokens and shadcn configuration; no product pages.
 - pytest unit/integration tests, Vitest/RTL health and root-env regression tests, Playwright full-stack health acceptance test.
 - Compact IMPLEMENTATION_CONTRACT.md, phase log, decisions log and implementation plan.
 - Independent code review; important root-environment bug reproduced by regression and fixed. No remaining important finding in reviewed Phase 0 scope; one deferred config-path issue below.
 
-## Actual database results
+## Historical database results before Docker access
 
-Tables created: **0**. Views created: **0**. Generated datasets: **none** (0 rows). Migrations, deterministic generator, COPY loader, all 18 DQ checks, 15 analyses and EXPLAIN measurements are **not implemented or verified**. Specification inventory is 26 tables and 12 views, not an observed database inventory.
+At the earlier checkpoint: tables created **0**, views created **0**, generated datasets **none**. Current schema results appear in the Phase 1 checkpoint below; views and generated datasets are still absent.
 
-## Verification (2026-10-09)
+## Historical verification before Docker access (2026-10-09)
 
 Machine: macOS 15.6.1, arm64; Python 3.12.7; Node 22.23.3; uv 0.13.0. Project-local uv/Node were installed into ignored `.tools` because global prerequisites were absent. Commands below used those executables on PATH and `UV_CACHE_DIR=/private/tmp/stocksense-uv-cache`.
 
@@ -47,14 +47,14 @@ Test assertions were not skipped or weakened to conceal the missing database. In
 
 No SQL/performance claims are available. Build/test durations above are observed development checks, not business or database benchmarks.
 
-## Known problems and next steps
+## Historical next-step record before Docker access
 
-1. **Install and start Docker Desktop**, then run `make db-up`, `make api`, `make web`, `make verify`, `make e2e`. Complete and record Phase 0 DoD before proceeding.
+1. The former Docker prerequisite and Phase 0 gate were completed in the continuation below.
 2. npm audit: five high development-tool advisory entries rooted in unpatched braces 3.0.3 through Next ESLint. Current selected lint peers require ESLint 9, which npm marks deprecated. No audit suppression or incompatible forced downgrade was used.
 3. Deferred review minor: root .env gives relative analytics/generator config paths. They are unused now; normalize against REPOSITORY_ROOT before Phase 1 consumes them. Cost if deferred too long: config lookup fails when running from backend cwd.
 4. Phase 1: all specified migrations/tables, deterministic small+standard simulator, transactional COPY, 18 DQ checks/corruption tests, schema dump and timings.
 5. Phase 2: 12 views, as-of extraction, 15 analyses, point-in-time tests, EXPLAIN measurements, compatibility verification against forecasting specification.
-6. Only after those checks can Stage 1 be marked complete and Stage 2 begin. No product decision is currently required; the blocker is the missing Docker prerequisite.
+6. Only after those checks can Stage 1 be marked complete and Stage 2 begin. No product decision is currently required.
 7. Owner may replace MIT `<Project Owner>` before publishing, per original spec.
 
 For this workstation's already-installed local tools:
