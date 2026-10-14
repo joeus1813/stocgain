@@ -11,7 +11,8 @@ help:
 	@echo 'Setup: make setup; make db-up; make api and make web in separate terminals'
 	@echo 'Verify: make lint typecheck test; make e2e requires running API, web and PostgreSQL'
 	@echo 'Types: make openapi; make check-openapi'
-	@echo 'Stage 1 incomplete: migrate, seed, analytics, pipeline, dev, demo-docker, explain, schema-dump, db-reset are not implemented.'
+	@echo 'Stage 1 incomplete: migrate, seed, analytics, pipeline, dev, demo-docker, explain, db-reset are not implemented.'
+	@echo 'Schema: make schema-dump writes sql/schema/current.sql from the running PostgreSQL container.'
 	@echo 'Future seed interface: make seed PRESET=standard SEED=42'
 
 setup:
@@ -68,6 +69,9 @@ verify:
 	$(MAKE) test
 	$(MAKE) check-openapi
 
-db-reset migrate seed analytics pipeline dev demo-docker explain schema-dump:
+schema-dump:
+	docker compose exec -T db pg_dump --schema-only --no-owner --no-privileges --restrict-key=stocgainSchemaDump42 -U stocksense stocksense > sql/schema/current.sql
+
+db-reset migrate seed analytics pipeline dev demo-docker explain:
 	@echo 'Not implemented in the current Phase 0 checkpoint: $@. See IMPLEMENTATION_STATUS.md.' >&2
 	@exit 2

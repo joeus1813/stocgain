@@ -157,7 +157,7 @@ StockSense/
 ├── THIRD_PARTY_NOTICES.md          # dependency license summary (Phase 9)
 ├── Makefile                        # all developer commands
 ├── docker-compose.yml
-├── docker/initdb/01_create_test_db.sql   # creates stocgain_test on first start
+├── docker/initdb/01_create_test_db.sql   # creates stocksense_test on first start
 ├── scripts/verify_fresh_setup.sh   # Phase 9 clean-clone verification
 ├── .env.example
 ├── .gitignore                      # includes data/generated/, .env, node_modules, .venv
@@ -404,8 +404,8 @@ services:
     image: postgres:17
     environment: [POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB from .env]
     ports: ["${POSTGRES_HOST_PORT:-5433}:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data, ./docker/initdb:/docker-entrypoint-initdb.d:ro]  # initdb creates stocgain_test
-    healthcheck: pg_isready -U stocgain, interval 5s, retries 20
+    volumes: [pgdata:/var/lib/postgresql/data, ./docker/initdb:/docker-entrypoint-initdb.d:ro]  # initdb creates stocksense_test
+    healthcheck: pg_isready -U stocksense, interval 5s, retries 20
     command: ["postgres", "-c", "shared_buffers=512MB", "-c", "work_mem=32MB", "-c", "maintenance_work_mem=256MB"]
   api:
     build: {context: ., dockerfile: backend/Dockerfile}
@@ -435,7 +435,7 @@ Two supported modes:
 | `make setup` | `uv sync` in `backend/`; `npm ci` in `frontend/`; copy `.env.example` → `.env` if missing |
 | `make db-up` | `docker compose up -d db` and wait for health |
 | `make db-down` | `docker compose down` |
-| `make db-reset` | Drop and recreate `stocgain` and `stocgain_test` databases, then `make migrate` |
+| `make db-reset` | Planned developer-only command; would recreate local `stocksense` and `stocksense_test` databases, then `make migrate`. Not implemented or used in this session. |
 | `make migrate` | `alembic upgrade head` then `stocgain db apply-views` |
 | `make seed PRESET=standard SEED=42` | generate → load → validate → refresh views |
 | `make analytics` | `stocgain analytics backfill --weeks 12` then `stocgain analytics run --evaluate` |

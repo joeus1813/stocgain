@@ -8,7 +8,7 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stage 1 is incomplete.** This checkpoint contains the Phase 0 development foundation and a temporary service-health page. No operational tables, data generator, SQL analyses, forecasting, business API, or dashboard have been implemented. See [implementation status](IMPLEMENTATION_STATUS.md) and [phase progress](docs/PROGRESS.md).
+**Stage 1 is incomplete.** Phase 0 is verified, and the 26-table PostgreSQL schema is migrated. The temporary service-health page is the only UI. The data generator, loader, quality checks, SQL analyses, forecasting, business API, and dashboard remain unfinished. See [implementation status](IMPLEMENTATION_STATUS.md) and [phase progress](docs/PROGRESS.md).
 
 ## Prerequisites
 
@@ -59,17 +59,17 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 ## Structure and next work
 
 - `backend/src/stocgain/`: settings, logging, FastAPI health/errors, SQLAlchemy engine, CLI namespaces.
-- `backend/migrations/`: configured Alembic environment; no table revisions yet.
+- `backend/migrations/`: four reversible Alembic revisions for the 26 specified physical tables.
 - `frontend/`: Next App Router health client, Tailwind v4 tokens, shadcn configuration, generated API types, Vitest/Playwright tests.
 - `sql/`: reserved directories for Phase 1 quality checks and Phase 2 SQL.
 - `docs/00`–`docs/11`: authoritative product and engineering specifications.
 - `IMPLEMENTATION_CONTRACT.md`: compact compatibility contract and planned data interfaces.
 
-`make migrate`, `seed`, `db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`, `explain`, and `schema-dump` fail explicitly until their required implementations exist. No populated dashboard setup is claimed. Phase 1 follows the verified Phase 0 gate; Phase 2 follows Phase 1. Stop before original Phase 3 in this stage.
+`make migrate`, `seed`, `db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`, and `explain` fail explicitly until their required implementations exist. `make schema-dump` writes the current database DDL to `sql/schema/current.sql`. No populated dashboard setup is claimed. Phase 1 follows the verified Phase 0 gate; Phase 2 follows Phase 1. Stop before original Phase 3 in this stage.
 
 ## Known limitations
 
-Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Compose image builds, migrations, data loading, reconciliation, analytical SQL, and query timings have not yet been verified.
+Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Four schema revisions passed an empty-test-database downgrade/re-upgrade round trip, and were applied to the existing project database. The schema is empty of retail facts; Compose image builds, data loading, reconciliation, analytical SQL, and query timings remain unverified.
 
 npm reports five high-severity development-only advisory entries rooted in `braces` through the Next ESLint plugin; latest available braces 3.0.3 is affected. ESLint 9 is deprecated upstream but currently required by the selected React/import lint plugins. No forced incompatible downgrade or hidden warning suppression was applied. Track these in `docs/DECISIONS_LOG.md`.
 

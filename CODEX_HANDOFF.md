@@ -304,7 +304,7 @@ Global: light enterprise design with tokens in `docs/07` §3 (canvas `#F6F7F9`, 
 ```bash
 # prerequisites: Docker Desktop running, uv, Node 22
 make setup                       # uv sync; npm ci; copy .env.example → .env
-make db-up                       # Postgres 17 on localhost:5433 (+ stocgain_test)
+make db-up                       # Postgres 17 on localhost:5433 (+ stocksense_test)
 make pipeline                    # migrate → generate standard (seed 42) → load → validate → views → analytics
 make api                         # http://localhost:8000/api/v1 (docs at /docs)
 make web                         # http://localhost:3000

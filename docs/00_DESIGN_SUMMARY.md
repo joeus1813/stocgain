@@ -141,7 +141,7 @@ Every document, config file, and test must use these values. Values marked *conf
 |------|-------|
 | PostgreSQL | 17, container port 5432, host port **5433** (avoids clashing with a Homebrew Postgres) |
 | Database / user / password | `stocksense` / `stocksense` / `stocksense` (local only) |
-| Test database | `stocgain_test` |
+| Test database | `stocksense_test` |
 | API | FastAPI on **8000**, prefix **`/api/v1`** |
 | Web | Next.js on **3000** |
 | Python | 3.12 (≥ 3.11 supported), managed by **uv** |

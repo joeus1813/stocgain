@@ -77,3 +77,7 @@ Do not bypass Phase 0 to start schema/data work. Before Stage 2, prove migration
 ## Rebrand compatibility addendum (2026-10-09)
 
 Official product name is `stocgain.`; full description is “Predictive Retail Inventory Intelligence Platform”; tagline is “Predict stockouts. Replenish smarter.” Name origin: “Stock Again” + “Stock + Gain”. Python package and CLI are `stocgain`; npm package is `stocgain-web`. Keep the active checkout path unchanged. The PostgreSQL database/user/password `stocksense`, `stocksense_test`, and Compose project/volume `stocksense` are retained intentionally to avoid a second database or destructive migration. `STOCGAIN_ENV` supersedes `STOCKSENSE_ENV`, which remains an accepted compatibility alias. Documentation references to SQL database identifiers must retain their actual names.
+
+## Verified partial Phase 1 interface
+
+Alembic revisions `0001`–`0004` are applied to the existing PostgreSQL database, with 17 `ops`, 8 `analytics`, and 1 `sim_truth` physical tables. The test database completed an upgrade/downgrade/re-upgrade round trip. `make schema-dump` writes `sql/schema/current.sql` using the existing Docker container and a fixed pg_dump restrict key. `backend/config/generator.toml` defines the normative small, standard, and large presets; `stocgain.generator.rng.stream` provides independent deterministic NumPy streams. The ORM model declarations, generation/loading commands, views, and data-quality runner remain planned; treat the SQL schema as empty until a real dataset is loaded and validated.

@@ -35,7 +35,7 @@
 
 ### 1.4 Fixtures
 
-- **Session fixture `loaded_small_db`:** migrates `stocgain_test` to head, applies views, generates the **small** preset with seed 42 into a temp directory, loads it, validates. Runs once per session (~20 s target).
+- **Session fixture `loaded_small_db`:** migrates `stocksense_test` to head, applies views, generates the **small** preset with seed 42 into a temp directory, loads it, validates. Runs once per session (~20 s target).
 - **Session fixture `analytics_small`:** runs `analytics backfill --weeks 4` + `run --evaluate` on the small DB.
 - **Function fixture `db_tx`:** a connection inside a transaction rolled back after each test (for mutation tests like constraint violations and point-in-time deletion).
 - **Golden fixtures:** `backend/tests/fixtures/golden_cases.json` (05 §15), `format_cases.json` (shared formatter cases, also copied to `frontend/tests/fixtures/`).

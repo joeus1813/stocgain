@@ -1,0 +1,28 @@
+generator_version = "1.0.0"
+default_preset = "standard"
+default_seed = 42
+burn_in_days = 35
+
+[presets.small]
+stores = ["S01", "S07", "S10"]
+skus_per_category = { PT = 7, HT = 7, EL = 9, PL = 8, BM = 7, LG = 8, PA = 6, HW = 8 }
+suppliers_per_category = { PT = 1, HT = 1, EL = 2, PL = 2, BM = 1, LG = 1, PA = 1, HW = 1 }
+history_start = "2026-06-03"
+history_end = "2026-09-30"
+
+[presets.standard]
+stores = "all"
+skus_per_category = { PT = 45, HT = 50, EL = 60, PL = 55, BM = 45, LG = 55, PA = 40, HW = 50 }
+suppliers_per_category = { PT = 6, HT = 6, EL = 6, PL = 6, BM = 6, LG = 6, PA = 6, HW = 6 }
+history_start = "2026-04-04"
+history_end = "2026-09-30"
+
+[presets.large]
+stores = "all_plus_generated"
+skus_per_category = { PT = 110, HT = 125, EL = 150, PL = 140, BM = 115, LG = 140, PA = 100, HW = 120 }
+suppliers_per_category = { PT = 12, HT = 12, EL = 13, PL = 13, BM = 12, LG = 13, PA = 12, HW = 13 }
+history_start = "2025-10-01"
+history_end = "2026-09-30"
+
+[events]
+enabled = true

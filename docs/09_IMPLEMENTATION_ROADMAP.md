@@ -53,7 +53,7 @@ And `docs/DECISIONS_LOG.md` for implementation-level decisions (format: date, de
 3. `settings.py` with pydantic-settings reading `.env` (02 §8.1).
 4. `create_app()` with CORS, request-ID middleware, error envelope handlers, `/api/v1/health` (returns DB status via `SELECT 1`).
 5. `stocgain` Typer CLI with command groups `data`, `db`, `analytics`, `pipeline` (stubs that print "not implemented" and exit 2 are allowed only in this phase).
-6. Docker Compose `db` service (Postgres 17, host port 5433, healthcheck, initdb script creating `stocgain_test`); `api`/`web` services under profile `full`.
+6. Docker Compose `db` service (Postgres 17, host port 5433, healthcheck, initdb script creating `stocksense_test`); `api`/`web` services under profile `full`.
 7. Frontend: create Next.js app; install Tailwind v4, shadcn/ui init, TanStack Query, lucide-react, Recharts, TanStack Table; ESLint + Prettier; Vitest + RTL; Playwright (install browsers).
 8. Temporary `page.tsx` calls `GET /api/v1/health` via TanStack Query and displays `status` and `database` (real request; this page is replaced in Phase 5).
 9. Makefile targets from 02 §9.2 (those not yet functional print a clear message and exit non-zero).
