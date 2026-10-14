@@ -1,0 +1,8 @@
+.git
+.env
+.tools
+**/.venv
+**/node_modules
+**/.next
+**/__pycache__
+data/generated

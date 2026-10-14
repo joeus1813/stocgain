@@ -456,7 +456,18 @@ Two supported modes:
 | `make schema-dump` | `pg_dump --schema-only` → `sql/schema/ddl_reference.sql` |
 | `make verify` | `lint typecheck test check-openapi` (the "everything green" gate) |
 
-### 9.3 Fresh-clone procedure (what the README will say)
+### 9.3 Current Phase 0 checkpoint commands (2026-10-09)
+
+The runnable setup currently stops at the health page: `make setup`, `make db-up`, then
+`make api` and `make web` in separate terminals. Setup uses locked dependencies and
+preserves the root `.env`. OpenAPI commands currently generate/check health-only types.
+`make migrate`, `seed`, `db-reset`, `analytics`, `pipeline`, `dev`, `demo-docker`,
+`explain`, and `schema-dump` explicitly fail until their phase implementation exists.
+`make verify` includes real PostgreSQL tests and must not be reported passing without
+Docker. See README and IMPLEMENTATION_STATUS.md for observed results. The target
+interfaces in §9.2 remain binding as their phases are implemented.
+
+### 9.4 Full-project fresh-clone procedure (future target)
 
 ```bash
 brew install uv node@22          # once; Docker Desktop must be installed and running

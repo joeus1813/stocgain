@@ -1,0 +1,58 @@
+{
+  "name": "stocksense-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "format:check": "prettier --check .",
+    "gen:api": "openapi-typescript openapi.json -o src/lib/api/schema.ts"
+  },
+  "dependencies": {
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@tanstack/react-query": "^5",
+    "@tanstack/react-table": "^8",
+    "recharts": "^3",
+    "lucide-react": "latest",
+    "clsx": "latest",
+    "tailwind-merge": "latest",
+    "class-variance-authority": "latest",
+    "@next/env": "16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "@tailwindcss/postcss": "^4",
+    "postcss": "latest",
+    "vitest": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/jest-dom": "latest",
+    "jsdom": "latest",
+    "@playwright/test": "latest",
+    "prettier": "latest",
+    "openapi-typescript": "^7",
+    "tw-animate-css": "latest"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "allowScripts": {
+    "@tailwindcss/oxide": true,
+    "esbuild": true,
+    "sharp": true,
+    "unrs-resolver": true
+  },
+  "type": "module"
+}

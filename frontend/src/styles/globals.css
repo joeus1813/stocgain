@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Phase 0 uses only this subset of docs/07 §3 design tokens. */
+:root {
+  --color-canvas: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-ink-900: #0e1a2b;
+  --color-border: #e4e7ec;
+  --color-teal-50: #eef8f7;
+  --color-teal-600: #0f7f76;
+  --color-teal-700: #0c665f;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --ring-focus: 0 0 0 3px rgba(15, 127, 118, 0.28);
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink-900);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  padding: 32px;
+}
+main {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+p {
+  margin-bottom: 16px;
+}
+.dataset-badge {
+  background: var(--color-teal-50);
+  color: var(--color-teal-700);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+}
+button {
+  background: var(--color-teal-600);
+  color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: var(--color-teal-700);
+}
+button:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 4px;
+  box-shadow: var(--ring-focus);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

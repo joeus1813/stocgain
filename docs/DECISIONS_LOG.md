@@ -1,0 +1,65 @@
+# Implementation decisions
+
+## 2026-10-09 · Stage boundary and phase gates
+Decision: Stage 1 means original phases 0–2, sequentially. Phase 0 includes only the temporary real-health page. No business API, forecasting, or dashboard is authorized here.
+Reason: user request and docs/09 phase gates. Docker is absent; database-dependent gates cannot be claimed.
+Alternatives: bypassing gates or replacing PostgreSQL with SQLite; rejected.
+Impact: finish verifiable Phase 0 work and preserve remaining phases as unstarted if Docker remains unavailable.
+
+## 2026-10-09 · Repository and tooling
+Decision: initialize Git in the supplied workspace on stage-1-foundation; preserve the supplied specs in an initial commit. Install uv and Node 22 under ignored .tools for this session.
+Reason: no repository or application existed; global uv/Docker and Node 22 are absent. Working in the supplied directory keeps the result accessible.
+Alternatives: global installations or another checkout; unnecessary for the authorized bootstrap.
+Impact: README requires normal uv/Node 22 installations; local tool paths are not committed.
+
+## 2026-10-09 · Phase-specific verification
+Decision: make verify runs lint/typecheck/test now; OpenAPI drift checking becomes required in Phase 4, as AGENTS.md §7 specifies. Future targets fail explicitly until implemented.
+Reason: CODEX_HANDOFF's general make verify requirement predates business API generation; docs/09 Phase 0 only requires health and trivial tests.
+Alternatives: silently succeeding stubs; rejected.
+Impact: no false indication that later-phase commands work.
+
+## 2026-10-09 · Health contract
+Decision: /api/v1/health returns HTTP 200 with database unavailable when the connection fails, per docs/08 §3.1; analytics_ready=false and current_run_id=null in this pre-schema skeleton.
+Reason: health is process liveness with explicit dependency status, not a business endpoint.
+Alternatives: HTTP 503 on database outage; conflicts with normative health contract.
+Impact: green process status must not be mistaken for database connectivity. Extend run detection when analytics tables/views exist.
+
+## 2026-10-09 · Supporting development packages
+Decision: use setuptools as the Python build backend; @tailwindcss/postcss + postcss, React/Node type packages, jsdom, and shadcn's clsx/tailwind-merge/class-variance-authority/tw-animate-css support the specified frameworks and tests.
+Reason: packaging, Tailwind v4 processing, TypeScript, RTL DOM tests, and shadcn setup require this tooling.
+Alternatives: hand-built substitutes; unnecessary maintenance.
+Impact: no new product infrastructure or data service.
+
+## 2026-10-09 · Test transport compatibility
+Decision: constrain transitive Starlette to <1 while retaining current compatible FastAPI and the specified httpx test transport.
+Reason: Starlette 1.7 emitted a deprecation warning requiring unlisted httpx2; the stable 0.x branch supports the selected stack without changing test infrastructure.
+Alternatives: adding httpx2 or suppressing the warning; rejected.
+Impact: exact compatible release is pinned in uv.lock; revisit with an explicit transport upgrade.
+The same test-transport compatibility constraint includes AnyIO <4.12: newer AnyIO deprecates the BlockingPortal alias used by the compatible Starlette 0.x TestClient. No warnings are suppressed.
+
+## 2026-10-09 · Frontend scaffolding
+Decision: use the current create-next-app scaffold, remove demo content/branding and optional caching flags, use standard Tailwind v4 PostCSS integration. @next/env loads the root .env for native frontend commands.
+Reason: Phase 0 needs only a real health client, consistent root environment, and documented setup. No product pages or remote font build dependency yet.
+Alternatives: retain generated demo or duplicate environment files; rejected.
+Impact: UI fonts/components remain Phase 5 work. @next/env is the framework's environment helper and is pinned with Next.
+
+## 2026-10-09 · Dependency audit and shadcn setup
+Decision: retain the Next-compatible lint dependency tree; document the unresolved development-only braces advisory (GHSA-vfj7-8cjw-p6xm, propagated through micromatch/fast-glob). Registry's latest braces is 3.0.3, which is affected; do not force-downgrade Next to 14 as npm suggests.
+Reason: no compatible upstream patch exists. ESLint 9 remains compatible with Next's React/import plugins; package manager reports it as unsupported.
+Alternatives: forced major framework downgrade or overriding incompatible lint peers; rejected.
+Impact: five high advisory entries in development tooling; recheck upstream before presenting the repository as complete. No production deployment is in scope.
+
+Decision: configure shadcn manually (components.json and standard cn utility) with Tailwind v4 and existing tokens, following the documented manual installation path.
+Reason: current init defaults to additional preset components/styles beyond the Phase 0 health page; preserve the required product tokens and avoid unrelated UI.
+Impact: shadcn components themselves are not built until their feature phase.
+
+## 2026-10-09 · Review fixes and browser isolation
+Decision: force Next's root environment reload with the actual development/production phase flag. A regression simulates Next's prior environment cache and asserts a root-only API URL is loaded.
+Reason: independent review reproduced ignored root settings; observed regression failed with undefined before the fix and passed after.
+Impact: custom root .env API settings now propagate; no product behavior change.
+
+Decision: Playwright resolves localhost to IPv4, matching Compose's localhost publication.
+Reason: an unrelated pre-existing application listens on ::1:3000, while this session's Next server is reachable at 127.0.0.1:3000. Initial browser test reached the unrelated app. Its process was not modified or stopped.
+Impact: browser smoke tests select this stack's IPv4 address while preserving localhost origin/CORS.
+
+Deferred review minor: environment-provided analytics_config_path and generator_config_path remain relative; normalize against REPOSITORY_ROOT before Phase 1 consumes them. Both configs are unused in Phase 0.
