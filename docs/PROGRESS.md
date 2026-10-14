@@ -5,7 +5,9 @@
 | 0 — Foundation | Complete | 2026-10-09 | Docker 29.8.2 and Compose 5.5.1; PostgreSQL 17.11 healthy; real API health reports database ok; 12 backend + 4 frontend tests and 1 browser test pass; lint/typecheck/OpenAPI pass | Existing PostgreSQL identifiers retained for compatibility |
 | 1 — Schema and data | Complete | 2026-10-10 | 26 tables; deterministic small/standard loads; 18 DQ checks zero; 70 backend + 4 frontend tests; explicit standard acceptance passes | Two explained on-time calibration deviations; optional large deferred |
 | 2 — SQL analytics | Complete | 2026-10-11 | 12 views, 15 analyses, 11 extractors; historical leakage tests and measured standard-data plans pass | Actual-model comparisons/performance deferred to Phase 3 as prescribed |
-| 3–9 | Outside this session's scope | — | None | Stage 1 stops before forecasting |
+| 3 — Model engines | Complete | 2026-10-12 | 13 real model runs; golden/leakage/neutrality gates pass | Risk calibration advisory documented |
+| 4 — Backend API | Complete | 2026-10-13 | 239 backend, 4 frontend, 2 browser tests; DQ/type/lint/OpenAPI pass | Scenario warm/cold targets missed and documented |
+| 5–9 | Not started | — | None | Stage 3/frontend not authorized |
 
 ## 2026-10-09 verification and limitations
 
@@ -63,3 +65,26 @@ Known limitations: two requires_run comparisons need actual Phase 3 model output
 Final standard verification: `pytest backend/tests/db/test_standard_dataset.py -m slow -q` passed 2 tests in 13.94 s; `stocgain data validate` reported all 18 checks zero in 7.956 s. The 864,000-row dense tables/MV, stored checksum and all 12/15/11 SQL inventories were verified against PostgreSQL.
 
 Standalone execution: all 15 files also passed `docker compose exec -T db psql -v ON_ERROR_STOP=1 -U stocksense -d stocksense` on standard data.
+
+## 2026-10-12 · Phase 3 verification
+
+Implemented forecasting, ADI/CV² patterns, uncertainty distributions, lane fallback, checkpoint risk, safety stock/ROP/targets, financial exposure, deterministic explanations/recommendations, rolling-origin backtest, scenarios and transactional analytics persistence. Preserved all operational data and migrations. Both deferred Stage 1 model comparisons now execute against real model results.
+
+Actual commands: `make analytics` produced 12 backfill + 1 current succeeded run; 4,800 forecasts/risks/recommendations, 201,600 daily forecasts, 7,206 checkpoints and 72 evaluation rows. Eight historical origins, three models, two bases, all observed segments. Initial total 150.050 seconds; current run 45.861 seconds (backtest 29.867). Historical runs were refreshed after promotion-window review correction.
+
+`make lint typecheck test check-openapi`: all passed; 183 backend tests in 13.61 seconds, 4 frontend tests in 0.970 seconds. Earlier complete coverage execution: 182 passed, analytics coverage 92%; subsequent added persisted-neutral test passes (4 pipeline tests, 3.97 seconds). `python backend/scripts/verify_models.py` verified all 4,800 neutral scenario positions against stored PostgreSQL rows, no numeric difference >1e-6 after specified storage serialization. Point-in-time deletion tests compare actual forecast summaries and daily outputs. Independent formula review found and fixed promotion-window and insufficient-history action issues.
+
+Observed/latent WAPE: stocgain 0.5766/0.5586; naive28 0.5839/0.5740; seasonal7 0.7796/0.7680. These simulated results are not business-impact claims. Full measured rows in `docs/perf/raw/phase3_models.json`.
+
+Known limitations: risk calibration exceeds heuristic ranges (727 critical, 331 high), documented in DECISIONS_LOG; scalar scenario evaluation 6.837 seconds exceeds API target and will be measured/optimized in Phase 4. Independence and right-censoring assumptions remain as specified. Docker Desktop stopped after the successful suite; daemon restart is underway before further database verification. Phase 3 implementation/acceptance checks passed; Phase 4 may begin once database access is restored.
+
+
+## 2026-10-13 · Phase 4 / Stage 2 completion
+
+Single-agent continuation preserved all interrupted work. All 16 required P0 endpoints now return actual PostgreSQL-backed, schema-valid responses on small and standard datasets. Required metadata, filters, six overview widgets, recommendations, risk list, four position routes and stateless scenarios are complete. P1 routes remain absent per the approved roadmap. Existing minimal six-KPI page is verified; no Stage 3 UI, deployment or remote work.
+
+Final commands and real outputs: `make lint` passes Ruff/96-file formatting/ESLint; `make typecheck` passes mypy63 and TypeScript; `pytest backend/tests -m '' --cov=stocgain.analytics --cov-report=term-missing` **239 passed, zero skipped/deselected, 73.60 s, 92% analytics coverage**. `make test-frontend check-openapi`: 4 frontend passed (0.902 s), no schema/type drift. Browser command with existing `.tools/playwright`: 2 passed (2.5 s). `stocgain data validate`: all 18 checks zero (8.149 s). Final standard model readback confirms all 4,800 neutral snapshot comparisons and 13 runs; independent numerical, model-dependent SQL and historical leakage regressions execute.
+
+Measured HTTP p95 from 20 warm requests each: overview summary225.043 ms, risk list24.888 ms, detail9.862 ms, projection81.889 ms, scenario1793.594 ms. First cold projection6431.645 ms includes full-precision baseline replay. Optimized neutral core1526.985 ms; scalar SciPy object construction/promotion scans removed, no changed assumptions. Scenario1.5s and cold3s targets remain gaps allowed to be documented by Phase4; all other warm endpoint targets pass. Standard current counts unchanged: 4,800 forecasts/risks/recommendations, 201,600 daily forecasts, 7,206 checkpoints, 72 evaluation rows. Calibration advisory and original model limitations remain. Full evidence: PHASE4_VERIFICATION and docs/perf/raw/stage2_*.
+
+Stage 2 acceptance gates pass with those explicit performance/calibration limitations. Local checkpoint only; no push. No owner approval or manual step pending.

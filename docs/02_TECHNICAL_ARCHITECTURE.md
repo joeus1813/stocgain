@@ -395,6 +395,8 @@ Inside Docker Compose, `DATABASE_URL` uses host `db` and port `5432`.
 
 ## 9. Local execution model
 
+Stage 2 implementation update (2026-10-13): `make analytics` runs 12 weekly backfills and a current evaluated run. `make api` exposes the required P0 endpoints and `/docs`; `make web` serves the minimal Phase 4 six-KPI vertical slice. `pipeline`, `dev`, `demo-docker` and `db-reset` remain explicit nonzero stubs. Existing PostgreSQL identifiers and volume are unchanged.
+
 ### 9.1 Docker Compose services
 
 ```yaml

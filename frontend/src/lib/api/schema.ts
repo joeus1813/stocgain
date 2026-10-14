@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/v1/filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Filters
+         * @description Read sorted identifiers for filter controls.
+         */
+        get: operations["get_filters_api_v1_filters_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -13,7 +33,7 @@ export interface paths {
         };
         /**
          * Health
-         * @description Return process status and database availability; always HTTP 200.
+         * @description Always return HTTP 200; expose dependencies as explicit status fields.
          */
         get: operations["health_api_v1_health_get"];
         put?: never;
@@ -24,38 +44,2710 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Meta
+         * @description Read provenance and actual persisted model settings.
+         */
+        get: operations["get_meta_api_v1_meta_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/category-heatmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Category Heatmap
+         * @description Return a dense store-category risk matrix.
+         */
+        get: operations["category_heatmap_api_v1_overview_category_heatmap_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/risk-distribution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Risk Distribution
+         * @description Count all four risk tiers, including empty tiers.
+         */
+        get: operations["risk_distribution_api_v1_overview_risk_distribution_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/risk-trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Risk Trend
+         * @description Return filtered risk across available historical run dates.
+         */
+        get: operations["risk_trend_api_v1_overview_risk_trend_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/store-comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Store Comparison
+         * @description Compare stores, ignoring the selected store filter.
+         */
+        get: operations["store_comparison_api_v1_overview_store_comparison_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Summary
+         * @description Summarize inventory risk and observed operational KPIs.
+         */
+        get: operations["summary_api_v1_overview_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/top-products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Top Products
+         * @description Return products with the highest estimated margin at risk.
+         */
+        get: operations["top_products_api_v1_overview_top_products_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{store_id}/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detail
+         * @description Inspect the stored forecast, risk, policy and recommendation for a position.
+         */
+        get: operations["detail_api_v1_positions__store_id___product_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{store_id}/{product_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * History
+         * @description Read observed inventory/sales history and the next 28 forecast days.
+         */
+        get: operations["history_api_v1_positions__store_id___product_id__history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{store_id}/{product_id}/projection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Projection
+         * @description Project inventory from full-precision model inputs with an approximate band.
+         */
+        get: operations["projection_api_v1_positions__store_id___product_id__projection_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/positions/{store_id}/{product_id}/purchase-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Purchase Orders
+         * @description Read open and recently completed purchase-order lines as of the run cutoff.
+         */
+        get: operations["purchase_orders_api_v1_positions__store_id___product_id__purchase_orders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Preserve global priority rank while filtering stored suggestions.
+         */
+        get: operations["recommendations_api_v1_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/risk/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Positions
+         * @description Return stable risk pages with a summary of the whole filtered set.
+         */
+        get: operations["positions_api_v1_risk_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scenarios/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate Scenario
+         * @description Recalculate risk and policy under bounded, reproducible assumptions.
+         */
+        post: operations["evaluate_scenario_api_v1_scenarios_evaluate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActualPoint */
+        ActualPoint: {
+            /**
+             * Date
+             * Format: date
+             * @description Observed inventory date.
+             */
+            date: string;
+            /**
+             * @description Identifies an observed stock balance. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "actual";
+            /**
+             * On Hand Units
+             * @description Observed closing on-hand inventory.
+             */
+            on_hand_units: number;
+        };
+        /** Assumptions */
+        Assumptions: {
+            /**
+             * Demand Change Rate
+             * @description Relative change in demand mean and standard deviation.
+             * @default 0
+             */
+            demand_change_rate: number;
+            /**
+             * Lead Time Change Days
+             * @description Shift in lane mean and expected inbound arrival dates.
+             * @default 0
+             */
+            lead_time_change_days: number;
+            /**
+             * Safety Stock Buffer Rate
+             * @description Relative safety stock buffer adjustment.
+             * @default 0
+             */
+            safety_stock_buffer_rate: number;
+            /**
+             * Service Level
+             * @description Cycle service level; omitted uses persisted run setting.
+             */
+            service_level?: number | null;
+        };
+        /** Category */
+        Category: {
+            /**
+             * Category Code
+             * @description Category code.
+             */
+            category_code: string;
+            /**
+             * Category Id
+             * @description Category identifier.
+             */
+            category_id: number;
+            /**
+             * Category Name
+             * @description Category name.
+             */
+            category_name: string;
+        };
+        /** CategoryChange */
+        CategoryChange: {
+            /**
+             * Baseline At Risk Positions
+             * @description Baseline critical/high count.
+             */
+            baseline_at_risk_positions: number;
+            /**
+             * Baseline Margin At Risk Usd
+             * @description Baseline modeled margin exposure.
+             */
+            baseline_margin_at_risk_usd: number;
+            /**
+             * Category Id
+             * @description Category identifier.
+             */
+            category_id: number;
+            /**
+             * Category Name
+             * @description Category name.
+             */
+            category_name: string;
+            /**
+             * Scenario At Risk Positions
+             * @description Scenario critical/high count.
+             */
+            scenario_at_risk_positions: number;
+            /**
+             * Scenario Margin At Risk Usd
+             * @description Scenario modeled margin exposure.
+             */
+            scenario_margin_at_risk_usd: number;
+        };
+        /** CategoryHeatmap */
+        CategoryHeatmap: {
+            /**
+             * Categories
+             * @description Categories defining the heatmap columns.
+             */
+            categories: components["schemas"]["HeatmapCategory"][];
+            /**
+             * Cells
+             * @description Dense store-category grid.
+             */
+            cells: components["schemas"]["HeatmapCell"][];
+            /**
+             * Stores
+             * @description Stores defining the heatmap rows.
+             */
+            stores: components["schemas"]["HeatmapStore"][];
+        };
+        /** Checkpoint */
+        Checkpoint: {
+            /**
+             * Arrival Date
+             * @description Expected receipt date for receipt checkpoints.
+             */
+            arrival_date: string | null;
+            /**
+             * Checkpoint Seq
+             * @description Ordered checkpoint sequence.
+             */
+            checkpoint_seq: number;
+            /**
+             * Checkpoint Type
+             * @description Receipt boundary or protection-window end.
+             * @enum {string}
+             */
+            checkpoint_type: "receipt" | "window_end";
+            /**
+             * Demand Mean Units
+             * @description Expected demand before the checkpoint.
+             */
+            demand_mean_units: number;
+            /**
+             * Demand Std Units
+             * @description Demand standard deviation before the checkpoint.
+             */
+            demand_std_units: number;
+            /**
+             * Distribution Family
+             * @description Distribution used for this checkpoint.
+             * @enum {string}
+             */
+            distribution_family: "normal" | "poisson" | "negative_binomial" | "degenerate";
+            /**
+             * Expected Shortage Units
+             * @description Expected positive demand shortfall.
+             */
+            expected_shortage_units: number;
+            /**
+             * Is Binding
+             * @description Whether this checkpoint determines the snapshot risk.
+             */
+            is_binding: boolean;
+            /**
+             * Po Number
+             * @description Representative PO display number.
+             */
+            po_number: string | null;
+            /**
+             * Purchase Order Id
+             * @description Representative PO at a receipt checkpoint.
+             */
+            purchase_order_id: number | null;
+            /**
+             * Stockout Probability
+             * @description Estimated probability demand exceeds supply.
+             */
+            stockout_probability: number;
+            /**
+             * Supply Units
+             * @description Stock plus shipments arriving strictly before this checkpoint.
+             */
+            supply_units: number;
+            /**
+             * Window Days
+             * @description Demand days preceding this checkpoint.
+             */
+            window_days: number;
+            /**
+             * Window Std Days
+             * @description Uncertainty of checkpoint timing.
+             */
+            window_std_days: number;
+        };
+        /** Dataset */
+        Dataset: {
+            /** @description Actual database dimension counts. */
+            counts: components["schemas"]["DatasetCounts"];
+            /**
+             * Data Origin
+             * @description Synthetic or public provenance.
+             */
+            data_origin: string;
+            /**
+             * Events
+             * @description Configured synthetic events.
+             */
+            events: components["schemas"]["Event"][];
+            /**
+             * Generator Version
+             * @description Stored generator version.
+             */
+            generator_version: string;
+            /**
+             * History End Date
+             * Format: date
+             * @description Final retained history date.
+             */
+            history_end_date: string;
+            /**
+             * History Start Date
+             * Format: date
+             * @description First retained history date.
+             */
+            history_start_date: string;
+            /**
+             * Label
+             * @description Required visible provenance label.
+             */
+            label: string;
+            /**
+             * Preset
+             * @description Loaded generator preset.
+             */
+            preset: string;
+            /**
+             * Provenance Statement
+             * @description Simulation provenance and limitations.
+             */
+            provenance_statement: string;
+            /**
+             * Row Counts
+             * @description Manifest row counts by table.
+             */
+            row_counts: {
+                [key: string]: number;
+            };
+            /**
+             * Seed
+             * @description Deterministic generation seed.
+             */
+            seed: number;
+        };
+        /** DatasetCounts */
+        DatasetCounts: {
+            /**
+             * Categories
+             * @description Loaded categories.
+             */
+            categories: number;
+            /**
+             * Products
+             * @description Loaded products.
+             */
+            products: number;
+            /**
+             * Regions
+             * @description Loaded regions.
+             */
+            regions: number;
+            /**
+             * Stores
+             * @description Loaded stores.
+             */
+            stores: number;
+            /**
+             * Suppliers
+             * @description Loaded suppliers.
+             */
+            suppliers: number;
+        };
+        /** Delta */
+        Delta: {
+            /** @description Scenario minus baseline in each metric unit. */
+            absolute: components["schemas"]["ScenarioMetrics"];
+            /**
+             * Relative
+             * @description Relative difference; null for zero baseline or probability metrics.
+             */
+            relative: {
+                [key: string]: number | null;
+            };
+        };
+        /** DemandInfo */
+        DemandInfo: {
+            /**
+             * Avg Daily Demand Units
+             * @description Average forecast demand over the next 28 days.
+             */
+            avg_daily_demand_units: number;
+            /**
+             * Base Daily Demand Units
+             * @description Deseasonalized daily demand level.
+             */
+            base_daily_demand_units: number;
+            /**
+             * Censored Days
+             * @description Stockout days excluded from the demand estimate.
+             */
+            censored_days: number;
+            /**
+             * Clean Days
+             * @description Uncensored nonpromotion days used to estimate demand.
+             */
+            clean_days: number;
+            /**
+             * Daily Demand Std Units
+             * @description Daily demand standard deviation after Poisson floor.
+             */
+            daily_demand_std_units: number;
+            /**
+             * Demand Pattern
+             * @description Clean-day demand pattern classification.
+             * @enum {string}
+             */
+            demand_pattern: "smooth" | "erratic" | "intermittent" | "lumpy" | "no_demand";
+            /**
+             * Demand Trend Ratio
+             * @description Recent clean demand relative to the preceding six weeks.
+             */
+            demand_trend_ratio: number | null;
+            /**
+             * Forecast 14D Std Units
+             * @description Fourteen-day demand standard deviation.
+             */
+            forecast_14d_std_units: number;
+            /**
+             * Forecast 14D Units
+             * @description Expected demand over fourteen days.
+             */
+            forecast_14d_units: number;
+            /**
+             * Forecast 28D Std Units
+             * @description Twenty-eight-day demand standard deviation.
+             */
+            forecast_28d_std_units: number;
+            /**
+             * Forecast 28D Units
+             * @description Expected demand over twenty-eight days.
+             */
+            forecast_28d_units: number;
+            /**
+             * Forecast 7D Std Units
+             * @description Seven-day demand standard deviation.
+             */
+            forecast_7d_std_units: number;
+            /**
+             * Forecast 7D Units
+             * @description Expected demand over seven days.
+             */
+            forecast_7d_units: number;
+            /**
+             * Forecast Method
+             * @description Censoring-aware forecast method.
+             * @enum {string}
+             */
+            forecast_method: "store_sku" | "blended" | "chain_fallback" | "insufficient_data";
+            /**
+             * Lookback Days
+             * @description Historical forecast lookback length.
+             */
+            lookback_days: number;
+            /**
+             * Observed Demand Cv
+             * @description Observed daily demand coefficient of variation.
+             */
+            observed_demand_cv: number | null;
+            /**
+             * Promo Days
+             * @description Promotion days in the historical window.
+             */
+            promo_days: number;
+            /**
+             * Recent Censored Days
+             * @description Censored days in the last 28 days.
+             */
+            recent_censored_days: number;
+        };
+        /** Driver */
+        Driver: {
+            /**
+             * Code
+             * @description Deterministic risk driver code.
+             */
+            code: string;
+            /**
+             * Description
+             * @description Explanation from stored model inputs.
+             */
+            description: string;
+            /**
+             * Label
+             * @description Human readable driver label.
+             */
+            label: string;
+        };
+        /** Event */
+        Event: {
+            /**
+             * Description
+             * @description Simulation event description.
+             */
+            description: string;
+            /**
+             * Id
+             * @description Configured simulation event identifier.
+             */
+            id: string;
+            /**
+             * Name
+             * @description Simulation event name.
+             */
+            name: string;
+        };
+        /** ExposureInfo */
+        ExposureInfo: {
+            /**
+             * Expected Lost Units
+             * @description Model estimate of shortage multiplied by lost-sale rate.
+             */
+            expected_lost_units: number;
+            /**
+             * Expected Shortage Units
+             * @description Expected shortage at the binding checkpoint.
+             */
+            expected_shortage_units: number;
+            /**
+             * Lost Sale Rate
+             * @description Category planning assumption for the share of shortage lost.
+             */
+            lost_sale_rate: number;
+            /**
+             * Margin At Risk Usd
+             * @description Model estimate of gross margin at risk.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Revenue At Risk Usd
+             * @description Model estimate of regular-price revenue at risk.
+             */
+            revenue_at_risk_usd: number;
+        };
+        /** FiltersResponse */
+        FiltersResponse: {
+            /**
+             * Categories
+             * @description Categories sorted by code.
+             */
+            categories: components["schemas"]["Category"][];
+            /**
+             * Regions
+             * @description Regions sorted by code.
+             */
+            regions: components["schemas"]["Region"][];
+            /**
+             * Stores
+             * @description Stores sorted by code.
+             */
+            stores: components["schemas"]["Store"][];
+            /**
+             * Suppliers
+             * @description Suppliers sorted by code.
+             */
+            suppliers: components["schemas"]["Supplier"][];
+        };
+        /** ForecastDay */
+        ForecastDay: {
+            /**
+             * Date
+             * Format: date
+             * @description Future demand date.
+             */
+            date: string;
+            /**
+             * Forecast Units
+             * @description Estimated demand units.
+             */
+            forecast_units: number;
+            /**
+             * Horizon Day
+             * @description Day index following the cutoff.
+             */
+            horizon_day: number;
+            /**
+             * Promo Multiplier
+             * @description Planned promotion demand multiplier.
+             */
+            promo_multiplier: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /**
          * HealthResponse
-         * @description Connectivity state; analytics are not implemented in Phase 0.
+         * @description Process, database and current successful analytics availability.
          */
         HealthResponse: {
             /**
              * Analytics Ready
+             * @description Whether a succeeded current analytics run exists.
              * @default false
              */
             analytics_ready: boolean;
-            /** Current Run Id */
+            /**
+             * Current Run Id
+             * @description Current successful run ID, null if not ready.
+             */
             current_run_id?: number | null;
             /**
              * Database
+             * @description Actual PostgreSQL connectivity.
              * @enum {string}
              */
             database: "ok" | "unavailable";
             /**
              * Status
+             * @description API process liveness.
              * @default ok
              * @constant
              */
             status: "ok";
             /**
              * Version
+             * @description Application version.
              * @default 1.0.0
              */
             version: string;
+        };
+        /** HeatmapCategory */
+        HeatmapCategory: {
+            /**
+             * Category Id
+             * @description Category identifier.
+             */
+            category_id: number;
+            /**
+             * Category Name
+             * @description Category name.
+             */
+            category_name: string;
+        };
+        /** HeatmapCell */
+        HeatmapCell: {
+            /**
+             * At Risk Positions
+             * @description Critical or high positions.
+             */
+            at_risk_positions: number;
+            /**
+             * At Risk Rate
+             * @description At-risk share; zero if no positions.
+             */
+            at_risk_rate: number;
+            /**
+             * Category Id
+             * @description Category identifier.
+             */
+            category_id: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated margin at risk.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Positions
+             * @description Store-category positions.
+             */
+            positions: number;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+        };
+        /** HeatmapStore */
+        HeatmapStore: {
+            /**
+             * Store Code
+             * @description Store display code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+        };
+        /** HistoryDay */
+        HistoryDay: {
+            /**
+             * Availability Status
+             * @description Observed daily availability classification.
+             * @enum {string}
+             */
+            availability_status: "in_stock" | "sold_out" | "out_all_day";
+            /**
+             * Closing On Hand Units
+             * @description End-of-day stock.
+             */
+            closing_on_hand_units: number;
+            /**
+             * Date
+             * Format: date
+             * @description Historical business date.
+             */
+            date: string;
+            /**
+             * Is Censored
+             * @description Observed sales may be lower than demand because stock ran out.
+             */
+            is_censored: boolean;
+            /**
+             * Net Adjustment Units
+             * @description Signed inventory adjustment posted at day end.
+             */
+            net_adjustment_units: number;
+            /**
+             * Opening On Hand Units
+             * @description Start-of-day stock before receipts.
+             */
+            opening_on_hand_units: number;
+            /**
+             * Promotion Id
+             * @description Active promotion identifier, if any.
+             */
+            promotion_id: number | null;
+            /**
+             * Promotion Name
+             * @description Active promotion display name.
+             */
+            promotion_name: string | null;
+            /**
+             * Units Received
+             * @description Units received at the start of the day.
+             */
+            units_received: number;
+            /**
+             * Units Sold
+             * @description Observed units sold.
+             */
+            units_sold: number;
+        };
+        /** InventoryInfo */
+        InventoryInfo: {
+            /**
+             * Days Of Cover
+             * @description On-hand coverage, capped at 365 days; null for zero demand.
+             */
+            days_of_cover: number | null;
+            /**
+             * Inventory Position Units
+             * @description On-hand plus all on-order units.
+             */
+            inventory_position_units: number;
+            /** @description Earliest expected inbound shipment, if any. */
+            next_receipt: components["schemas"]["NextReceipt"] | null;
+            /**
+             * On Hand Units
+             * @description Closing stock at the cutoff.
+             */
+            on_hand_units: number;
+            /**
+             * On Order Units
+             * @description Total outstanding purchase-order units.
+             */
+            on_order_units: number;
+            /**
+             * Open Po Count
+             * @description Number of distinct open purchase orders.
+             */
+            open_po_count: number;
+        };
+        /** Meta */
+        Meta: {
+            /** @description Loaded provenance, null before loading. */
+            dataset: components["schemas"]["Dataset"] | null;
+            /** @description Run model settings or documented defaults. */
+            parameters: components["schemas"]["Parameters"];
+            /** @description Current succeeded run, null before analytics. */
+            run: components["schemas"]["Run"] | null;
+        };
+        /** NextReceipt */
+        NextReceipt: {
+            /**
+             * Date
+             * Format: date
+             * @description Expected receipt date.
+             */
+            date: string;
+            /**
+             * Overdue
+             * @description Promised date is at or before the cutoff.
+             */
+            overdue: boolean;
+            /**
+             * Po Number
+             * @description Purchase-order display number.
+             */
+            po_number: string;
+            /**
+             * Purchase Order Id
+             * @description Lowest purchase-order identifier at this arrival.
+             */
+            purchase_order_id: number;
+            /**
+             * Units
+             * @description Open units arriving on this date.
+             */
+            units: number;
+        };
+        /** OpenOrder */
+        OpenOrder: {
+            /**
+             * Expected Arrival Date
+             * Format: date
+             * @description Model estimated receipt date.
+             */
+            expected_arrival_date: string;
+            /**
+             * Open Quantity
+             * @description Outstanding units as of cutoff.
+             */
+            open_quantity: number;
+            /**
+             * Order Date
+             * Format: date
+             * @description Order placement date.
+             */
+            order_date: string;
+            /**
+             * Overdue
+             * @description Promised date is at or before the cutoff.
+             */
+            overdue: boolean;
+            /**
+             * Po Number
+             * @description Purchase-order display number.
+             */
+            po_number: string;
+            /**
+             * Promised Delivery Date
+             * Format: date
+             * @description Supplier promised delivery date.
+             */
+            promised_delivery_date: string;
+            /**
+             * Purchase Order Id
+             * @description Purchase-order identifier.
+             */
+            purchase_order_id: number;
+            /**
+             * Quantity Cancelled
+             * @description Cancelled units known by the cutoff.
+             */
+            quantity_cancelled: number;
+            /**
+             * Quantity Ordered
+             * @description Units originally ordered.
+             */
+            quantity_ordered: number;
+            /**
+             * Quantity Received
+             * @description Units received by the cutoff.
+             */
+            quantity_received: number;
+            /**
+             * Status
+             * @description Line-level as-of fulfillment status.
+             * @enum {string}
+             */
+            status: "open" | "partially_received";
+        };
+        /** OverviewSummary */
+        OverviewSummary: {
+            /**
+             * Active Positions
+             * @description Store-product positions in scope.
+             */
+            active_positions: number;
+            /**
+             * Active Skus
+             * @description Distinct products in scope.
+             */
+            active_skus: number;
+            /**
+             * As Of Date
+             * Format: date
+             * @description End-of-day model cutoff.
+             */
+            as_of_date: string;
+            /**
+             * At Risk Positions
+             * @description Critical or high risk positions.
+             */
+            at_risk_positions: number;
+            /**
+             * At Risk Positions Change
+             * @description Current minus prior at-risk count; null without prior run.
+             */
+            at_risk_positions_change: number | null;
+            /**
+             * At Risk Rate
+             * @description At-risk share of positions; zero for empty scope.
+             */
+            at_risk_rate: number;
+            /**
+             * Critical Positions
+             * @description Critical risk positions.
+             */
+            critical_positions: number;
+            /**
+             * Gross Margin At Risk Usd
+             * @description Estimated gross margin exposed to stockouts.
+             */
+            gross_margin_at_risk_usd: number;
+            /**
+             * In Stock Rate
+             * @description Share of position-days with positive closing stock; null if empty.
+             */
+            in_stock_rate: number | null;
+            /**
+             * In Stock Rate Prior
+             * @description Prior 28-day in-stock share; null if unavailable.
+             */
+            in_stock_rate_prior: number | null;
+            /**
+             * In Stock Window Days
+             * @description Availability measurement window in days.
+             */
+            in_stock_window_days: number;
+            /**
+             * Median Days Of Cover
+             * @description Median finite demand coverage; null without demand.
+             */
+            median_days_of_cover: number | null;
+            /**
+             * Prior At Risk Positions
+             * @description At-risk count seven days earlier; null without prior run.
+             */
+            prior_at_risk_positions: number | null;
+            /**
+             * Revenue At Risk Usd
+             * @description Estimated revenue exposed to stockouts.
+             */
+            revenue_at_risk_usd: number;
+            /**
+             * Run Id
+             * @description Selected successful current run.
+             */
+            run_id: number;
+            /**
+             * Supplier On Time Rate
+             * @description Due POs first received on time; null if none due.
+             */
+            supplier_on_time_rate: number | null;
+            /**
+             * Supplier On Time Window Days
+             * @description Supplier measurement window in days.
+             */
+            supplier_on_time_window_days: number;
+            /**
+             * Supplier Pos Due
+             * @description POs due in the supplier measurement window.
+             */
+            supplier_pos_due: number;
+        };
+        /** Parameters */
+        Parameters: {
+            /**
+             * Carrying Cost Rate Annual
+             * @description Assumed annual carrying rate.
+             */
+            carrying_cost_rate_annual: number;
+            /**
+             * Exposure Escalation Usd
+             * @description Margin exposure escalation threshold.
+             */
+            exposure_escalation_usd: number;
+            /**
+             * Half Life Days
+             * @description EWMA half life.
+             */
+            half_life_days: number;
+            /**
+             * Lookback Days
+             * @description Forecast lookback.
+             */
+            lookback_days: number;
+            /**
+             * Lost Sale Rates
+             * @description Assumed category lost-sale shares.
+             */
+            lost_sale_rates: {
+                [key: string]: number;
+            };
+            /**
+             * Min Clean Days Blend
+             * @description Minimum clean days for blended estimate.
+             */
+            min_clean_days_blend: number;
+            /**
+             * Min Clean Days Full
+             * @description Minimum clean days for local estimate.
+             */
+            min_clean_days_full: number;
+            /**
+             * Normal Min Mean Units
+             * @description Window demand threshold for Normal family.
+             */
+            normal_min_mean_units: number;
+            /**
+             * Review Period Days
+             * @description Review cadence.
+             */
+            review_period_days: number;
+            /** @description Permitted scenario controls. */
+            scenario_limits: components["schemas"]["ScenarioLimits"];
+            /**
+             * Service Level
+             * @description Cycle service level.
+             */
+            service_level: number;
+            /**
+             * Tier Thresholds
+             * @description Probability tier thresholds.
+             */
+            tier_thresholds: {
+                [key: string]: number;
+            };
+        };
+        /** PolicyInfo */
+        PolicyInfo: {
+            /**
+             * Below Reorder Point
+             * @description Reorder trigger met with positive required quantity.
+             */
+            below_reorder_point: boolean;
+            /**
+             * Distribution Family
+             * @description Demand family at the binding checkpoint.
+             * @enum {string}
+             */
+            distribution_family: "normal" | "poisson" | "negative_binomial" | "degenerate";
+            /**
+             * Lead Time Demand Mean Units
+             * @description Expected demand across lead time.
+             */
+            lead_time_demand_mean_units: number;
+            /**
+             * Lead Time Demand Std Units
+             * @description Standard deviation of lead-time demand.
+             */
+            lead_time_demand_std_units: number;
+            /**
+             * Order Up To Units
+             * @description Target inventory position after ordering.
+             */
+            order_up_to_units: number;
+            /**
+             * Reorder Point Units
+             * @description Inventory-position reorder trigger.
+             */
+            reorder_point_units: number;
+            /**
+             * Review Period Days
+             * @description Review cadence in days.
+             */
+            review_period_days: number;
+            /**
+             * Safety Stock Units
+             * @description Safety stock at the selected service level.
+             */
+            safety_stock_units: number;
+            /**
+             * Service Level
+             * @description Cycle service level used for stock policy.
+             */
+            service_level: number;
+        };
+        /** PositionChange */
+        PositionChange: {
+            /**
+             * Baseline Margin At Risk Usd
+             * @description Baseline estimated margin exposure.
+             */
+            baseline_margin_at_risk_usd: number;
+            /**
+             * Baseline Recommended Order Units
+             * @description Baseline order recommendation; null if unnecessary.
+             */
+            baseline_recommended_order_units: number | null;
+            /**
+             * Baseline Stockout Probability
+             * @description Baseline estimated probability.
+             */
+            baseline_stockout_probability: number;
+            /**
+             * Baseline Tier
+             * @description Baseline risk tier.
+             */
+            baseline_tier: string;
+            /**
+             * Product Id
+             * @description Product identifier.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Fictional product name.
+             */
+            product_name: string;
+            /**
+             * Scenario Margin At Risk Usd
+             * @description Scenario estimated margin exposure.
+             */
+            scenario_margin_at_risk_usd: number;
+            /**
+             * Scenario Recommended Order Units
+             * @description Scenario order recommendation; null if unnecessary.
+             */
+            scenario_recommended_order_units: number | null;
+            /**
+             * Scenario Stockout Probability
+             * @description Scenario estimated probability.
+             */
+            scenario_stockout_probability: number;
+            /**
+             * Scenario Tier
+             * @description Scenario risk tier.
+             */
+            scenario_tier: string;
+            /**
+             * Sku
+             * @description Fictional SKU.
+             */
+            sku: string;
+            /**
+             * Store Code
+             * @description Fictional store code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+        };
+        /** PositionDetail */
+        PositionDetail: {
+            /**
+             * Checkpoints
+             * @description Ordered supply-demand checkpoints.
+             */
+            checkpoints: components["schemas"]["Checkpoint"][];
+            /** @description Stored demand forecast and diagnostics. */
+            demand: components["schemas"]["DemandInfo"];
+            /** @description Estimated financial exposure. */
+            exposure: components["schemas"]["ExposureInfo"];
+            /** @description As-of inventory quantities and next inbound shipment. */
+            inventory: components["schemas"]["InventoryInfo"];
+            /** @description Inventory replenishment policy. */
+            policy: components["schemas"]["PolicyInfo"];
+            /** @description Product context. */
+            product: components["schemas"]["ProductInfo"];
+            /** @description Decision support; never an order write-back. */
+            recommendation: components["schemas"]["RecommendationInfo"];
+            /** @description Estimated near-term stockout risk. */
+            risk: components["schemas"]["RiskInfo"];
+            /** @description Analytics run provenance. */
+            run: components["schemas"]["RunInfo"];
+            /** @description Store context. */
+            store: components["schemas"]["StoreInfo"];
+            /** @description Primary sourcing context. */
+            supplier: components["schemas"]["SupplierInfo"];
+            /** @description Stored lane lead-time estimates. */
+            supply: components["schemas"]["SupplyInfo"];
+        };
+        /** PositionHistory */
+        PositionHistory: {
+            /**
+             * Days
+             * @description Historical observations in ascending date order.
+             */
+            days: components["schemas"]["HistoryDay"][];
+            /**
+             * Forecast
+             * @description Next 28 stored forecast days.
+             */
+            forecast: components["schemas"]["ForecastDay"][];
+        };
+        /** PositionOrders */
+        PositionOrders: {
+            /**
+             * Open
+             * @description Outstanding purchase-order lines for this product.
+             */
+            open: components["schemas"]["OpenOrder"][];
+            /**
+             * Recent Received
+             * @description Most recently received completed lines, newest first.
+             */
+            recent_received: components["schemas"]["ReceivedOrder"][];
+        };
+        /** PositionProjection */
+        PositionProjection: {
+            /**
+             * As Of Date
+             * Format: date
+             * @description End-of-day model cutoff.
+             */
+            as_of_date: string;
+            /**
+             * Notes
+             * @description Projection assumptions and uncertainty caveat.
+             */
+            notes: string;
+            /**
+             * Points
+             * @description Chronological observed and projected inventory.
+             */
+            points: (components["schemas"]["ActualPoint"] | components["schemas"]["ProjectedPoint"])[];
+            /**
+             * Projected Stockout Date
+             * @description First expected stockout within the full 42-day horizon.
+             */
+            projected_stockout_date: string | null;
+            /**
+             * Receipts
+             * @description Expected inbound deliveries in the requested horizon.
+             */
+            receipts: components["schemas"]["ProjectionReceipt"][];
+            /**
+             * Reorder Point Units
+             * @description Stored reorder trigger.
+             */
+            reorder_point_units: number;
+            /**
+             * Safety Stock Units
+             * @description Stored safety-stock level.
+             */
+            safety_stock_units: number;
+        };
+        /** ProductInfo */
+        ProductInfo: {
+            /**
+             * Brand Name
+             * @description Fictional product brand.
+             */
+            brand_name: string;
+            /**
+             * Category Name
+             * @description Category display name.
+             */
+            category_name: string;
+            /**
+             * Product Id
+             * @description Product identifier.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Fictional product display name.
+             */
+            product_name: string;
+            /**
+             * Sku
+             * @description Stock keeping unit code.
+             */
+            sku: string;
+            /**
+             * Unit Cost Usd
+             * @description Acquisition cost per unit.
+             */
+            unit_cost_usd: number;
+            /**
+             * Unit Of Measure
+             * @description Unit in which stock is counted.
+             */
+            unit_of_measure: string;
+            /**
+             * Unit Price Usd
+             * @description Regular selling price per unit.
+             */
+            unit_price_usd: number;
+        };
+        /** ProjectedPoint */
+        ProjectedPoint: {
+            /**
+             * Band High Units
+             * @description Approximate upper inventory bound from demand uncertainty.
+             */
+            band_high_units: number;
+            /**
+             * Band Low Units
+             * @description Approximate lower inventory bound from demand uncertainty.
+             */
+            band_low_units: number;
+            /**
+             * Date
+             * Format: date
+             * @description Projection date.
+             */
+            date: string;
+            /**
+             * Expected On Hand Units
+             * @description Expected closing stock under lost-sales dynamics.
+             */
+            expected_on_hand_units: number;
+            /**
+             * Forecast Units
+             * @description Expected demand during this day.
+             */
+            forecast_units: number;
+            /**
+             * @description Identifies an expected-value projection. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "projected";
+            /**
+             * Receipts Units
+             * @description Expected receipts at the start of this day.
+             */
+            receipts_units: number;
+        };
+        /** ProjectionReceipt */
+        ProjectionReceipt: {
+            /**
+             * Date
+             * Format: date
+             * @description Expected arrival date.
+             */
+            date: string;
+            /**
+             * Overdue
+             * @description Promised delivery date is at or before cutoff.
+             */
+            overdue: boolean;
+            /**
+             * Po Number
+             * @description Purchase-order display number.
+             */
+            po_number: string;
+            /**
+             * Purchase Order Id
+             * @description Purchase-order identifier.
+             */
+            purchase_order_id: number;
+            /**
+             * Units
+             * @description Open units expected to arrive.
+             */
+            units: number;
+        };
+        /** ReceivedOrder */
+        ReceivedOrder: {
+            /**
+             * Delay Days
+             * @description Signed days from promised date to first receipt.
+             */
+            delay_days: number;
+            /**
+             * First Receipt Date
+             * Format: date
+             * @description First receipt date known by cutoff.
+             */
+            first_receipt_date: string;
+            /**
+             * Order Date
+             * Format: date
+             * @description Order placement date.
+             */
+            order_date: string;
+            /**
+             * Po Number
+             * @description Purchase-order display number.
+             */
+            po_number: string;
+            /**
+             * Promised Delivery Date
+             * Format: date
+             * @description Supplier promised delivery date.
+             */
+            promised_delivery_date: string;
+            /**
+             * Purchase Order Id
+             * @description Purchase-order identifier.
+             */
+            purchase_order_id: number;
+            /**
+             * Quantity Cancelled
+             * @description Cancelled units known by cutoff.
+             */
+            quantity_cancelled: number;
+            /**
+             * Quantity Ordered
+             * @description Units originally ordered.
+             */
+            quantity_ordered: number;
+            /**
+             * Quantity Received
+             * @description Units received by cutoff.
+             */
+            quantity_received: number;
+            /**
+             * Status
+             * @description Completed line status as of cutoff.
+             * @enum {string}
+             */
+            status: "received" | "closed_short";
+        };
+        /** RecommendationInfo */
+        RecommendationInfo: {
+            /**
+             * Action Type
+             * @description Primary decision-support action.
+             * @enum {string}
+             */
+            action_type: "expedite_po" | "reorder" | "monitor" | "no_action";
+            /**
+             * Priority Rank
+             * @description Run-wide lexicographic action rank.
+             */
+            priority_rank: number | null;
+            /**
+             * Rationale
+             * @description Deterministic explanation of the recommendation.
+             */
+            rationale: string;
+            /**
+             * Recommended Order Cases
+             * @description Orderable quantity expressed in whole cases.
+             */
+            recommended_order_cases: number | null;
+            /**
+             * Recommended Order Cost Usd
+             * @description Estimated acquisition cost of the recommended order.
+             */
+            recommended_order_cost_usd: number | null;
+            /**
+             * Recommended Order Units
+             * @description Orderable quantity when the reorder trigger is met.
+             */
+            recommended_order_units: number | null;
+            /** @description Existing purchase order to expedite. */
+            related_purchase_order: components["schemas"]["RelatedOrder"] | null;
+            /**
+             * Urgency
+             * @description Action urgency; null for no action.
+             */
+            urgency: ("urgent" | "standard") | null;
+        };
+        /** RecommendationItem */
+        RecommendationItem: {
+            /**
+             * Action Type
+             * @description Suggested decision-support action.
+             * @enum {string}
+             */
+            action_type: "expedite_po" | "reorder" | "monitor";
+            /**
+             * Category Name
+             * @description Product category.
+             */
+            category_name: string;
+            /**
+             * Days Until Projected Stockout
+             * @description Days until projected stockout, or null if none in horizon.
+             */
+            days_until_projected_stockout: number | null;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin at risk.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Priority Rank
+             * @description Original global priority rank, preserved under filtering.
+             */
+            priority_rank: number;
+            /**
+             * Product Id
+             * @description Product identifier.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Fictional product name.
+             */
+            product_name: string;
+            /**
+             * Rationale
+             * @description Stored deterministic explanation of the action.
+             */
+            rationale: string;
+            /**
+             * Recommended Order Cost Usd
+             * @description Estimated purchase cost; null when no order is recommended.
+             */
+            recommended_order_cost_usd: number | null;
+            /**
+             * Recommended Order Units
+             * @description Suggested whole-unit order quantity; null when no order is recommended.
+             */
+            recommended_order_units: number | null;
+            /** @description Existing PO associated with action, or null. */
+            related_purchase_order: components["schemas"]["RelatedPurchaseOrder"] | null;
+            /**
+             * Risk Tier
+             * @description Stored risk tier.
+             * @enum {string}
+             */
+            risk_tier: "critical" | "high" | "moderate" | "low";
+            /**
+             * Sku
+             * @description Product SKU.
+             */
+            sku: string;
+            /**
+             * Stockout Probability
+             * @description Estimated probability at the binding checkpoint.
+             */
+            stockout_probability: number;
+            /**
+             * Store Code
+             * @description Store display code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+            /**
+             * Urgency
+             * @description Suggested urgency.
+             * @enum {string}
+             */
+            urgency: "urgent" | "standard";
+        };
+        /** Recommendations */
+        Recommendations: {
+            /**
+             * Items
+             * @description Stored actionable recommendations in global rank order.
+             */
+            items: components["schemas"]["RecommendationItem"][];
+        };
+        /** Region */
+        Region: {
+            /**
+             * Region Code
+             * @description Fictional region code.
+             */
+            region_code: string;
+            /**
+             * Region Id
+             * @description Region identifier.
+             */
+            region_id: number;
+            /**
+             * Region Name
+             * @description Region name.
+             */
+            region_name: string;
+        };
+        /** RelatedOrder */
+        RelatedOrder: {
+            /**
+             * Po Number
+             * @description Purchase-order display number.
+             */
+            po_number: string;
+            /**
+             * Purchase Order Id
+             * @description Purchase-order identifier.
+             */
+            purchase_order_id: number;
+        };
+        /** RelatedPurchaseOrder */
+        RelatedPurchaseOrder: {
+            /**
+             * Po Number
+             * @description Existing purchase order display number.
+             */
+            po_number: string;
+            /**
+             * Purchase Order Id
+             * @description Existing purchase order identifier.
+             */
+            purchase_order_id: number;
+        };
+        /** RiskDistribution */
+        RiskDistribution: {
+            /**
+             * Tiers
+             * @description All four tiers ordered critical to low, including zeros.
+             */
+            tiers: components["schemas"]["RiskTierCount"][];
+            /**
+             * Total Positions
+             * @description Total filtered positions.
+             */
+            total_positions: number;
+        };
+        /** RiskInfo */
+        RiskInfo: {
+            /**
+             * Binding Checkpoint Type
+             * @description Type of the riskiest checkpoint.
+             * @enum {string}
+             */
+            binding_checkpoint_type: "receipt" | "window_end";
+            /**
+             * Currently Out Of Stock
+             * @description No stock on hand with positive forecast demand.
+             */
+            currently_out_of_stock: boolean;
+            /**
+             * Days Until Projected Stockout
+             * @description Days from cutoff to projected stockout.
+             */
+            days_until_projected_stockout: number | null;
+            /**
+             * Drivers
+             * @description Descriptive associations explaining this risk.
+             */
+            drivers: components["schemas"]["Driver"][];
+            /**
+             * Explanation
+             * @description Deterministic model explanation.
+             */
+            explanation: string;
+            /**
+             * Projected Stockout Date
+             * @description First expected-value stockout date within 42 days.
+             */
+            projected_stockout_date: string | null;
+            /**
+             * Risk Tier
+             * @description Model risk tier.
+             * @enum {string}
+             */
+            risk_tier: "critical" | "high" | "moderate" | "low";
+            /**
+             * Stockout Probability
+             * @description Estimated probability at the riskiest checkpoint.
+             */
+            stockout_probability: number;
+        };
+        /** RiskListSummary */
+        RiskListSummary: {
+            /**
+             * Critical
+             * @description Filtered critical positions.
+             */
+            critical: number;
+            /**
+             * High
+             * @description Filtered high positions.
+             */
+            high: number;
+            /**
+             * Low
+             * @description Filtered low positions.
+             */
+            low: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated exposure across the complete filtered set.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Moderate
+             * @description Filtered moderate positions.
+             */
+            moderate: number;
+            /**
+             * Positions
+             * @description Positions matching every filter, across all pages.
+             */
+            positions: number;
+        };
+        /** RiskPosition */
+        RiskPosition: {
+            /**
+             * Action Type
+             * @description Stored suggested action.
+             * @enum {string}
+             */
+            action_type: "expedite_po" | "reorder" | "monitor" | "no_action";
+            /**
+             * Avg Daily Demand Units
+             * @description Mean forecast daily demand over 28 days.
+             */
+            avg_daily_demand_units: number;
+            /**
+             * Below Reorder Point
+             * @description Whether inventory position is at or below reorder point.
+             */
+            below_reorder_point: boolean;
+            /**
+             * Category Id
+             * @description Category identifier.
+             */
+            category_id: number;
+            /**
+             * Category Name
+             * @description Product category.
+             */
+            category_name: string;
+            /**
+             * Days Of Cover
+             * @description On-hand divided by daily demand; null at zero demand.
+             */
+            days_of_cover: number | null;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposed.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Next Receipt Date
+             * @description Expected next receipt date; null without inbound.
+             */
+            next_receipt_date: string | null;
+            /**
+             * Next Receipt Overdue
+             * @description Whether the next PO is past its promise.
+             */
+            next_receipt_overdue: boolean;
+            /**
+             * Next Receipt Po Number
+             * @description Representative next PO number; null without inbound.
+             */
+            next_receipt_po_number: string | null;
+            /**
+             * Next Receipt Units
+             * @description Expected next receipt quantity; null without inbound.
+             */
+            next_receipt_units: number | null;
+            /**
+             * On Hand Units
+             * @description Closing inventory at cutoff.
+             */
+            on_hand_units: number;
+            /**
+             * On Order Units
+             * @description Outstanding quantity on existing POs.
+             */
+            on_order_units: number;
+            /**
+             * Priority Rank
+             * @description Global action rank; null for no action.
+             */
+            priority_rank: number | null;
+            /**
+             * Product Id
+             * @description Product identifier.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Fictional product name.
+             */
+            product_name: string;
+            /**
+             * Recommended Order Units
+             * @description Suggested whole-unit order quantity; null when no order is recommended.
+             */
+            recommended_order_units: number | null;
+            /**
+             * Region Name
+             * @description Store region.
+             */
+            region_name: string;
+            /**
+             * Revenue At Risk Usd
+             * @description Estimated revenue exposed.
+             */
+            revenue_at_risk_usd: number;
+            /**
+             * Risk Tier
+             * @description Stored severity tier.
+             * @enum {string}
+             */
+            risk_tier: "critical" | "high" | "moderate" | "low";
+            /**
+             * Sku
+             * @description Product SKU.
+             */
+            sku: string;
+            /**
+             * Stockout Probability
+             * @description Estimated stockout probability before replenishment.
+             */
+            stockout_probability: number;
+            /**
+             * Store Code
+             * @description Store display code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+            /**
+             * Store Name
+             * @description Fictional store name.
+             */
+            store_name: string;
+            /**
+             * Supplier Id
+             * @description Primary supplier identifier.
+             */
+            supplier_id: number;
+            /**
+             * Supplier Name
+             * @description Fictional primary supplier name.
+             */
+            supplier_name: string;
+            /**
+             * Urgency
+             * @description Stored action urgency; null for no action.
+             */
+            urgency: ("urgent" | "standard") | null;
+        };
+        /** RiskPositions */
+        RiskPositions: {
+            /**
+             * Items
+             * @description Stable page of filtered positions.
+             */
+            items: components["schemas"]["RiskPosition"][];
+            /**
+             * Page
+             * @description Requested one-based page.
+             */
+            page: number;
+            /**
+             * Page Size
+             * @description Maximum positions per page.
+             */
+            page_size: number;
+            /** @description Aggregates over the complete filtered set. */
+            summary: components["schemas"]["RiskListSummary"];
+            /**
+             * Total Items
+             * @description Total filtered positions.
+             */
+            total_items: number;
+            /**
+             * Total Pages
+             * @description Number of pages; zero for empty scope.
+             */
+            total_pages: number;
+        };
+        /** RiskTierCount */
+        RiskTierCount: {
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposed in this tier.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Positions
+             * @description Positions assigned this tier.
+             */
+            positions: number;
+            /**
+             * Risk Tier
+             * @description Risk severity tier.
+             * @enum {string}
+             */
+            risk_tier: "critical" | "high" | "moderate" | "low";
+            /**
+             * Share Of Positions
+             * @description Tier share of filtered positions.
+             */
+            share_of_positions: number;
+        };
+        /** RiskTrend */
+        RiskTrend: {
+            /**
+             * Points
+             * @description One point per available cutoff date, ascending.
+             */
+            points: components["schemas"]["TrendPoint"][];
+        };
+        /** Run */
+        Run: {
+            /**
+             * As Of Date
+             * Format: date
+             * @description End-of-day observation cutoff.
+             */
+            as_of_date: string;
+            /**
+             * Backfill Runs Available
+             * @description Succeeded historical runs.
+             */
+            backfill_runs_available: number;
+            /**
+             * Completed At
+             * Format: date-time
+             * @description Successful completion time UTC.
+             */
+            completed_at: string;
+            /**
+             * Model Version
+             * @description Version of model configuration.
+             */
+            model_version: string;
+            /**
+             * Run Id
+             * @description Immutable analytics run identifier.
+             */
+            run_id: number;
+            /**
+             * Run Type
+             * @description Current or historical backfill.
+             */
+            run_type: string;
+        };
+        /** RunInfo */
+        RunInfo: {
+            /**
+             * As Of Date
+             * Format: date
+             * @description End-of-day model cutoff.
+             */
+            as_of_date: string;
+            /**
+             * Model Version
+             * @description Version of the analytical model.
+             */
+            model_version: string;
+            /**
+             * Run Id
+             * @description Successful analytics run identifier.
+             */
+            run_id: number;
+        };
+        /** ScenarioLimits */
+        ScenarioLimits: {
+            /**
+             * Demand Change Rate
+             * @description Inclusive relative demand limits.
+             */
+            demand_change_rate: number[];
+            /**
+             * Lead Time Change Days
+             * @description Inclusive lead-time shift limits.
+             */
+            lead_time_change_days: number[];
+            /**
+             * Safety Stock Buffer Rate
+             * @description Inclusive buffer change limits.
+             */
+            safety_stock_buffer_rate: number[];
+            /**
+             * Service Level
+             * @description Inclusive cycle service limits.
+             */
+            service_level: number[];
+        };
+        /** ScenarioMetrics */
+        ScenarioMetrics: {
+            /**
+             * Annual Carrying Cost Usd
+             * @description Safety stock value times assumed annual carrying rate.
+             */
+            annual_carrying_cost_usd: number;
+            /**
+             * Annual Expected Shortfall Margin Usd
+             * @description Annualized expected policy shortfall margin; model estimate.
+             */
+            annual_expected_shortfall_margin_usd: number;
+            /**
+             * At Risk Positions
+             * @description Critical plus high positions.
+             */
+            at_risk_positions: number;
+            /**
+             * Avg Lead Time Days
+             * @description Average estimated lane lead time.
+             */
+            avg_lead_time_days: number;
+            /**
+             * Expected Shortage Units
+             * @description Sum of modeled expected shortages.
+             */
+            expected_shortage_units: number;
+            /**
+             * Lead Time Demand Units
+             * @description Sum of expected lead-time demand.
+             */
+            lead_time_demand_units: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposure.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Mean Stockout Probability
+             * @description Mean modeled stockout probability.
+             */
+            mean_stockout_probability: number;
+            /**
+             * Positions Below Reorder Point
+             * @description Positions triggering reorder policy.
+             */
+            positions_below_reorder_point: number;
+            /**
+             * Recommended Order Units
+             * @description Sum of recommended order units.
+             */
+            recommended_order_units: number;
+            /**
+             * Recommended Order Value Usd
+             * @description Recommended units valued at unit cost.
+             */
+            recommended_order_value_usd: number;
+            /**
+             * Revenue At Risk Usd
+             * @description Estimated revenue exposure.
+             */
+            revenue_at_risk_usd: number;
+            /**
+             * Safety Stock Units
+             * @description Sum of policy safety stock.
+             */
+            safety_stock_units: number;
+            /**
+             * Safety Stock Value Usd
+             * @description Safety stock valued at unit cost.
+             */
+            safety_stock_value_usd: number;
+        };
+        /** ScenarioRequest */
+        ScenarioRequest: {
+            /** @description Scenario model controls; defaults are neutral. */
+            assumptions?: components["schemas"]["Assumptions"];
+            /** @description Intersecting position scope. */
+            scope?: components["schemas"]["Scope"];
+        };
+        /** ScenarioResponse */
+        ScenarioResponse: {
+            /**
+             * As Of Date
+             * Format: date
+             * @description Baseline end-of-day observation cutoff.
+             */
+            as_of_date: string;
+            /** @description Resolved assumptions, including run default service level. */
+            assumptions_applied: components["schemas"]["Assumptions"];
+            /** @description Neutral baseline computed with run settings. */
+            baseline: components["schemas"]["ScenarioSummary"];
+            /**
+             * By Category
+             * @description Category exposure and risk comparisons.
+             */
+            by_category: components["schemas"]["CategoryChange"][];
+            /**
+             * Computation Ms
+             * @description Measured server calculation time, milliseconds.
+             */
+            computation_ms: number;
+            /** @description Absolute and relative changes. */
+            delta: components["schemas"]["Delta"];
+            /**
+             * Positions In Scope
+             * @description Positions in the scope intersection.
+             */
+            positions_in_scope: number;
+            /**
+             * Run Id
+             * @description Immutable baseline run identifier.
+             */
+            run_id: number;
+            /** @description Recalculated scenario metrics. */
+            scenario: components["schemas"]["ScenarioSummary"];
+            /** @description Complete baseline-to-scenario tier matrix. */
+            tier_transitions: components["schemas"]["Transitions"];
+            /**
+             * Top Changes
+             * @description Twenty greatest increases in margin exposure, then probability.
+             */
+            top_changes: components["schemas"]["PositionChange"][];
+            /**
+             * Warnings
+             * @description Floored lead time or model assumption warnings.
+             */
+            warnings: string[];
+        };
+        /** ScenarioSummary */
+        ScenarioSummary: {
+            /**
+             * Annual Carrying Cost Usd
+             * @description Safety stock value times assumed annual carrying rate.
+             */
+            annual_carrying_cost_usd: number;
+            /**
+             * Annual Expected Shortfall Margin Usd
+             * @description Annualized expected policy shortfall margin; model estimate.
+             */
+            annual_expected_shortfall_margin_usd: number;
+            /**
+             * At Risk Positions
+             * @description Critical plus high positions.
+             */
+            at_risk_positions: number;
+            /**
+             * Avg Lead Time Days
+             * @description Average estimated lane lead time.
+             */
+            avg_lead_time_days: number;
+            /**
+             * Expected Shortage Units
+             * @description Sum of modeled expected shortages.
+             */
+            expected_shortage_units: number;
+            /**
+             * Lead Time Demand Units
+             * @description Sum of expected lead-time demand.
+             */
+            lead_time_demand_units: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposure.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Mean Stockout Probability
+             * @description Mean modeled stockout probability.
+             */
+            mean_stockout_probability: number;
+            /**
+             * Positions Below Reorder Point
+             * @description Positions triggering reorder policy.
+             */
+            positions_below_reorder_point: number;
+            /** @description Counts under each probability tier. */
+            positions_by_tier: components["schemas"]["TierCounts"];
+            /**
+             * Recommended Order Units
+             * @description Sum of recommended order units.
+             */
+            recommended_order_units: number;
+            /**
+             * Recommended Order Value Usd
+             * @description Recommended units valued at unit cost.
+             */
+            recommended_order_value_usd: number;
+            /**
+             * Revenue At Risk Usd
+             * @description Estimated revenue exposure.
+             */
+            revenue_at_risk_usd: number;
+            /**
+             * Safety Stock Units
+             * @description Sum of policy safety stock.
+             */
+            safety_stock_units: number;
+            /**
+             * Safety Stock Value Usd
+             * @description Safety stock valued at unit cost.
+             */
+            safety_stock_value_usd: number;
+        };
+        /** Scope */
+        Scope: {
+            /**
+             * Category Ids
+             * @description Optional categories; null means all.
+             */
+            category_ids?: number[] | null;
+            /**
+             * Store Ids
+             * @description Optional stores; null means all.
+             */
+            store_ids?: number[] | null;
+            /**
+             * Supplier Ids
+             * @description Optional primary suppliers; null means all.
+             */
+            supplier_ids?: number[] | null;
+        };
+        /** Store */
+        Store: {
+            /**
+             * Region Id
+             * @description Region identifier.
+             */
+            region_id: number;
+            /**
+             * Store Code
+             * @description Fictional store code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+            /**
+             * Store Name
+             * @description Fictional store name.
+             */
+            store_name: string;
+        };
+        /** StoreComparison */
+        StoreComparison: {
+            /**
+             * Stores
+             * @description Stores sorted by margin at risk, ignoring selected store filters.
+             */
+            stores: components["schemas"]["StoreComparisonItem"][];
+        };
+        /** StoreComparisonItem */
+        StoreComparisonItem: {
+            /**
+             * At Risk Positions
+             * @description Critical or high positions.
+             */
+            at_risk_positions: number;
+            /**
+             * Critical Positions
+             * @description Critical positions.
+             */
+            critical_positions: number;
+            /**
+             * In Stock Rate
+             * @description Trailing 28-day in-stock share; null if no observations.
+             */
+            in_stock_rate: number | null;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin at risk.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Positions
+             * @description Positions in scope at this store.
+             */
+            positions: number;
+            /**
+             * Region Name
+             * @description Store region.
+             */
+            region_name: string;
+            /**
+             * Store Code
+             * @description Store display code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+            /**
+             * Store Name
+             * @description Fictional store name.
+             */
+            store_name: string;
+        };
+        /** StoreInfo */
+        StoreInfo: {
+            /**
+             * Region Name
+             * @description Region display name.
+             */
+            region_name: string;
+            /**
+             * Store Code
+             * @description Stable store code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store identifier.
+             */
+            store_id: number;
+            /**
+             * Store Name
+             * @description Fictional store display name.
+             */
+            store_name: string;
+        };
+        /** Supplier */
+        Supplier: {
+            /**
+             * Category Id
+             * @description Primary category identifier.
+             */
+            category_id: number;
+            /**
+             * Supplier Code
+             * @description Fictional supplier code.
+             */
+            supplier_code: string;
+            /**
+             * Supplier Id
+             * @description Supplier identifier.
+             */
+            supplier_id: number;
+            /**
+             * Supplier Name
+             * @description Fictional supplier name.
+             */
+            supplier_name: string;
+        };
+        /** SupplierInfo */
+        SupplierInfo: {
+            /**
+             * Case Pack Qty
+             * @description Units in one orderable case.
+             */
+            case_pack_qty: number;
+            /**
+             * Min Order Qty
+             * @description Minimum orderable units.
+             */
+            min_order_qty: number;
+            /**
+             * Supplier Code
+             * @description Stable supplier code.
+             */
+            supplier_code: string;
+            /**
+             * Supplier Id
+             * @description Primary supplier identifier.
+             */
+            supplier_id: number;
+            /**
+             * Supplier Name
+             * @description Fictional supplier display name.
+             */
+            supplier_name: string;
+        };
+        /** SupplyInfo */
+        SupplyInfo: {
+            /**
+             * Lead Time Mean Days
+             * @description Estimated mean replenishment lead time.
+             */
+            lead_time_mean_days: number;
+            /**
+             * Lead Time Source
+             * @description Source selected for lead-time estimates.
+             * @enum {string}
+             */
+            lead_time_source: "lane" | "supplier" | "contract";
+            /**
+             * Lead Time Std Days
+             * @description Estimated lead-time standard deviation.
+             */
+            lead_time_std_days: number;
+            /**
+             * Mean Delay Days
+             * @description Mean receipt delay relative to the promised date; negative means early.
+             */
+            mean_delay_days: number;
+            /**
+             * N Received Pos
+             * @description Observed received purchase orders on the lane.
+             */
+            n_received_pos: number;
+            /**
+             * On Time Rate
+             * @description Lane on-time proportion over 90 days; null if no orders were due.
+             */
+            on_time_rate: number | null;
+            /**
+             * Protection Window Days
+             * @description Demand window before a new order could arrive.
+             */
+            protection_window_days: number;
+        };
+        /** TierCounts */
+        TierCounts: {
+            /**
+             * Critical
+             * @description Critical positions.
+             */
+            critical: number;
+            /**
+             * High
+             * @description High positions.
+             */
+            high: number;
+            /**
+             * Low
+             * @description Low positions.
+             */
+            low: number;
+            /**
+             * Moderate
+             * @description Moderate positions.
+             */
+            moderate: number;
+        };
+        /** TopProduct */
+        TopProduct: {
+            /**
+             * At Risk Stores
+             * @description Stores with critical or high risk.
+             */
+            at_risk_stores: number;
+            /**
+             * Category Name
+             * @description Product category.
+             */
+            category_name: string;
+            /**
+             * Critical Stores
+             * @description Stores with critical risk.
+             */
+            critical_stores: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated margin at risk across stores.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Product Id
+             * @description Product identifier.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Fictional product name.
+             */
+            product_name: string;
+            /**
+             * Sku
+             * @description Product SKU.
+             */
+            sku: string;
+        };
+        /** TopProducts */
+        TopProducts: {
+            /**
+             * Items
+             * @description Products with at least one at-risk store, by exposure.
+             */
+            items: components["schemas"]["TopProduct"][];
+        };
+        /** Transitions */
+        Transitions: {
+            /**
+             * Matrix
+             * @description Counts from baseline row tier to scenario column tier.
+             */
+            matrix: number[][];
+            /**
+             * Order
+             * @description Tier row and column order.
+             */
+            order: string[];
+        };
+        /** TrendPoint */
+        TrendPoint: {
+            /**
+             * As Of Date
+             * Format: date
+             * @description Historical model cutoff.
+             */
+            as_of_date: string;
+            /**
+             * Critical
+             * @description Critical positions.
+             */
+            critical: number;
+            /**
+             * High
+             * @description High risk positions.
+             */
+            high: number;
+            /**
+             * Low
+             * @description Low risk positions.
+             */
+            low: number;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated margin at risk across all tiers.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Moderate
+             * @description Moderate risk positions.
+             */
+            moderate: number;
+            /**
+             * Run Id
+             * @description Selected successful run for this date.
+             */
+            run_id: number;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
         };
     };
     responses: never;
@@ -66,6 +2758,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_filters_api_v1_filters_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiltersResponse"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -82,6 +2794,502 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    get_meta_api_v1_meta_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meta"];
+                };
+            };
+        };
+    };
+    category_heatmap_api_v1_overview_category_heatmap_get: {
+        parameters: {
+            query?: {
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryHeatmap"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    risk_distribution_api_v1_overview_risk_distribution_get: {
+        parameters: {
+            query?: {
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskDistribution"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    risk_trend_api_v1_overview_risk_trend_get: {
+        parameters: {
+            query?: {
+                /** @description Weeks to include. */
+                weeks?: number;
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskTrend"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    store_comparison_api_v1_overview_store_comparison_get: {
+        parameters: {
+            query?: {
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoreComparison"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summary_api_v1_overview_summary_get: {
+        parameters: {
+            query?: {
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    top_products_api_v1_overview_top_products_get: {
+        parameters: {
+            query?: {
+                /** @description Maximum products. */
+                limit?: number;
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopProducts"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detail_api_v1_positions__store_id___product_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Positive database identifier. */
+                store_id: number;
+                /** @description Positive database identifier. */
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    history_api_v1_positions__store_id___product_id__history_get: {
+        parameters: {
+            query?: {
+                /** @description Historical days ending at the model cutoff. */
+                days?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Positive database identifier. */
+                store_id: number;
+                /** @description Positive database identifier. */
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionHistory"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    projection_api_v1_positions__store_id___product_id__projection_get: {
+        parameters: {
+            query?: {
+                /** @description Observed inventory days to include. */
+                history_days?: number;
+                /** @description Future inventory days to include. */
+                horizon_days?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Positive database identifier. */
+                store_id: number;
+                /** @description Positive database identifier. */
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionProjection"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    purchase_orders_api_v1_positions__store_id___product_id__purchase_orders_get: {
+        parameters: {
+            query?: {
+                /** @description Maximum completed purchase-order lines to include. */
+                recent_received_limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Positive database identifier. */
+                store_id: number;
+                /** @description Positive database identifier. */
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionOrders"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recommendations_api_v1_recommendations_get: {
+        parameters: {
+            query?: {
+                /** @description Repeated actionable recommendation types. */
+                action_type?: ("expedite_po" | "reorder" | "monitor")[] | null;
+                /** @description Maximum recommendations. */
+                limit?: number;
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendations"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    positions_api_v1_risk_positions_get: {
+        parameters: {
+            query?: {
+                /** @description Repeated risk tiers. */
+                risk_tier?: ("critical" | "high" | "moderate" | "low")[] | null;
+                /** @description Repeated action types. */
+                action_type?: ("expedite_po" | "reorder" | "monitor" | "no_action")[] | null;
+                /** @description Restrict by reorder-point status. */
+                below_reorder_point?: boolean | null;
+                /** @description SKU prefix or product name substring. */
+                q?: string | null;
+                /** @description Whitelisted sort column. */
+                sort_by?: "priority" | "product_name" | "store_code" | "category_name" | "on_hand_units" | "avg_daily_demand_units" | "days_of_cover" | "next_receipt_date" | "stockout_probability" | "risk_tier" | "margin_at_risk_usd";
+                /** @description Sort direction; defaults by column. */
+                sort_dir?: ("asc" | "desc") | null;
+                /** @description One-based page. */
+                page?: number;
+                /** @description Positions per page. */
+                page_size?: number;
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskPositions"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluate_scenario_api_v1_scenarios_evaluate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -5,6 +5,8 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import text
 
+from stocgain.analytics.config import AnalyticsConfig
+from stocgain.analytics.forecasting import forecast
 from stocgain.db.sql_loader import SQL_ROOT, read_sql
 
 pytestmark = pytest.mark.db
@@ -26,7 +28,31 @@ def test_point_in_time_future_deletion(db_tx):
     as_of = db_tx.scalar(
         text("SELECT history_end_date FROM ops.dataset_manifest")
     ) - timedelta(days=30)
+
+    def model_outputs():
+        inputs = []
+        for name in (
+            "daily_history",
+            "positions",
+            "category_dow_profile",
+            "product_chain_rate",
+            "store_scale",
+            "planned_promotions",
+        ):
+            inputs.append(
+                [
+                    dict(row)
+                    for row in db_tx.execute(
+                        text(read_sql(f"pipeline/extract_{name}.sql")),
+                        {"as_of": as_of, "history_days": 56},
+                    ).mappings()
+                ]
+            )
+        return forecast(*inputs, as_of, AnalyticsConfig())
+
     before = extract_all(db_tx, as_of)
+    forecast_before = model_outputs()
+    assert forecast_before[0] and forecast_before[1]
     for table, column in [
         ("daily_sales", "sales_date"),
         ("inventory_snapshots", "snapshot_date"),
@@ -48,6 +74,7 @@ def test_point_in_time_future_deletion(db_tx):
     )
     db_tx.execute(text("REFRESH MATERIALIZED VIEW analytics.mv_daily_position"))
     assert before == extract_all(db_tx, as_of)
+    assert forecast_before == model_outputs()
 
 
 def test_chain_rate_is_deseasonalized_for_forecast_contract(db_tx):

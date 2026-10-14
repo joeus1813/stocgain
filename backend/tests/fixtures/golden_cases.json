@@ -1,0 +1,14 @@
+{
+  "G1": {"demand":12,"std":5,"on_hand":100,"lead":10,"lead_std":2,"price":24.98,"cost":15.49,"loss":0.65,"pack":12,"moq":24,"expected":{"probability":0.7568,"shortage":24.14,"margin":148.88,"rop":168,"target":257,"qty":168,"tier":"critical","action":"reorder"}},
+  "G2": {"demand":8,"std":4,"on_hand":40,"lead":12,"lead_std":3,"price":39.97,"cost":24.10,"loss":0.55,"pack":6,"moq":12,"po":{"purchase_order_id":104512,"po_number":"PO-104512","open_quantity_as_of":96,"promised_delivery_date":"2026-10-06"},"delay":0.92,"delay_std":1.5,"expected":{"probability":0.6972,"rop":142,"target":201,"qty":66,"action":"expedite_po","second_probability":0.0745}},
+  "G3": {"demand":0.4,"std":0.9,"on_hand":2,"lead":8,"lead_std":2,"price":12.98,"cost":5.84,"loss":0.35,"pack":1,"moq":1,"expected":{"probability":0.5211,"shortage":1.6256,"rop":8,"family":"negative_binomial"}},
+  "G4": {"expected":{"level":6.019,"daily_std":2.453,"naive":3.643,"censored_days":6}},
+  "G5": {"demand":14.4,"std":6,"on_hand":100,"lead":14,"lead_std":2,"price":24.98,"cost":15.49,"loss":0.65,"pack":12,"moq":24,"expected":{"probability":0.9973,"margin":626.90,"rop":262,"qty":276}},
+  "G6": {"demand":12,"std":5,"on_hand":100,"lead":10,"lead_std":2,"price":24.98,"cost":15.49,"loss":0.65,"pack":12,"moq":24,"service_level":0.98,"expected":{"rop":180,"target":269,"qty":180}},
+  "G7": {"demand":0,"std":0,"on_hand":0,"lead":7,"lead_std":1,"price":10,"cost":5,"loss":0.5,"pack":1,"moq":1,"expected":{"probability":0,"shortage":0,"doc":null,"action":"no_action"}},
+  "G8": {"demand":5,"std":3,"on_hand":0,"lead":7,"lead_std":1,"price":10,"cost":5,"loss":0.5,"pack":1,"moq":1,"expected":{"tier":"critical","driver":"currently_out_of_stock"}},
+  "G9": {"demand":5,"std":3,"on_hand":0,"lead":7,"lead_std":1,"price":10,"cost":5,"loss":0.5,"pack":1,"moq":1,"po":{"purchase_order_id":9,"po_number":"PO-9","open_quantity_as_of":100,"promised_delivery_date":"2026-10-01"},"delay":0,"delay_std":1,"expected":{"receipt_probability":0}},
+  "G10": {"promised_offset":-2,"mean_delay_when_late":4,"expected":{"eta_offset":2}},
+  "G11": {"promised_offset":-6,"mean_delay_when_late":4,"expected":{"eta_offset":1}},
+  "G12": {"reference":"G1","expected":{"neutral_identical":true}}
+}

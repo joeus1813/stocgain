@@ -1,15 +1,16 @@
 import { HealthStatus } from "@/components/health-status";
+import { OverviewKpis } from "@/components/overview-kpis";
 
 export default function Home() {
   return (
     <main>
       <h1>stocgain.</h1>
       <p>Predict stockouts. Replenish smarter.</p>
-      <h2>Service health</h2>
-      <p>
-        Development foundation — checks the real API and database connection.
-      </p>
-      <HealthStatus />
+      <OverviewKpis />
+      <details>
+        <summary>Service health</summary>
+        <HealthStatus />
+      </details>
     </main>
   );
 }

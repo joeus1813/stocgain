@@ -173,3 +173,53 @@ def sql_run(db_tx, risk_position):
         {"run": risk_position},
     )
     return risk_position
+
+
+@pytest.fixture
+def actual_model_run(db_tx):
+    """Actual calculations and PostgreSQL persistence, rolled back after each test."""
+    from datetime import date
+
+    from sqlalchemy import func
+
+    from stocgain.analytics.config import AnalyticsConfig
+    from stocgain.analytics.pipeline import compute, extract_inputs, persist
+    from stocgain.db.models import Base
+
+    def insert_outputs(connection, inputs, outputs):
+        runs = Base.metadata.tables["analytics.analytics_runs"]
+        run = connection.execute(
+            runs.insert()
+            .values(
+                run_type="current",
+                as_of_date=inputs.as_of,
+                model_version=inputs.config.model_version,
+                config=inputs.config.to_dict(),
+                dataset_checksum="0" * 64,
+            )
+            .returning(runs.c.run_id)
+        ).scalar_one()
+        persist(connection, run, outputs, True)
+        connection.execute(
+            runs.update()
+            .where(runs.c.run_id == run)
+            .values(status="succeeded", completed_at=func.now())
+        )
+        return run
+
+    inputs = extract_inputs(db_tx, date(2026, 9, 30), AnalyticsConfig())
+    return insert_outputs(db_tx, inputs, compute(inputs))
+
+
+@pytest.fixture
+def api_client(db_tx, actual_model_run):
+    """HTTP contracts against actual computed data in a rolled-back transaction."""
+    from fastapi.testclient import TestClient
+
+    from stocgain.api.app import create_app
+    from stocgain.api.dependencies import get_connection
+
+    app = create_app()
+    app.dependency_overrides[get_connection] = lambda: db_tx
+    with TestClient(app) as client:
+        yield client

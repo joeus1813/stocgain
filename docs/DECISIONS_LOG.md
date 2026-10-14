@@ -135,3 +135,24 @@ Impact: labels now describe delivered data. No numerical behavior altered.
 Decision: use existing prescribed MV unique/date indexes and record serial PostgreSQL plans. No additional index migration is justified by current measurements.
 Reason: the standard workload fits the existing architecture; serial execution avoids the previously observed Docker shared-memory limit. Q1 explains the MV SELECT and separately times actual REFRESH, because PostgreSQL does not EXPLAIN REFRESH directly.
 Impact: timings are local third-run warm measurements; Q4/Q7/Q8 empty-run plans do not establish populated-model targets. Eight required workloads plus two direct-ops comparison wrappers are retained.
+
+## 2026-10-12 · Phase 3 model implementation
+
+Decision: preserve full precision through forecasting and policy calculations; apply PostgreSQL Numeric precision only at final snapshot serialization. Neutral scenario tests compare every serialized field to actual stored rows (including drivers/explanation), never recompute policy from rounded daily/lane values.
+Reason: the neutral 1e-6 invariant and the specified numeric column scales otherwise conflict. No formula or schema changes.
+
+Decision: the specific insufficient-history rule in docs/05 §3.6/E15 takes precedence over generic first-match action rules in §9.1. An insufficient_data forecast always produces monitor, including with overdue POs. A regression reproduces this case.
+
+Decision: retain the generator and risk thresholds despite calibration advisory. Actual current tiers: 727 critical (15.15%), 331 high (6.90%), 322 moderate, 3,420 low; critical+high 22.04%, above the 1–5% / 4–12% plausibility targets. These are forward-looking uncertain-window probabilities under the specified count/Normal model and scheduled receipts, rather than historical observed stockout rates. All exact golden calculations, constraints and persisted neutrality pass. No generated data or model formula is tuned to manufacture the target. The synthetic risk population is more elevated than the design's heuristic target; report that limitation with outputs.
+
+Decision: explicit per-position orchestration around vectorized forecasting and SciPy primitives preserves traceable checkpoint logic. Actual neutral 4,800-position scenario time is 6.837 seconds, above the 1.5-second API target; performance optimization remains for Phase 4 validation. Standard initial 13-run execution recorded 150.050 seconds, below the three-minute batch target.
+
+## 2026-10-13 · Phase 4 completion decisions
+
+Retain all 16 required P0 endpoints and leave six P1 endpoints absent, as explicitly allowed by docs/09 Phase 4. No substitute or mock endpoints. The existing minimal six-KPI page is only the Phase 4 vertical slice; no Stage 3 frontend implementation.
+
+Use named SQL files through a request-scoped Context with a read-only repeatable-read connection and one current-run identity. Full-precision scenario/projection inputs are cached by database and immutable run ID (bounded to two runs), rather than reconstructing policy from rounded stored forecasts. This preserves integer policy and neutral snapshot equivalence; cold cache population is visible in timings.
+
+Profiling identified repeated construction of frozen SciPy distributions (14,897 objects, including their docstrings) and scanning all promotions once per position as the main scenario overhead. Replace frozen objects with the same SciPy distribution methods, use the equivalent Normal special functions, and index promotions by position. Keep the prescribed finite-sum count shortage and tail cutoff; independent finite-sum regression, golden cases and stored-neutral tests pass. No mathematical assumptions changed. Standard warm scenario p95 is 1.794 seconds (previous single neutral computation 6.837 seconds). The 1.5-second target remains unmet; cold baseline replay was 6.432 seconds, also above the 3-second target. These performance gaps are documented rather than concealed.
+
+Run PostgreSQL tests in a single pytest process. Concurrent session fixtures previously deadlocked while applying repeatable views; those failed setup runs did not establish test success. Final acceptance is serialized.

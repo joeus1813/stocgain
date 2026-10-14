@@ -1,0 +1,101 @@
+cd backend && uv run --locked mypy src/stocgain
+Success: no issues found in 63 source files
+cd frontend && npm run typecheck
+
+> stocgain-web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/yuminsong/Desktop/StockSense/backend
+configfile: pyproject.toml
+plugins: anyio-4.11.0, cov-7.1.0
+collected 239 items
+
+backend/tests/api/test_contracts.py ...                                  [  1%]
+backend/tests/api/test_health.py .                                       [  1%]
+backend/tests/api/test_meta_scenarios.py ..........                      [  5%]
+backend/tests/api/test_overview.py .........                             [  9%]
+backend/tests/api/test_positions.py ........                             [ 12%]
+backend/tests/api/test_risk_positions.py ......................          [ 22%]
+backend/tests/db/test_constraints.py ........................            [ 32%]
+backend/tests/db/test_data_quality.py .................                  [ 39%]
+backend/tests/db/test_kpi_sql.py ...                                     [ 40%]
+backend/tests/db/test_loader.py ....                                     [ 42%]
+backend/tests/db/test_pipeline_outputs.py ....                           [ 43%]
+backend/tests/db/test_point_in_time.py ......                            [ 46%]
+backend/tests/db/test_reference_schema.py ...                            [ 47%]
+backend/tests/db/test_sql_analyses.py .................................  [ 61%]
+backend/tests/db/test_standard_dataset.py ..                             [ 62%]
+backend/tests/db/test_views.py ......                                    [ 64%]
+backend/tests/unit/test_backtest.py .......                              [ 67%]
+backend/tests/unit/test_forecasting.py ...................               [ 75%]
+backend/tests/unit/test_generator_rng.py .                               [ 76%]
+backend/tests/unit/test_generator_simulation.py .........                [ 79%]
+backend/tests/unit/test_golden_cases.py ..........                       [ 84%]
+backend/tests/unit/test_inventory_math.py .......................        [ 93%]
+backend/tests/unit/test_scenario.py ....                                 [ 95%]
+backend/tests/unit/test_smoke.py ...........                             [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.12.7-final-0 _______________
+
+Name                                                Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------
+backend/src/stocgain/analytics/__init__.py              0      0   100%
+backend/src/stocgain/analytics/backtest.py             95      3    97%   21, 60, 112
+backend/src/stocgain/analytics/config.py               41      4    90%   57-60
+backend/src/stocgain/analytics/demand_patterns.py      18      0   100%
+backend/src/stocgain/analytics/distributions.py        99      2    98%   14, 118
+backend/src/stocgain/analytics/explanations.py         56      6    89%   149-152, 168, 172
+backend/src/stocgain/analytics/exposure.py              3      0   100%
+backend/src/stocgain/analytics/forecasting.py         112      2    98%   47, 155
+backend/src/stocgain/analytics/leadtime.py             32      0   100%
+backend/src/stocgain/analytics/pipeline.py            111     51    54%   46, 160-259, 264-274
+backend/src/stocgain/analytics/policy.py               17      0   100%
+backend/src/stocgain/analytics/replenishment.py        45      1    98%   58
+backend/src/stocgain/analytics/risk.py                105      1    99%   313
+backend/src/stocgain/analytics/scenario.py            116      3    97%   32, 43, 297
+backend/src/stocgain/analytics/serialization.py         5      0   100%
+backend/src/stocgain/analytics/types.py                27      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                 882     73    92%
+======================== 239 passed in 73.60s (0:01:13) ========================
+cd frontend && npm run test
+
+> stocgain-web@1.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /Users/yuminsong/Desktop/StockSense/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  00:43:42
+   Duration  902ms (environment 73%, setup 14%, tests 9%, transform 3%, import 1%)
+
+✨ openapi-typescript 7.13.0
+🚀 /var/folders/3s/wtmjmld13lnd2r98kb9jl35r0000gn/T/tmp.JoiZlO8Ogj/openapi.json → /var/folders/3s/wtmjmld13lnd2r98kb9jl35r0000gn/T/tmp.JoiZlO8Ogj/schema.ts [87.8ms]
+check	severity	violations
+DQ01_inventory_equation	error	0
+DQ02_continuity	error	0
+DQ03_sales_availability	error	0
+DQ04_dense_coverage	error	0
+DQ05_receipt_quantity	error	0
+DQ06_receipt_after_order	error	0
+DQ07_sourced_product	error	0
+DQ08_primary_supplier	error	0
+DQ09_promotion_overlap	error	0
+DQ10_sales_amount	error	0
+DQ11_cogs	error	0
+DQ12_history_end	error	0
+DQ13_primary_lanes	error	0
+DQ14_stockout_incidence	warning	0
+DQ15_latent_demand	error	0
+DQ16_manifest	error	0
+DQ17_price_cost	error	0
+DQ18_introduction	warning	0
+validation_seconds=8.149

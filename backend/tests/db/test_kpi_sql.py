@@ -70,17 +70,11 @@ def test_kpi_supplier_rate_uses_all_due_pos(db_tx, sql_run):
 
 
 @pytest.mark.requires_run
-def test_real_current_run_kpi(loaded_small_db):
-    with loaded_small_db.connect() as connection:
-        run = connection.scalar(text("SELECT run_id FROM analytics.v_current_run"))
-        if run is None:
-            pytest.skip(
-                "Phase 3 must generate actual model outputs; rollback SQL fixtures are covered separately"
-            )
-        actual = summary(connection, run)
-        expected = connection.scalar(
-            text(
-                "SELECT count(*) FROM analytics.v_current_risk WHERE risk_tier IN ('high','critical')"
-            )
+def test_real_current_run_kpi(db_tx, actual_model_run):
+    actual = summary(db_tx, actual_model_run)
+    expected = db_tx.scalar(
+        text(
+            "SELECT count(*) FROM analytics.v_current_risk WHERE risk_tier IN ('high','critical')"
         )
-        assert actual["at_risk_positions"] == expected
+    )
+    assert actual["at_risk_positions"] == expected

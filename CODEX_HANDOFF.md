@@ -1,4 +1,5 @@
-> Current checkpoint update — 2026-10-11: Phases 0–2 and Stage 1 complete. Stage 2 has not begun. Continue the existing implementation; never restart. Read IMPLEMENTATION_STATUS.md, IMPLEMENTATION_CONTRACT.md, docs/PROGRESS.md and docs/PHASE2_VERIFICATION.md. Main DB holds verified standard seed 42; test DB holds small seed 42. All 12 views, 15 analyses and 11 extraction queries are implemented. Existing databases/volumes and migrations are preserved. Two actual-model tests are intentionally deferred to Phase 3; no real model outputs exist yet.
+> Current checkpoint update — 2026-10-13: Stage 2 (Phases 3–4) implemented; consult IMPLEMENTATION_STATUS.md and docs/PHASE4_VERIFICATION.md for final acceptance and limitations. Preserve all data, migrations and changes. No Stage 3 frontend work, deployment or remote Git actions authorized.
+
 
 # CODEX_HANDOFF — stocgain Implementation Contract
 

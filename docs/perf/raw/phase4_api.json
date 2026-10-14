@@ -1,0 +1,103 @@
+{
+  "/health": {
+    "first_ms": 53.31,
+    "warm_p95_ms": 3.577,
+    "warm_min_ms": 3.028,
+    "requests": 21
+  },
+  "/meta": {
+    "first_ms": 11.45,
+    "warm_p95_ms": 6.846,
+    "warm_min_ms": 5.218,
+    "requests": 21
+  },
+  "/filters": {
+    "first_ms": 3.082,
+    "warm_p95_ms": 2.86,
+    "warm_min_ms": 2.59,
+    "requests": 21
+  },
+  "/overview/summary": {
+    "first_ms": 344.005,
+    "warm_p95_ms": 225.043,
+    "warm_min_ms": 176.225,
+    "requests": 21
+  },
+  "/overview/risk-distribution": {
+    "first_ms": 16.396,
+    "warm_p95_ms": 15.923,
+    "warm_min_ms": 13.203,
+    "requests": 21
+  },
+  "/overview/risk-trend": {
+    "first_ms": 75.345,
+    "warm_p95_ms": 68.754,
+    "warm_min_ms": 38.007,
+    "requests": 21
+  },
+  "/overview/store-comparison": {
+    "first_ms": 47.656,
+    "warm_p95_ms": 43.61,
+    "warm_min_ms": 40.318,
+    "requests": 21
+  },
+  "/overview/category-heatmap": {
+    "first_ms": 11.505,
+    "warm_p95_ms": 11.16,
+    "warm_min_ms": 6.416,
+    "requests": 21
+  },
+  "/overview/top-products": {
+    "first_ms": 8.466,
+    "warm_p95_ms": 6.894,
+    "warm_min_ms": 5.952,
+    "requests": 21
+  },
+  "/recommendations": {
+    "first_ms": 22.078,
+    "warm_p95_ms": 15.266,
+    "warm_min_ms": 11.749,
+    "requests": 21
+  },
+  "/risk/positions": {
+    "first_ms": 31.464,
+    "warm_p95_ms": 24.888,
+    "warm_min_ms": 20.573,
+    "requests": 21
+  },
+  "/positions/1/1": {
+    "first_ms": 21.064,
+    "warm_p95_ms": 9.862,
+    "warm_min_ms": 8.048,
+    "requests": 21
+  },
+  "/positions/1/1/history": {
+    "first_ms": 11.946,
+    "warm_p95_ms": 7.797,
+    "warm_min_ms": 4.527,
+    "requests": 21
+  },
+  "/positions/1/1/projection": {
+    "first_ms": 6431.645,
+    "warm_p95_ms": 81.889,
+    "warm_min_ms": 62.96,
+    "requests": 21
+  },
+  "/positions/1/1/purchase-orders": {
+    "first_ms": 41.103,
+    "warm_p95_ms": 23.832,
+    "warm_min_ms": 16.814,
+    "requests": 21
+  },
+  "/scenarios/evaluate": {
+    "first_ms": 1648.844,
+    "warm_p95_ms": 1793.594,
+    "warm_min_ms": 1564.439,
+    "requests": 21
+  },
+  "verification": {
+    "neutral_positions": 4800,
+    "run_id": 14,
+    "neutral_delta_zero": true
+  }
+}

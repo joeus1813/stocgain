@@ -1,26 +1,870 @@
 {
   "components": {
     "schemas": {
+      "ActualPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Observed inventory date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "kind": {
+            "const": "actual",
+            "description": "Identifies an observed stock balance.",
+            "title": "Kind",
+            "type": "string"
+          },
+          "on_hand_units": {
+            "description": "Observed closing on-hand inventory.",
+            "title": "On Hand Units",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "date",
+          "kind",
+          "on_hand_units"
+        ],
+        "title": "ActualPoint",
+        "type": "object"
+      },
+      "Assumptions": {
+        "additionalProperties": false,
+        "properties": {
+          "demand_change_rate": {
+            "default": 0,
+            "description": "Relative change in demand mean and standard deviation.",
+            "maximum": 1.0,
+            "minimum": -0.5,
+            "title": "Demand Change Rate",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "lead_time_change_days": {
+            "default": 0,
+            "description": "Shift in lane mean and expected inbound arrival dates.",
+            "maximum": 14.0,
+            "minimum": -7.0,
+            "title": "Lead Time Change Days",
+            "type": "integer",
+            "x-unit": "days"
+          },
+          "safety_stock_buffer_rate": {
+            "default": 0,
+            "description": "Relative safety stock buffer adjustment.",
+            "maximum": 1.0,
+            "minimum": -0.5,
+            "title": "Safety Stock Buffer Rate",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "service_level": {
+            "anyOf": [
+              {
+                "maximum": 0.995,
+                "minimum": 0.8,
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Cycle service level; omitted uses persisted run setting.",
+            "title": "Service Level"
+          }
+        },
+        "title": "Assumptions",
+        "type": "object"
+      },
+      "Category": {
+        "additionalProperties": false,
+        "properties": {
+          "category_code": {
+            "description": "Category code.",
+            "title": "Category Code",
+            "type": "string"
+          },
+          "category_id": {
+            "description": "Category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Category name.",
+            "title": "Category Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category_id",
+          "category_code",
+          "category_name"
+        ],
+        "title": "Category",
+        "type": "object"
+      },
+      "CategoryChange": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_at_risk_positions": {
+            "description": "Baseline critical/high count.",
+            "title": "Baseline At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "baseline_margin_at_risk_usd": {
+            "description": "Baseline modeled margin exposure.",
+            "title": "Baseline Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "category_id": {
+            "description": "Category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Category name.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "scenario_at_risk_positions": {
+            "description": "Scenario critical/high count.",
+            "title": "Scenario At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "scenario_margin_at_risk_usd": {
+            "description": "Scenario modeled margin exposure.",
+            "title": "Scenario Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          }
+        },
+        "required": [
+          "category_id",
+          "category_name",
+          "baseline_margin_at_risk_usd",
+          "scenario_margin_at_risk_usd",
+          "baseline_at_risk_positions",
+          "scenario_at_risk_positions"
+        ],
+        "title": "CategoryChange",
+        "type": "object"
+      },
+      "CategoryHeatmap": {
+        "additionalProperties": false,
+        "properties": {
+          "categories": {
+            "description": "Categories defining the heatmap columns.",
+            "items": {
+              "$ref": "#/components/schemas/HeatmapCategory"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "cells": {
+            "description": "Dense store-category grid.",
+            "items": {
+              "$ref": "#/components/schemas/HeatmapCell"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "stores": {
+            "description": "Stores defining the heatmap rows.",
+            "items": {
+              "$ref": "#/components/schemas/HeatmapStore"
+            },
+            "title": "Stores",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stores",
+          "categories",
+          "cells"
+        ],
+        "title": "CategoryHeatmap",
+        "type": "object"
+      },
+      "Checkpoint": {
+        "additionalProperties": false,
+        "properties": {
+          "arrival_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Expected receipt date for receipt checkpoints.",
+            "title": "Arrival Date"
+          },
+          "checkpoint_seq": {
+            "description": "Ordered checkpoint sequence.",
+            "title": "Checkpoint Seq",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "checkpoint_type": {
+            "description": "Receipt boundary or protection-window end.",
+            "enum": [
+              "receipt",
+              "window_end"
+            ],
+            "title": "Checkpoint Type",
+            "type": "string"
+          },
+          "demand_mean_units": {
+            "description": "Expected demand before the checkpoint.",
+            "title": "Demand Mean Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "demand_std_units": {
+            "description": "Demand standard deviation before the checkpoint.",
+            "title": "Demand Std Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "distribution_family": {
+            "description": "Distribution used for this checkpoint.",
+            "enum": [
+              "normal",
+              "poisson",
+              "negative_binomial",
+              "degenerate"
+            ],
+            "title": "Distribution Family",
+            "type": "string"
+          },
+          "expected_shortage_units": {
+            "description": "Expected positive demand shortfall.",
+            "title": "Expected Shortage Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "is_binding": {
+            "description": "Whether this checkpoint determines the snapshot risk.",
+            "title": "Is Binding",
+            "type": "boolean"
+          },
+          "po_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Representative PO display number.",
+            "title": "Po Number"
+          },
+          "purchase_order_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Representative PO at a receipt checkpoint.",
+            "title": "Purchase Order Id"
+          },
+          "stockout_probability": {
+            "description": "Estimated probability demand exceeds supply.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "supply_units": {
+            "description": "Stock plus shipments arriving strictly before this checkpoint.",
+            "title": "Supply Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "window_days": {
+            "description": "Demand days preceding this checkpoint.",
+            "title": "Window Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "window_std_days": {
+            "description": "Uncertainty of checkpoint timing.",
+            "title": "Window Std Days",
+            "type": "number",
+            "x-unit": "days"
+          }
+        },
+        "required": [
+          "checkpoint_seq",
+          "checkpoint_type",
+          "purchase_order_id",
+          "po_number",
+          "arrival_date",
+          "window_days",
+          "window_std_days",
+          "supply_units",
+          "demand_mean_units",
+          "demand_std_units",
+          "distribution_family",
+          "stockout_probability",
+          "expected_shortage_units",
+          "is_binding"
+        ],
+        "title": "Checkpoint",
+        "type": "object"
+      },
+      "Dataset": {
+        "additionalProperties": false,
+        "properties": {
+          "counts": {
+            "$ref": "#/components/schemas/DatasetCounts",
+            "description": "Actual database dimension counts."
+          },
+          "data_origin": {
+            "description": "Synthetic or public provenance.",
+            "title": "Data Origin",
+            "type": "string"
+          },
+          "events": {
+            "description": "Configured synthetic events.",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "generator_version": {
+            "description": "Stored generator version.",
+            "title": "Generator Version",
+            "type": "string"
+          },
+          "history_end_date": {
+            "description": "Final retained history date.",
+            "format": "date",
+            "title": "History End Date",
+            "type": "string"
+          },
+          "history_start_date": {
+            "description": "First retained history date.",
+            "format": "date",
+            "title": "History Start Date",
+            "type": "string"
+          },
+          "label": {
+            "description": "Required visible provenance label.",
+            "title": "Label",
+            "type": "string"
+          },
+          "preset": {
+            "description": "Loaded generator preset.",
+            "title": "Preset",
+            "type": "string"
+          },
+          "provenance_statement": {
+            "description": "Simulation provenance and limitations.",
+            "title": "Provenance Statement",
+            "type": "string"
+          },
+          "row_counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "x-unit": "count"
+            },
+            "description": "Manifest row counts by table.",
+            "title": "Row Counts",
+            "type": "object"
+          },
+          "seed": {
+            "description": "Deterministic generation seed.",
+            "title": "Seed",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "data_origin",
+          "label",
+          "provenance_statement",
+          "generator_version",
+          "preset",
+          "seed",
+          "history_start_date",
+          "history_end_date",
+          "row_counts",
+          "counts",
+          "events"
+        ],
+        "title": "Dataset",
+        "type": "object"
+      },
+      "DatasetCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "categories": {
+            "description": "Loaded categories.",
+            "title": "Categories",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "products": {
+            "description": "Loaded products.",
+            "title": "Products",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "regions": {
+            "description": "Loaded regions.",
+            "title": "Regions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "stores": {
+            "description": "Loaded stores.",
+            "title": "Stores",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "suppliers": {
+            "description": "Loaded suppliers.",
+            "title": "Suppliers",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "stores",
+          "regions",
+          "products",
+          "suppliers",
+          "categories"
+        ],
+        "title": "DatasetCounts",
+        "type": "object"
+      },
+      "Delta": {
+        "additionalProperties": false,
+        "properties": {
+          "absolute": {
+            "$ref": "#/components/schemas/ScenarioMetrics",
+            "description": "Scenario minus baseline in each metric unit."
+          },
+          "relative": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "x-unit": "ratio"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Relative difference; null for zero baseline or probability metrics.",
+            "title": "Relative",
+            "type": "object"
+          }
+        },
+        "required": [
+          "absolute",
+          "relative"
+        ],
+        "title": "Delta",
+        "type": "object"
+      },
+      "DemandInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "avg_daily_demand_units": {
+            "description": "Average forecast demand over the next 28 days.",
+            "title": "Avg Daily Demand Units",
+            "type": "number",
+            "x-unit": "units_per_day"
+          },
+          "base_daily_demand_units": {
+            "description": "Deseasonalized daily demand level.",
+            "title": "Base Daily Demand Units",
+            "type": "number",
+            "x-unit": "units_per_day"
+          },
+          "censored_days": {
+            "description": "Stockout days excluded from the demand estimate.",
+            "title": "Censored Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "clean_days": {
+            "description": "Uncensored nonpromotion days used to estimate demand.",
+            "title": "Clean Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "daily_demand_std_units": {
+            "description": "Daily demand standard deviation after Poisson floor.",
+            "title": "Daily Demand Std Units",
+            "type": "number",
+            "x-unit": "units_per_day"
+          },
+          "demand_pattern": {
+            "description": "Clean-day demand pattern classification.",
+            "enum": [
+              "smooth",
+              "erratic",
+              "intermittent",
+              "lumpy",
+              "no_demand"
+            ],
+            "title": "Demand Pattern",
+            "type": "string"
+          },
+          "demand_trend_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Recent clean demand relative to the preceding six weeks.",
+            "title": "Demand Trend Ratio"
+          },
+          "forecast_14d_std_units": {
+            "description": "Fourteen-day demand standard deviation.",
+            "title": "Forecast 14D Std Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_14d_units": {
+            "description": "Expected demand over fourteen days.",
+            "title": "Forecast 14D Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_28d_std_units": {
+            "description": "Twenty-eight-day demand standard deviation.",
+            "title": "Forecast 28D Std Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_28d_units": {
+            "description": "Expected demand over twenty-eight days.",
+            "title": "Forecast 28D Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_7d_std_units": {
+            "description": "Seven-day demand standard deviation.",
+            "title": "Forecast 7D Std Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_7d_units": {
+            "description": "Expected demand over seven days.",
+            "title": "Forecast 7D Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_method": {
+            "description": "Censoring-aware forecast method.",
+            "enum": [
+              "store_sku",
+              "blended",
+              "chain_fallback",
+              "insufficient_data"
+            ],
+            "title": "Forecast Method",
+            "type": "string"
+          },
+          "lookback_days": {
+            "description": "Historical forecast lookback length.",
+            "title": "Lookback Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "observed_demand_cv": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Observed daily demand coefficient of variation.",
+            "title": "Observed Demand Cv"
+          },
+          "promo_days": {
+            "description": "Promotion days in the historical window.",
+            "title": "Promo Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "recent_censored_days": {
+            "description": "Censored days in the last 28 days.",
+            "title": "Recent Censored Days",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "forecast_method",
+          "demand_pattern",
+          "base_daily_demand_units",
+          "avg_daily_demand_units",
+          "daily_demand_std_units",
+          "observed_demand_cv",
+          "demand_trend_ratio",
+          "lookback_days",
+          "clean_days",
+          "censored_days",
+          "promo_days",
+          "recent_censored_days",
+          "forecast_7d_units",
+          "forecast_14d_units",
+          "forecast_28d_units",
+          "forecast_7d_std_units",
+          "forecast_14d_std_units",
+          "forecast_28d_std_units"
+        ],
+        "title": "DemandInfo",
+        "type": "object"
+      },
+      "Driver": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "description": "Deterministic risk driver code.",
+            "title": "Code",
+            "type": "string"
+          },
+          "description": {
+            "description": "Explanation from stored model inputs.",
+            "title": "Description",
+            "type": "string"
+          },
+          "label": {
+            "description": "Human readable driver label.",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "label",
+          "description"
+        ],
+        "title": "Driver",
+        "type": "object"
+      },
+      "Event": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "description": "Simulation event description.",
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "description": "Configured simulation event identifier.",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Simulation event name.",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "title": "Event",
+        "type": "object"
+      },
+      "ExposureInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_lost_units": {
+            "description": "Model estimate of shortage multiplied by lost-sale rate.",
+            "title": "Expected Lost Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "expected_shortage_units": {
+            "description": "Expected shortage at the binding checkpoint.",
+            "title": "Expected Shortage Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "lost_sale_rate": {
+            "description": "Category planning assumption for the share of shortage lost.",
+            "title": "Lost Sale Rate",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "margin_at_risk_usd": {
+            "description": "Model estimate of gross margin at risk.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "revenue_at_risk_usd": {
+            "description": "Model estimate of regular-price revenue at risk.",
+            "title": "Revenue At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          }
+        },
+        "required": [
+          "expected_shortage_units",
+          "lost_sale_rate",
+          "expected_lost_units",
+          "revenue_at_risk_usd",
+          "margin_at_risk_usd"
+        ],
+        "title": "ExposureInfo",
+        "type": "object"
+      },
+      "FiltersResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "categories": {
+            "description": "Categories sorted by code.",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "regions": {
+            "description": "Regions sorted by code.",
+            "items": {
+              "$ref": "#/components/schemas/Region"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "stores": {
+            "description": "Stores sorted by code.",
+            "items": {
+              "$ref": "#/components/schemas/Store"
+            },
+            "title": "Stores",
+            "type": "array"
+          },
+          "suppliers": {
+            "description": "Suppliers sorted by code.",
+            "items": {
+              "$ref": "#/components/schemas/Supplier"
+            },
+            "title": "Suppliers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "regions",
+          "stores",
+          "categories",
+          "suppliers"
+        ],
+        "title": "FiltersResponse",
+        "type": "object"
+      },
+      "ForecastDay": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Future demand date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "forecast_units": {
+            "description": "Estimated demand units.",
+            "title": "Forecast Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "horizon_day": {
+            "description": "Day index following the cutoff.",
+            "title": "Horizon Day",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "promo_multiplier": {
+            "description": "Planned promotion demand multiplier.",
+            "title": "Promo Multiplier",
+            "type": "number",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "date",
+          "horizon_day",
+          "forecast_units",
+          "promo_multiplier"
+        ],
+        "title": "ForecastDay",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
       "HealthResponse": {
-        "description": "Connectivity state; analytics are not implemented in Phase 0.",
+        "additionalProperties": false,
+        "description": "Process, database and current successful analytics availability.",
         "properties": {
           "analytics_ready": {
             "default": false,
+            "description": "Whether a succeeded current analytics run exists.",
             "title": "Analytics Ready",
             "type": "boolean"
           },
           "current_run_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "integer",
+                "x-unit": "count"
               },
               {
                 "type": "null"
               }
             ],
+            "description": "Current successful run ID, null if not ready.",
             "title": "Current Run Id"
           },
           "database": {
+            "description": "Actual PostgreSQL connectivity.",
             "enum": [
               "ok",
               "unavailable"
@@ -31,11 +875,13 @@
           "status": {
             "const": "ok",
             "default": "ok",
+            "description": "API process liveness.",
             "title": "Status",
             "type": "string"
           },
           "version": {
             "default": "1.0.0",
+            "description": "Application version.",
             "title": "Version",
             "type": "string"
           }
@@ -44,6 +890,3286 @@
           "database"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HeatmapCategory": {
+        "additionalProperties": false,
+        "properties": {
+          "category_id": {
+            "description": "Category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Category name.",
+            "title": "Category Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category_id",
+          "category_name"
+        ],
+        "title": "HeatmapCategory",
+        "type": "object"
+      },
+      "HeatmapCell": {
+        "additionalProperties": false,
+        "properties": {
+          "at_risk_positions": {
+            "description": "Critical or high positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "at_risk_rate": {
+            "description": "At-risk share; zero if no positions.",
+            "title": "At Risk Rate",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "category_id": {
+            "description": "Category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated margin at risk.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "positions": {
+            "description": "Store-category positions.",
+            "title": "Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "store_id",
+          "category_id",
+          "positions",
+          "at_risk_positions",
+          "at_risk_rate",
+          "margin_at_risk_usd"
+        ],
+        "title": "HeatmapCell",
+        "type": "object"
+      },
+      "HeatmapStore": {
+        "additionalProperties": false,
+        "properties": {
+          "store_code": {
+            "description": "Store display code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code"
+        ],
+        "title": "HeatmapStore",
+        "type": "object"
+      },
+      "HistoryDay": {
+        "additionalProperties": false,
+        "properties": {
+          "availability_status": {
+            "description": "Observed daily availability classification.",
+            "enum": [
+              "in_stock",
+              "sold_out",
+              "out_all_day"
+            ],
+            "title": "Availability Status",
+            "type": "string"
+          },
+          "closing_on_hand_units": {
+            "description": "End-of-day stock.",
+            "title": "Closing On Hand Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "date": {
+            "description": "Historical business date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "is_censored": {
+            "description": "Observed sales may be lower than demand because stock ran out.",
+            "title": "Is Censored",
+            "type": "boolean"
+          },
+          "net_adjustment_units": {
+            "description": "Signed inventory adjustment posted at day end.",
+            "title": "Net Adjustment Units",
+            "type": "integer",
+            "x-unit": "units"
+          },
+          "opening_on_hand_units": {
+            "description": "Start-of-day stock before receipts.",
+            "title": "Opening On Hand Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "promotion_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Active promotion identifier, if any.",
+            "title": "Promotion Id"
+          },
+          "promotion_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Active promotion display name.",
+            "title": "Promotion Name"
+          },
+          "units_received": {
+            "description": "Units received at the start of the day.",
+            "title": "Units Received",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "units_sold": {
+            "description": "Observed units sold.",
+            "title": "Units Sold",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "date",
+          "units_sold",
+          "opening_on_hand_units",
+          "units_received",
+          "net_adjustment_units",
+          "closing_on_hand_units",
+          "availability_status",
+          "is_censored",
+          "promotion_id",
+          "promotion_name"
+        ],
+        "title": "HistoryDay",
+        "type": "object"
+      },
+      "InventoryInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "days_of_cover": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "On-hand coverage, capped at 365 days; null for zero demand.",
+            "title": "Days Of Cover"
+          },
+          "inventory_position_units": {
+            "description": "On-hand plus all on-order units.",
+            "title": "Inventory Position Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "next_receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextReceipt"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Earliest expected inbound shipment, if any."
+          },
+          "on_hand_units": {
+            "description": "Closing stock at the cutoff.",
+            "title": "On Hand Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "on_order_units": {
+            "description": "Total outstanding purchase-order units.",
+            "title": "On Order Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "open_po_count": {
+            "description": "Number of distinct open purchase orders.",
+            "title": "Open Po Count",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "on_hand_units",
+          "on_order_units",
+          "inventory_position_units",
+          "open_po_count",
+          "days_of_cover",
+          "next_receipt"
+        ],
+        "title": "InventoryInfo",
+        "type": "object"
+      },
+      "Meta": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Dataset"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Loaded provenance, null before loading."
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/Parameters",
+            "description": "Run model settings or documented defaults."
+          },
+          "run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Run"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Current succeeded run, null before analytics."
+          }
+        },
+        "required": [
+          "dataset",
+          "run",
+          "parameters"
+        ],
+        "title": "Meta",
+        "type": "object"
+      },
+      "NextReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Expected receipt date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "overdue": {
+            "description": "Promised date is at or before the cutoff.",
+            "title": "Overdue",
+            "type": "boolean"
+          },
+          "po_number": {
+            "description": "Purchase-order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Lowest purchase-order identifier at this arrival.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "units": {
+            "description": "Open units arriving on this date.",
+            "title": "Units",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "date",
+          "units",
+          "purchase_order_id",
+          "po_number",
+          "overdue"
+        ],
+        "title": "NextReceipt",
+        "type": "object"
+      },
+      "OpenOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_arrival_date": {
+            "description": "Model estimated receipt date.",
+            "format": "date",
+            "title": "Expected Arrival Date",
+            "type": "string"
+          },
+          "open_quantity": {
+            "description": "Outstanding units as of cutoff.",
+            "title": "Open Quantity",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "order_date": {
+            "description": "Order placement date.",
+            "format": "date",
+            "title": "Order Date",
+            "type": "string"
+          },
+          "overdue": {
+            "description": "Promised date is at or before the cutoff.",
+            "title": "Overdue",
+            "type": "boolean"
+          },
+          "po_number": {
+            "description": "Purchase-order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "promised_delivery_date": {
+            "description": "Supplier promised delivery date.",
+            "format": "date",
+            "title": "Promised Delivery Date",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Purchase-order identifier.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_cancelled": {
+            "description": "Cancelled units known by the cutoff.",
+            "title": "Quantity Cancelled",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_ordered": {
+            "description": "Units originally ordered.",
+            "title": "Quantity Ordered",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_received": {
+            "description": "Units received by the cutoff.",
+            "title": "Quantity Received",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "status": {
+            "description": "Line-level as-of fulfillment status.",
+            "enum": [
+              "open",
+              "partially_received"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "purchase_order_id",
+          "po_number",
+          "order_date",
+          "promised_delivery_date",
+          "expected_arrival_date",
+          "quantity_ordered",
+          "quantity_received",
+          "quantity_cancelled",
+          "open_quantity",
+          "status",
+          "overdue"
+        ],
+        "title": "OpenOrder",
+        "type": "object"
+      },
+      "OverviewSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "active_positions": {
+            "description": "Store-product positions in scope.",
+            "title": "Active Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "active_skus": {
+            "description": "Distinct products in scope.",
+            "title": "Active Skus",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "as_of_date": {
+            "description": "End-of-day model cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "at_risk_positions": {
+            "description": "Critical or high risk positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "at_risk_positions_change": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Current minus prior at-risk count; null without prior run.",
+            "title": "At Risk Positions Change"
+          },
+          "at_risk_rate": {
+            "description": "At-risk share of positions; zero for empty scope.",
+            "title": "At Risk Rate",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "critical_positions": {
+            "description": "Critical risk positions.",
+            "title": "Critical Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "gross_margin_at_risk_usd": {
+            "description": "Estimated gross margin exposed to stockouts.",
+            "title": "Gross Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "in_stock_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Share of position-days with positive closing stock; null if empty.",
+            "title": "In Stock Rate"
+          },
+          "in_stock_rate_prior": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Prior 28-day in-stock share; null if unavailable.",
+            "title": "In Stock Rate Prior"
+          },
+          "in_stock_window_days": {
+            "description": "Availability measurement window in days.",
+            "title": "In Stock Window Days",
+            "type": "integer",
+            "x-unit": "days"
+          },
+          "median_days_of_cover": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Median finite demand coverage; null without demand.",
+            "title": "Median Days Of Cover"
+          },
+          "prior_at_risk_positions": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "At-risk count seven days earlier; null without prior run.",
+            "title": "Prior At Risk Positions"
+          },
+          "revenue_at_risk_usd": {
+            "description": "Estimated revenue exposed to stockouts.",
+            "title": "Revenue At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "run_id": {
+            "description": "Selected successful current run.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Due POs first received on time; null if none due.",
+            "title": "Supplier On Time Rate"
+          },
+          "supplier_on_time_window_days": {
+            "description": "Supplier measurement window in days.",
+            "title": "Supplier On Time Window Days",
+            "type": "integer",
+            "x-unit": "days"
+          },
+          "supplier_pos_due": {
+            "description": "POs due in the supplier measurement window.",
+            "title": "Supplier Pos Due",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "as_of_date",
+          "run_id",
+          "active_positions",
+          "active_skus",
+          "at_risk_positions",
+          "critical_positions",
+          "at_risk_rate",
+          "prior_at_risk_positions",
+          "at_risk_positions_change",
+          "gross_margin_at_risk_usd",
+          "revenue_at_risk_usd",
+          "median_days_of_cover",
+          "supplier_on_time_rate",
+          "supplier_pos_due",
+          "supplier_on_time_window_days",
+          "in_stock_rate",
+          "in_stock_rate_prior",
+          "in_stock_window_days"
+        ],
+        "title": "OverviewSummary",
+        "type": "object"
+      },
+      "Parameters": {
+        "additionalProperties": false,
+        "properties": {
+          "carrying_cost_rate_annual": {
+            "description": "Assumed annual carrying rate.",
+            "title": "Carrying Cost Rate Annual",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "exposure_escalation_usd": {
+            "description": "Margin exposure escalation threshold.",
+            "title": "Exposure Escalation Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "half_life_days": {
+            "description": "EWMA half life.",
+            "title": "Half Life Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "lookback_days": {
+            "description": "Forecast lookback.",
+            "title": "Lookback Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "lost_sale_rates": {
+            "additionalProperties": {
+              "type": "number",
+              "x-unit": "ratio"
+            },
+            "description": "Assumed category lost-sale shares.",
+            "title": "Lost Sale Rates",
+            "type": "object"
+          },
+          "min_clean_days_blend": {
+            "description": "Minimum clean days for blended estimate.",
+            "title": "Min Clean Days Blend",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "min_clean_days_full": {
+            "description": "Minimum clean days for local estimate.",
+            "title": "Min Clean Days Full",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "normal_min_mean_units": {
+            "description": "Window demand threshold for Normal family.",
+            "title": "Normal Min Mean Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "review_period_days": {
+            "description": "Review cadence.",
+            "title": "Review Period Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "scenario_limits": {
+            "$ref": "#/components/schemas/ScenarioLimits",
+            "description": "Permitted scenario controls."
+          },
+          "service_level": {
+            "description": "Cycle service level.",
+            "title": "Service Level",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "tier_thresholds": {
+            "additionalProperties": {
+              "type": "number",
+              "x-unit": "ratio"
+            },
+            "description": "Probability tier thresholds.",
+            "title": "Tier Thresholds",
+            "type": "object"
+          }
+        },
+        "required": [
+          "service_level",
+          "review_period_days",
+          "lookback_days",
+          "half_life_days",
+          "min_clean_days_full",
+          "min_clean_days_blend",
+          "normal_min_mean_units",
+          "tier_thresholds",
+          "exposure_escalation_usd",
+          "carrying_cost_rate_annual",
+          "lost_sale_rates",
+          "scenario_limits"
+        ],
+        "title": "Parameters",
+        "type": "object"
+      },
+      "PolicyInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "below_reorder_point": {
+            "description": "Reorder trigger met with positive required quantity.",
+            "title": "Below Reorder Point",
+            "type": "boolean"
+          },
+          "distribution_family": {
+            "description": "Demand family at the binding checkpoint.",
+            "enum": [
+              "normal",
+              "poisson",
+              "negative_binomial",
+              "degenerate"
+            ],
+            "title": "Distribution Family",
+            "type": "string"
+          },
+          "lead_time_demand_mean_units": {
+            "description": "Expected demand across lead time.",
+            "title": "Lead Time Demand Mean Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "lead_time_demand_std_units": {
+            "description": "Standard deviation of lead-time demand.",
+            "title": "Lead Time Demand Std Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "order_up_to_units": {
+            "description": "Target inventory position after ordering.",
+            "title": "Order Up To Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "reorder_point_units": {
+            "description": "Inventory-position reorder trigger.",
+            "title": "Reorder Point Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "review_period_days": {
+            "description": "Review cadence in days.",
+            "title": "Review Period Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "safety_stock_units": {
+            "description": "Safety stock at the selected service level.",
+            "title": "Safety Stock Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "service_level": {
+            "description": "Cycle service level used for stock policy.",
+            "title": "Service Level",
+            "type": "number",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "service_level",
+          "review_period_days",
+          "distribution_family",
+          "lead_time_demand_mean_units",
+          "lead_time_demand_std_units",
+          "safety_stock_units",
+          "reorder_point_units",
+          "order_up_to_units",
+          "below_reorder_point"
+        ],
+        "title": "PolicyInfo",
+        "type": "object"
+      },
+      "PositionChange": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_margin_at_risk_usd": {
+            "description": "Baseline estimated margin exposure.",
+            "title": "Baseline Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "baseline_recommended_order_units": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "units"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Baseline order recommendation; null if unnecessary.",
+            "title": "Baseline Recommended Order Units"
+          },
+          "baseline_stockout_probability": {
+            "description": "Baseline estimated probability.",
+            "title": "Baseline Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "baseline_tier": {
+            "description": "Baseline risk tier.",
+            "title": "Baseline Tier",
+            "type": "string"
+          },
+          "product_id": {
+            "description": "Product identifier.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Fictional product name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "scenario_margin_at_risk_usd": {
+            "description": "Scenario estimated margin exposure.",
+            "title": "Scenario Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "scenario_recommended_order_units": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "units"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Scenario order recommendation; null if unnecessary.",
+            "title": "Scenario Recommended Order Units"
+          },
+          "scenario_stockout_probability": {
+            "description": "Scenario estimated probability.",
+            "title": "Scenario Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "scenario_tier": {
+            "description": "Scenario risk tier.",
+            "title": "Scenario Tier",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Fictional SKU.",
+            "title": "Sku",
+            "type": "string"
+          },
+          "store_code": {
+            "description": "Fictional store code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "store_id",
+          "product_id",
+          "sku",
+          "product_name",
+          "store_code",
+          "baseline_tier",
+          "scenario_tier",
+          "baseline_stockout_probability",
+          "scenario_stockout_probability",
+          "baseline_margin_at_risk_usd",
+          "scenario_margin_at_risk_usd",
+          "baseline_recommended_order_units",
+          "scenario_recommended_order_units"
+        ],
+        "title": "PositionChange",
+        "type": "object"
+      },
+      "PositionDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "checkpoints": {
+            "description": "Ordered supply-demand checkpoints.",
+            "items": {
+              "$ref": "#/components/schemas/Checkpoint"
+            },
+            "title": "Checkpoints",
+            "type": "array"
+          },
+          "demand": {
+            "$ref": "#/components/schemas/DemandInfo",
+            "description": "Stored demand forecast and diagnostics."
+          },
+          "exposure": {
+            "$ref": "#/components/schemas/ExposureInfo",
+            "description": "Estimated financial exposure."
+          },
+          "inventory": {
+            "$ref": "#/components/schemas/InventoryInfo",
+            "description": "As-of inventory quantities and next inbound shipment."
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PolicyInfo",
+            "description": "Inventory replenishment policy."
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductInfo",
+            "description": "Product context."
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/RecommendationInfo",
+            "description": "Decision support; never an order write-back."
+          },
+          "risk": {
+            "$ref": "#/components/schemas/RiskInfo",
+            "description": "Estimated near-term stockout risk."
+          },
+          "run": {
+            "$ref": "#/components/schemas/RunInfo",
+            "description": "Analytics run provenance."
+          },
+          "store": {
+            "$ref": "#/components/schemas/StoreInfo",
+            "description": "Store context."
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/SupplierInfo",
+            "description": "Primary sourcing context."
+          },
+          "supply": {
+            "$ref": "#/components/schemas/SupplyInfo",
+            "description": "Stored lane lead-time estimates."
+          }
+        },
+        "required": [
+          "run",
+          "store",
+          "product",
+          "supplier",
+          "risk",
+          "inventory",
+          "demand",
+          "supply",
+          "policy",
+          "exposure",
+          "checkpoints",
+          "recommendation"
+        ],
+        "title": "PositionDetail",
+        "type": "object"
+      },
+      "PositionHistory": {
+        "additionalProperties": false,
+        "properties": {
+          "days": {
+            "description": "Historical observations in ascending date order.",
+            "items": {
+              "$ref": "#/components/schemas/HistoryDay"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "forecast": {
+            "description": "Next 28 stored forecast days.",
+            "items": {
+              "$ref": "#/components/schemas/ForecastDay"
+            },
+            "title": "Forecast",
+            "type": "array"
+          }
+        },
+        "required": [
+          "days",
+          "forecast"
+        ],
+        "title": "PositionHistory",
+        "type": "object"
+      },
+      "PositionOrders": {
+        "additionalProperties": false,
+        "properties": {
+          "open": {
+            "description": "Outstanding purchase-order lines for this product.",
+            "items": {
+              "$ref": "#/components/schemas/OpenOrder"
+            },
+            "title": "Open",
+            "type": "array"
+          },
+          "recent_received": {
+            "description": "Most recently received completed lines, newest first.",
+            "items": {
+              "$ref": "#/components/schemas/ReceivedOrder"
+            },
+            "title": "Recent Received",
+            "type": "array"
+          }
+        },
+        "required": [
+          "open",
+          "recent_received"
+        ],
+        "title": "PositionOrders",
+        "type": "object"
+      },
+      "PositionProjection": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_date": {
+            "description": "End-of-day model cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "notes": {
+            "description": "Projection assumptions and uncertainty caveat.",
+            "title": "Notes",
+            "type": "string"
+          },
+          "points": {
+            "description": "Chronological observed and projected inventory.",
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "actual": "#/components/schemas/ActualPoint",
+                  "projected": "#/components/schemas/ProjectedPoint"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ActualPoint"
+                },
+                {
+                  "$ref": "#/components/schemas/ProjectedPoint"
+                }
+              ]
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "projected_stockout_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "First expected stockout within the full 42-day horizon.",
+            "title": "Projected Stockout Date"
+          },
+          "receipts": {
+            "description": "Expected inbound deliveries in the requested horizon.",
+            "items": {
+              "$ref": "#/components/schemas/ProjectionReceipt"
+            },
+            "title": "Receipts",
+            "type": "array"
+          },
+          "reorder_point_units": {
+            "description": "Stored reorder trigger.",
+            "title": "Reorder Point Units",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "safety_stock_units": {
+            "description": "Stored safety-stock level.",
+            "title": "Safety Stock Units",
+            "type": "number",
+            "x-unit": "units"
+          }
+        },
+        "required": [
+          "as_of_date",
+          "reorder_point_units",
+          "safety_stock_units",
+          "projected_stockout_date",
+          "points",
+          "receipts",
+          "notes"
+        ],
+        "title": "PositionProjection",
+        "type": "object"
+      },
+      "ProductInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "brand_name": {
+            "description": "Fictional product brand.",
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "category_name": {
+            "description": "Category display name.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "product_id": {
+            "description": "Product identifier.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Fictional product display name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Stock keeping unit code.",
+            "title": "Sku",
+            "type": "string"
+          },
+          "unit_cost_usd": {
+            "description": "Acquisition cost per unit.",
+            "title": "Unit Cost Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "unit_of_measure": {
+            "description": "Unit in which stock is counted.",
+            "title": "Unit Of Measure",
+            "type": "string"
+          },
+          "unit_price_usd": {
+            "description": "Regular selling price per unit.",
+            "title": "Unit Price Usd",
+            "type": "number",
+            "x-unit": "usd"
+          }
+        },
+        "required": [
+          "product_id",
+          "sku",
+          "product_name",
+          "category_name",
+          "brand_name",
+          "unit_of_measure",
+          "unit_price_usd",
+          "unit_cost_usd"
+        ],
+        "title": "ProductInfo",
+        "type": "object"
+      },
+      "ProjectedPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "band_high_units": {
+            "description": "Approximate upper inventory bound from demand uncertainty.",
+            "title": "Band High Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "band_low_units": {
+            "description": "Approximate lower inventory bound from demand uncertainty.",
+            "title": "Band Low Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "date": {
+            "description": "Projection date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "expected_on_hand_units": {
+            "description": "Expected closing stock under lost-sales dynamics.",
+            "title": "Expected On Hand Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "forecast_units": {
+            "description": "Expected demand during this day.",
+            "title": "Forecast Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "kind": {
+            "const": "projected",
+            "description": "Identifies an expected-value projection.",
+            "title": "Kind",
+            "type": "string"
+          },
+          "receipts_units": {
+            "description": "Expected receipts at the start of this day.",
+            "title": "Receipts Units",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "date",
+          "kind",
+          "expected_on_hand_units",
+          "band_low_units",
+          "band_high_units",
+          "forecast_units",
+          "receipts_units"
+        ],
+        "title": "ProjectedPoint",
+        "type": "object"
+      },
+      "ProjectionReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "description": "Expected arrival date.",
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "overdue": {
+            "description": "Promised delivery date is at or before cutoff.",
+            "title": "Overdue",
+            "type": "boolean"
+          },
+          "po_number": {
+            "description": "Purchase-order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Purchase-order identifier.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "units": {
+            "description": "Open units expected to arrive.",
+            "title": "Units",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "date",
+          "purchase_order_id",
+          "po_number",
+          "units",
+          "overdue"
+        ],
+        "title": "ProjectionReceipt",
+        "type": "object"
+      },
+      "ReceivedOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "delay_days": {
+            "description": "Signed days from promised date to first receipt.",
+            "title": "Delay Days",
+            "type": "integer",
+            "x-unit": "days"
+          },
+          "first_receipt_date": {
+            "description": "First receipt date known by cutoff.",
+            "format": "date",
+            "title": "First Receipt Date",
+            "type": "string"
+          },
+          "order_date": {
+            "description": "Order placement date.",
+            "format": "date",
+            "title": "Order Date",
+            "type": "string"
+          },
+          "po_number": {
+            "description": "Purchase-order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "promised_delivery_date": {
+            "description": "Supplier promised delivery date.",
+            "format": "date",
+            "title": "Promised Delivery Date",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Purchase-order identifier.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_cancelled": {
+            "description": "Cancelled units known by cutoff.",
+            "title": "Quantity Cancelled",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_ordered": {
+            "description": "Units originally ordered.",
+            "title": "Quantity Ordered",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "quantity_received": {
+            "description": "Units received by cutoff.",
+            "title": "Quantity Received",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "status": {
+            "description": "Completed line status as of cutoff.",
+            "enum": [
+              "received",
+              "closed_short"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "purchase_order_id",
+          "po_number",
+          "order_date",
+          "promised_delivery_date",
+          "first_receipt_date",
+          "quantity_ordered",
+          "quantity_received",
+          "quantity_cancelled",
+          "status",
+          "delay_days"
+        ],
+        "title": "ReceivedOrder",
+        "type": "object"
+      },
+      "RecommendationInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "action_type": {
+            "description": "Primary decision-support action.",
+            "enum": [
+              "expedite_po",
+              "reorder",
+              "monitor",
+              "no_action"
+            ],
+            "title": "Action Type",
+            "type": "string"
+          },
+          "priority_rank": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Run-wide lexicographic action rank.",
+            "title": "Priority Rank"
+          },
+          "rationale": {
+            "description": "Deterministic explanation of the recommendation.",
+            "title": "Rationale",
+            "type": "string"
+          },
+          "recommended_order_cases": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Orderable quantity expressed in whole cases.",
+            "title": "Recommended Order Cases"
+          },
+          "recommended_order_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "usd"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated acquisition cost of the recommended order.",
+            "title": "Recommended Order Cost Usd"
+          },
+          "recommended_order_units": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Orderable quantity when the reorder trigger is met.",
+            "title": "Recommended Order Units"
+          },
+          "related_purchase_order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RelatedOrder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Existing purchase order to expedite."
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "enum": [
+                  "urgent",
+                  "standard"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Action urgency; null for no action.",
+            "title": "Urgency"
+          }
+        },
+        "required": [
+          "action_type",
+          "urgency",
+          "priority_rank",
+          "recommended_order_units",
+          "recommended_order_cases",
+          "recommended_order_cost_usd",
+          "related_purchase_order",
+          "rationale"
+        ],
+        "title": "RecommendationInfo",
+        "type": "object"
+      },
+      "RecommendationItem": {
+        "additionalProperties": false,
+        "properties": {
+          "action_type": {
+            "description": "Suggested decision-support action.",
+            "enum": [
+              "expedite_po",
+              "reorder",
+              "monitor"
+            ],
+            "title": "Action Type",
+            "type": "string"
+          },
+          "category_name": {
+            "description": "Product category.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "days_until_projected_stockout": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Days until projected stockout, or null if none in horizon.",
+            "title": "Days Until Projected Stockout",
+            "x-unit": "days"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin at risk.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "priority_rank": {
+            "description": "Original global priority rank, preserved under filtering.",
+            "title": "Priority Rank",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_id": {
+            "description": "Product identifier.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Fictional product name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "rationale": {
+            "description": "Stored deterministic explanation of the action.",
+            "title": "Rationale",
+            "type": "string"
+          },
+          "recommended_order_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "usd"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated purchase cost; null when no order is recommended.",
+            "title": "Recommended Order Cost Usd"
+          },
+          "recommended_order_units": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "units"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Suggested whole-unit order quantity; null when no order is recommended.",
+            "title": "Recommended Order Units"
+          },
+          "related_purchase_order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RelatedPurchaseOrder"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Existing PO associated with action, or null."
+          },
+          "risk_tier": {
+            "description": "Stored risk tier.",
+            "enum": [
+              "critical",
+              "high",
+              "moderate",
+              "low"
+            ],
+            "title": "Risk Tier",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Product SKU.",
+            "title": "Sku",
+            "type": "string"
+          },
+          "stockout_probability": {
+            "description": "Estimated probability at the binding checkpoint.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "store_code": {
+            "description": "Store display code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "urgency": {
+            "description": "Suggested urgency.",
+            "enum": [
+              "urgent",
+              "standard"
+            ],
+            "title": "Urgency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "priority_rank",
+          "store_id",
+          "store_code",
+          "product_id",
+          "sku",
+          "product_name",
+          "category_name",
+          "risk_tier",
+          "stockout_probability",
+          "margin_at_risk_usd",
+          "action_type",
+          "urgency",
+          "recommended_order_units",
+          "recommended_order_cost_usd",
+          "related_purchase_order",
+          "rationale",
+          "days_until_projected_stockout"
+        ],
+        "title": "RecommendationItem",
+        "type": "object"
+      },
+      "Recommendations": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "description": "Stored actionable recommendations in global rank order.",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "Recommendations",
+        "type": "object"
+      },
+      "Region": {
+        "additionalProperties": false,
+        "properties": {
+          "region_code": {
+            "description": "Fictional region code.",
+            "title": "Region Code",
+            "type": "string"
+          },
+          "region_id": {
+            "description": "Region identifier.",
+            "title": "Region Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "region_name": {
+            "description": "Region name.",
+            "title": "Region Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "region_id",
+          "region_code",
+          "region_name"
+        ],
+        "title": "Region",
+        "type": "object"
+      },
+      "RelatedOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "po_number": {
+            "description": "Purchase-order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Purchase-order identifier.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "purchase_order_id",
+          "po_number"
+        ],
+        "title": "RelatedOrder",
+        "type": "object"
+      },
+      "RelatedPurchaseOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "po_number": {
+            "description": "Existing purchase order display number.",
+            "title": "Po Number",
+            "type": "string"
+          },
+          "purchase_order_id": {
+            "description": "Existing purchase order identifier.",
+            "title": "Purchase Order Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "purchase_order_id",
+          "po_number"
+        ],
+        "title": "RelatedPurchaseOrder",
+        "type": "object"
+      },
+      "RiskDistribution": {
+        "additionalProperties": false,
+        "properties": {
+          "tiers": {
+            "description": "All four tiers ordered critical to low, including zeros.",
+            "items": {
+              "$ref": "#/components/schemas/RiskTierCount"
+            },
+            "title": "Tiers",
+            "type": "array"
+          },
+          "total_positions": {
+            "description": "Total filtered positions.",
+            "title": "Total Positions",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "tiers",
+          "total_positions"
+        ],
+        "title": "RiskDistribution",
+        "type": "object"
+      },
+      "RiskInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "binding_checkpoint_type": {
+            "description": "Type of the riskiest checkpoint.",
+            "enum": [
+              "receipt",
+              "window_end"
+            ],
+            "title": "Binding Checkpoint Type",
+            "type": "string"
+          },
+          "currently_out_of_stock": {
+            "description": "No stock on hand with positive forecast demand.",
+            "title": "Currently Out Of Stock",
+            "type": "boolean"
+          },
+          "days_until_projected_stockout": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Days from cutoff to projected stockout.",
+            "title": "Days Until Projected Stockout"
+          },
+          "drivers": {
+            "description": "Descriptive associations explaining this risk.",
+            "items": {
+              "$ref": "#/components/schemas/Driver"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "explanation": {
+            "description": "Deterministic model explanation.",
+            "title": "Explanation",
+            "type": "string"
+          },
+          "projected_stockout_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "First expected-value stockout date within 42 days.",
+            "title": "Projected Stockout Date"
+          },
+          "risk_tier": {
+            "description": "Model risk tier.",
+            "enum": [
+              "critical",
+              "high",
+              "moderate",
+              "low"
+            ],
+            "title": "Risk Tier",
+            "type": "string"
+          },
+          "stockout_probability": {
+            "description": "Estimated probability at the riskiest checkpoint.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "risk_tier",
+          "stockout_probability",
+          "currently_out_of_stock",
+          "binding_checkpoint_type",
+          "projected_stockout_date",
+          "days_until_projected_stockout",
+          "drivers",
+          "explanation"
+        ],
+        "title": "RiskInfo",
+        "type": "object"
+      },
+      "RiskListSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "critical": {
+            "description": "Filtered critical positions.",
+            "title": "Critical",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "high": {
+            "description": "Filtered high positions.",
+            "title": "High",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "low": {
+            "description": "Filtered low positions.",
+            "title": "Low",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated exposure across the complete filtered set.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "moderate": {
+            "description": "Filtered moderate positions.",
+            "title": "Moderate",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "positions": {
+            "description": "Positions matching every filter, across all pages.",
+            "title": "Positions",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "positions",
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "margin_at_risk_usd"
+        ],
+        "title": "RiskListSummary",
+        "type": "object"
+      },
+      "RiskPosition": {
+        "additionalProperties": false,
+        "properties": {
+          "action_type": {
+            "description": "Stored suggested action.",
+            "enum": [
+              "expedite_po",
+              "reorder",
+              "monitor",
+              "no_action"
+            ],
+            "title": "Action Type",
+            "type": "string"
+          },
+          "avg_daily_demand_units": {
+            "description": "Mean forecast daily demand over 28 days.",
+            "title": "Avg Daily Demand Units",
+            "type": "number",
+            "x-unit": "units_per_day"
+          },
+          "below_reorder_point": {
+            "description": "Whether inventory position is at or below reorder point.",
+            "title": "Below Reorder Point",
+            "type": "boolean"
+          },
+          "category_id": {
+            "description": "Category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Product category.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "days_of_cover": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "On-hand divided by daily demand; null at zero demand.",
+            "title": "Days Of Cover"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposed.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "next_receipt_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Expected next receipt date; null without inbound.",
+            "title": "Next Receipt Date"
+          },
+          "next_receipt_overdue": {
+            "description": "Whether the next PO is past its promise.",
+            "title": "Next Receipt Overdue",
+            "type": "boolean"
+          },
+          "next_receipt_po_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Representative next PO number; null without inbound.",
+            "title": "Next Receipt Po Number"
+          },
+          "next_receipt_units": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "units"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Expected next receipt quantity; null without inbound.",
+            "title": "Next Receipt Units"
+          },
+          "on_hand_units": {
+            "description": "Closing inventory at cutoff.",
+            "title": "On Hand Units",
+            "type": "integer",
+            "x-unit": "units"
+          },
+          "on_order_units": {
+            "description": "Outstanding quantity on existing POs.",
+            "title": "On Order Units",
+            "type": "integer",
+            "x-unit": "units"
+          },
+          "priority_rank": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Global action rank; null for no action.",
+            "title": "Priority Rank"
+          },
+          "product_id": {
+            "description": "Product identifier.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Fictional product name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "recommended_order_units": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "x-unit": "units"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Suggested whole-unit order quantity; null when no order is recommended.",
+            "title": "Recommended Order Units"
+          },
+          "region_name": {
+            "description": "Store region.",
+            "title": "Region Name",
+            "type": "string"
+          },
+          "revenue_at_risk_usd": {
+            "description": "Estimated revenue exposed.",
+            "title": "Revenue At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "risk_tier": {
+            "description": "Stored severity tier.",
+            "enum": [
+              "critical",
+              "high",
+              "moderate",
+              "low"
+            ],
+            "title": "Risk Tier",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Product SKU.",
+            "title": "Sku",
+            "type": "string"
+          },
+          "stockout_probability": {
+            "description": "Estimated stockout probability before replenishment.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "store_code": {
+            "description": "Store display code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_name": {
+            "description": "Fictional store name.",
+            "title": "Store Name",
+            "type": "string"
+          },
+          "supplier_id": {
+            "description": "Primary supplier identifier.",
+            "title": "Supplier Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_name": {
+            "description": "Fictional primary supplier name.",
+            "title": "Supplier Name",
+            "type": "string"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "enum": [
+                  "urgent",
+                  "standard"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Stored action urgency; null for no action.",
+            "title": "Urgency"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code",
+          "store_name",
+          "region_name",
+          "product_id",
+          "sku",
+          "product_name",
+          "category_id",
+          "category_name",
+          "supplier_id",
+          "supplier_name",
+          "on_hand_units",
+          "on_order_units",
+          "avg_daily_demand_units",
+          "days_of_cover",
+          "next_receipt_date",
+          "next_receipt_units",
+          "next_receipt_po_number",
+          "next_receipt_overdue",
+          "stockout_probability",
+          "risk_tier",
+          "margin_at_risk_usd",
+          "revenue_at_risk_usd",
+          "below_reorder_point",
+          "action_type",
+          "urgency",
+          "priority_rank",
+          "recommended_order_units"
+        ],
+        "title": "RiskPosition",
+        "type": "object"
+      },
+      "RiskPositions": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "description": "Stable page of filtered positions.",
+            "items": {
+              "$ref": "#/components/schemas/RiskPosition"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "description": "Requested one-based page.",
+            "title": "Page",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "page_size": {
+            "description": "Maximum positions per page.",
+            "title": "Page Size",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RiskListSummary",
+            "description": "Aggregates over the complete filtered set."
+          },
+          "total_items": {
+            "description": "Total filtered positions.",
+            "title": "Total Items",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "total_pages": {
+            "description": "Number of pages; zero for empty scope.",
+            "title": "Total Pages",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total_items",
+          "total_pages",
+          "summary"
+        ],
+        "title": "RiskPositions",
+        "type": "object"
+      },
+      "RiskTierCount": {
+        "additionalProperties": false,
+        "properties": {
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposed in this tier.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "positions": {
+            "description": "Positions assigned this tier.",
+            "title": "Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "risk_tier": {
+            "description": "Risk severity tier.",
+            "enum": [
+              "critical",
+              "high",
+              "moderate",
+              "low"
+            ],
+            "title": "Risk Tier",
+            "type": "string"
+          },
+          "share_of_positions": {
+            "description": "Tier share of filtered positions.",
+            "title": "Share Of Positions",
+            "type": "number",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "risk_tier",
+          "positions",
+          "share_of_positions",
+          "margin_at_risk_usd"
+        ],
+        "title": "RiskTierCount",
+        "type": "object"
+      },
+      "RiskTrend": {
+        "additionalProperties": false,
+        "properties": {
+          "points": {
+            "description": "One point per available cutoff date, ascending.",
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "points"
+        ],
+        "title": "RiskTrend",
+        "type": "object"
+      },
+      "Run": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_date": {
+            "description": "End-of-day observation cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "backfill_runs_available": {
+            "description": "Succeeded historical runs.",
+            "title": "Backfill Runs Available",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "completed_at": {
+            "description": "Successful completion time UTC.",
+            "format": "date-time",
+            "title": "Completed At",
+            "type": "string"
+          },
+          "model_version": {
+            "description": "Version of model configuration.",
+            "title": "Model Version",
+            "type": "string"
+          },
+          "run_id": {
+            "description": "Immutable analytics run identifier.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "run_type": {
+            "description": "Current or historical backfill.",
+            "title": "Run Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "run_type",
+          "as_of_date",
+          "model_version",
+          "completed_at",
+          "backfill_runs_available"
+        ],
+        "title": "Run",
+        "type": "object"
+      },
+      "RunInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_date": {
+            "description": "End-of-day model cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "model_version": {
+            "description": "Version of the analytical model.",
+            "title": "Model Version",
+            "type": "string"
+          },
+          "run_id": {
+            "description": "Successful analytics run identifier.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "run_id",
+          "as_of_date",
+          "model_version"
+        ],
+        "title": "RunInfo",
+        "type": "object"
+      },
+      "ScenarioLimits": {
+        "additionalProperties": false,
+        "properties": {
+          "demand_change_rate": {
+            "description": "Inclusive relative demand limits.",
+            "items": {
+              "type": "number",
+              "x-unit": "ratio"
+            },
+            "title": "Demand Change Rate",
+            "type": "array"
+          },
+          "lead_time_change_days": {
+            "description": "Inclusive lead-time shift limits.",
+            "items": {
+              "type": "number",
+              "x-unit": "days"
+            },
+            "title": "Lead Time Change Days",
+            "type": "array"
+          },
+          "safety_stock_buffer_rate": {
+            "description": "Inclusive buffer change limits.",
+            "items": {
+              "type": "number",
+              "x-unit": "ratio"
+            },
+            "title": "Safety Stock Buffer Rate",
+            "type": "array"
+          },
+          "service_level": {
+            "description": "Inclusive cycle service limits.",
+            "items": {
+              "type": "number",
+              "x-unit": "ratio"
+            },
+            "title": "Service Level",
+            "type": "array"
+          }
+        },
+        "required": [
+          "lead_time_change_days",
+          "demand_change_rate",
+          "service_level",
+          "safety_stock_buffer_rate"
+        ],
+        "title": "ScenarioLimits",
+        "type": "object"
+      },
+      "ScenarioMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "annual_carrying_cost_usd": {
+            "description": "Safety stock value times assumed annual carrying rate.",
+            "title": "Annual Carrying Cost Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "annual_expected_shortfall_margin_usd": {
+            "description": "Annualized expected policy shortfall margin; model estimate.",
+            "title": "Annual Expected Shortfall Margin Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "at_risk_positions": {
+            "description": "Critical plus high positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "avg_lead_time_days": {
+            "description": "Average estimated lane lead time.",
+            "title": "Avg Lead Time Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "expected_shortage_units": {
+            "description": "Sum of modeled expected shortages.",
+            "title": "Expected Shortage Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "lead_time_demand_units": {
+            "description": "Sum of expected lead-time demand.",
+            "title": "Lead Time Demand Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposure.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "mean_stockout_probability": {
+            "description": "Mean modeled stockout probability.",
+            "title": "Mean Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "positions_below_reorder_point": {
+            "description": "Positions triggering reorder policy.",
+            "title": "Positions Below Reorder Point",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "recommended_order_units": {
+            "description": "Sum of recommended order units.",
+            "title": "Recommended Order Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "recommended_order_value_usd": {
+            "description": "Recommended units valued at unit cost.",
+            "title": "Recommended Order Value Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "revenue_at_risk_usd": {
+            "description": "Estimated revenue exposure.",
+            "title": "Revenue At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "safety_stock_units": {
+            "description": "Sum of policy safety stock.",
+            "title": "Safety Stock Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "safety_stock_value_usd": {
+            "description": "Safety stock valued at unit cost.",
+            "title": "Safety Stock Value Usd",
+            "type": "number",
+            "x-unit": "usd"
+          }
+        },
+        "required": [
+          "at_risk_positions",
+          "mean_stockout_probability",
+          "expected_shortage_units",
+          "revenue_at_risk_usd",
+          "margin_at_risk_usd",
+          "lead_time_demand_units",
+          "safety_stock_units",
+          "safety_stock_value_usd",
+          "positions_below_reorder_point",
+          "recommended_order_units",
+          "recommended_order_value_usd",
+          "annual_carrying_cost_usd",
+          "annual_expected_shortfall_margin_usd",
+          "avg_lead_time_days"
+        ],
+        "title": "ScenarioMetrics",
+        "type": "object"
+      },
+      "ScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "$ref": "#/components/schemas/Assumptions",
+            "description": "Scenario model controls; defaults are neutral."
+          },
+          "scope": {
+            "$ref": "#/components/schemas/Scope",
+            "description": "Intersecting position scope."
+          }
+        },
+        "title": "ScenarioRequest",
+        "type": "object"
+      },
+      "ScenarioResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_date": {
+            "description": "Baseline end-of-day observation cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "assumptions_applied": {
+            "$ref": "#/components/schemas/Assumptions",
+            "description": "Resolved assumptions, including run default service level."
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/ScenarioSummary",
+            "description": "Neutral baseline computed with run settings."
+          },
+          "by_category": {
+            "description": "Category exposure and risk comparisons.",
+            "items": {
+              "$ref": "#/components/schemas/CategoryChange"
+            },
+            "title": "By Category",
+            "type": "array"
+          },
+          "computation_ms": {
+            "description": "Measured server calculation time, milliseconds.",
+            "title": "Computation Ms",
+            "type": "number",
+            "x-unit": "milliseconds"
+          },
+          "delta": {
+            "$ref": "#/components/schemas/Delta",
+            "description": "Absolute and relative changes."
+          },
+          "positions_in_scope": {
+            "description": "Positions in the scope intersection.",
+            "title": "Positions In Scope",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "run_id": {
+            "description": "Immutable baseline run identifier.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioSummary",
+            "description": "Recalculated scenario metrics."
+          },
+          "tier_transitions": {
+            "$ref": "#/components/schemas/Transitions",
+            "description": "Complete baseline-to-scenario tier matrix."
+          },
+          "top_changes": {
+            "description": "Twenty greatest increases in margin exposure, then probability.",
+            "items": {
+              "$ref": "#/components/schemas/PositionChange"
+            },
+            "title": "Top Changes",
+            "type": "array"
+          },
+          "warnings": {
+            "description": "Floored lead time or model assumption warnings.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "as_of_date",
+          "assumptions_applied",
+          "positions_in_scope",
+          "baseline",
+          "scenario",
+          "delta",
+          "tier_transitions",
+          "by_category",
+          "top_changes",
+          "warnings",
+          "computation_ms"
+        ],
+        "title": "ScenarioResponse",
+        "type": "object"
+      },
+      "ScenarioSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "annual_carrying_cost_usd": {
+            "description": "Safety stock value times assumed annual carrying rate.",
+            "title": "Annual Carrying Cost Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "annual_expected_shortfall_margin_usd": {
+            "description": "Annualized expected policy shortfall margin; model estimate.",
+            "title": "Annual Expected Shortfall Margin Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "at_risk_positions": {
+            "description": "Critical plus high positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "avg_lead_time_days": {
+            "description": "Average estimated lane lead time.",
+            "title": "Avg Lead Time Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "expected_shortage_units": {
+            "description": "Sum of modeled expected shortages.",
+            "title": "Expected Shortage Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "lead_time_demand_units": {
+            "description": "Sum of expected lead-time demand.",
+            "title": "Lead Time Demand Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposure.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "mean_stockout_probability": {
+            "description": "Mean modeled stockout probability.",
+            "title": "Mean Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "positions_below_reorder_point": {
+            "description": "Positions triggering reorder policy.",
+            "title": "Positions Below Reorder Point",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "positions_by_tier": {
+            "$ref": "#/components/schemas/TierCounts",
+            "description": "Counts under each probability tier."
+          },
+          "recommended_order_units": {
+            "description": "Sum of recommended order units.",
+            "title": "Recommended Order Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "recommended_order_value_usd": {
+            "description": "Recommended units valued at unit cost.",
+            "title": "Recommended Order Value Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "revenue_at_risk_usd": {
+            "description": "Estimated revenue exposure.",
+            "title": "Revenue At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "safety_stock_units": {
+            "description": "Sum of policy safety stock.",
+            "title": "Safety Stock Units",
+            "type": "number",
+            "x-unit": "units"
+          },
+          "safety_stock_value_usd": {
+            "description": "Safety stock valued at unit cost.",
+            "title": "Safety Stock Value Usd",
+            "type": "number",
+            "x-unit": "usd"
+          }
+        },
+        "required": [
+          "at_risk_positions",
+          "mean_stockout_probability",
+          "expected_shortage_units",
+          "revenue_at_risk_usd",
+          "margin_at_risk_usd",
+          "lead_time_demand_units",
+          "safety_stock_units",
+          "safety_stock_value_usd",
+          "positions_below_reorder_point",
+          "recommended_order_units",
+          "recommended_order_value_usd",
+          "annual_carrying_cost_usd",
+          "annual_expected_shortfall_margin_usd",
+          "avg_lead_time_days",
+          "positions_by_tier"
+        ],
+        "title": "ScenarioSummary",
+        "type": "object"
+      },
+      "Scope": {
+        "additionalProperties": false,
+        "properties": {
+          "category_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer",
+                  "x-unit": "count"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional categories; null means all.",
+            "title": "Category Ids"
+          },
+          "store_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer",
+                  "x-unit": "count"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional stores; null means all.",
+            "title": "Store Ids"
+          },
+          "supplier_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer",
+                  "x-unit": "count"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional primary suppliers; null means all.",
+            "title": "Supplier Ids"
+          }
+        },
+        "title": "Scope",
+        "type": "object"
+      },
+      "Store": {
+        "additionalProperties": false,
+        "properties": {
+          "region_id": {
+            "description": "Region identifier.",
+            "title": "Region Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_code": {
+            "description": "Fictional store code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_name": {
+            "description": "Fictional store name.",
+            "title": "Store Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code",
+          "store_name",
+          "region_id"
+        ],
+        "title": "Store",
+        "type": "object"
+      },
+      "StoreComparison": {
+        "additionalProperties": false,
+        "properties": {
+          "stores": {
+            "description": "Stores sorted by margin at risk, ignoring selected store filters.",
+            "items": {
+              "$ref": "#/components/schemas/StoreComparisonItem"
+            },
+            "title": "Stores",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stores"
+        ],
+        "title": "StoreComparison",
+        "type": "object"
+      },
+      "StoreComparisonItem": {
+        "additionalProperties": false,
+        "properties": {
+          "at_risk_positions": {
+            "description": "Critical or high positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "critical_positions": {
+            "description": "Critical positions.",
+            "title": "Critical Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "in_stock_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Trailing 28-day in-stock share; null if no observations.",
+            "title": "In Stock Rate"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin at risk.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "positions": {
+            "description": "Positions in scope at this store.",
+            "title": "Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "region_name": {
+            "description": "Store region.",
+            "title": "Region Name",
+            "type": "string"
+          },
+          "store_code": {
+            "description": "Store display code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_name": {
+            "description": "Fictional store name.",
+            "title": "Store Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code",
+          "store_name",
+          "region_name",
+          "positions",
+          "at_risk_positions",
+          "critical_positions",
+          "margin_at_risk_usd",
+          "in_stock_rate"
+        ],
+        "title": "StoreComparisonItem",
+        "type": "object"
+      },
+      "StoreInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "region_name": {
+            "description": "Region display name.",
+            "title": "Region Name",
+            "type": "string"
+          },
+          "store_code": {
+            "description": "Stable store code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store identifier.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "store_name": {
+            "description": "Fictional store display name.",
+            "title": "Store Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code",
+          "store_name",
+          "region_name"
+        ],
+        "title": "StoreInfo",
+        "type": "object"
+      },
+      "Supplier": {
+        "additionalProperties": false,
+        "properties": {
+          "category_id": {
+            "description": "Primary category identifier.",
+            "title": "Category Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_code": {
+            "description": "Fictional supplier code.",
+            "title": "Supplier Code",
+            "type": "string"
+          },
+          "supplier_id": {
+            "description": "Supplier identifier.",
+            "title": "Supplier Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_name": {
+            "description": "Fictional supplier name.",
+            "title": "Supplier Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "supplier_id",
+          "supplier_code",
+          "supplier_name",
+          "category_id"
+        ],
+        "title": "Supplier",
+        "type": "object"
+      },
+      "SupplierInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "case_pack_qty": {
+            "description": "Units in one orderable case.",
+            "title": "Case Pack Qty",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "min_order_qty": {
+            "description": "Minimum orderable units.",
+            "title": "Min Order Qty",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_code": {
+            "description": "Stable supplier code.",
+            "title": "Supplier Code",
+            "type": "string"
+          },
+          "supplier_id": {
+            "description": "Primary supplier identifier.",
+            "title": "Supplier Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_name": {
+            "description": "Fictional supplier display name.",
+            "title": "Supplier Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "supplier_id",
+          "supplier_code",
+          "supplier_name",
+          "case_pack_qty",
+          "min_order_qty"
+        ],
+        "title": "SupplierInfo",
+        "type": "object"
+      },
+      "SupplyInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "lead_time_mean_days": {
+            "description": "Estimated mean replenishment lead time.",
+            "title": "Lead Time Mean Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "lead_time_source": {
+            "description": "Source selected for lead-time estimates.",
+            "enum": [
+              "lane",
+              "supplier",
+              "contract"
+            ],
+            "title": "Lead Time Source",
+            "type": "string"
+          },
+          "lead_time_std_days": {
+            "description": "Estimated lead-time standard deviation.",
+            "title": "Lead Time Std Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "mean_delay_days": {
+            "description": "Mean receipt delay relative to the promised date; negative means early.",
+            "title": "Mean Delay Days",
+            "type": "number",
+            "x-unit": "days"
+          },
+          "n_received_pos": {
+            "description": "Observed received purchase orders on the lane.",
+            "title": "N Received Pos",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Lane on-time proportion over 90 days; null if no orders were due.",
+            "title": "On Time Rate"
+          },
+          "protection_window_days": {
+            "description": "Demand window before a new order could arrive.",
+            "title": "Protection Window Days",
+            "type": "number",
+            "x-unit": "days"
+          }
+        },
+        "required": [
+          "lead_time_source",
+          "n_received_pos",
+          "lead_time_mean_days",
+          "lead_time_std_days",
+          "mean_delay_days",
+          "on_time_rate",
+          "protection_window_days"
+        ],
+        "title": "SupplyInfo",
+        "type": "object"
+      },
+      "TierCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "critical": {
+            "description": "Critical positions.",
+            "title": "Critical",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "high": {
+            "description": "High positions.",
+            "title": "High",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "low": {
+            "description": "Low positions.",
+            "title": "Low",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "moderate": {
+            "description": "Moderate positions.",
+            "title": "Moderate",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "critical",
+          "high",
+          "moderate",
+          "low"
+        ],
+        "title": "TierCounts",
+        "type": "object"
+      },
+      "TopProduct": {
+        "additionalProperties": false,
+        "properties": {
+          "at_risk_stores": {
+            "description": "Stores with critical or high risk.",
+            "title": "At Risk Stores",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Product category.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "critical_stores": {
+            "description": "Stores with critical risk.",
+            "title": "Critical Stores",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated margin at risk across stores.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "product_id": {
+            "description": "Product identifier.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Fictional product name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Product SKU.",
+            "title": "Sku",
+            "type": "string"
+          }
+        },
+        "required": [
+          "product_id",
+          "sku",
+          "product_name",
+          "category_name",
+          "at_risk_stores",
+          "critical_stores",
+          "margin_at_risk_usd"
+        ],
+        "title": "TopProduct",
+        "type": "object"
+      },
+      "TopProducts": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "description": "Products with at least one at-risk store, by exposure.",
+            "items": {
+              "$ref": "#/components/schemas/TopProduct"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "TopProducts",
+        "type": "object"
+      },
+      "Transitions": {
+        "additionalProperties": false,
+        "properties": {
+          "matrix": {
+            "description": "Counts from baseline row tier to scenario column tier.",
+            "items": {
+              "items": {
+                "type": "integer",
+                "x-unit": "count"
+              },
+              "type": "array"
+            },
+            "title": "Matrix",
+            "type": "array"
+          },
+          "order": {
+            "description": "Tier row and column order.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Order",
+            "type": "array"
+          }
+        },
+        "required": [
+          "order",
+          "matrix"
+        ],
+        "title": "Transitions",
+        "type": "object"
+      },
+      "TrendPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of_date": {
+            "description": "Historical model cutoff.",
+            "format": "date",
+            "title": "As Of Date",
+            "type": "string"
+          },
+          "critical": {
+            "description": "Critical positions.",
+            "title": "Critical",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "high": {
+            "description": "High risk positions.",
+            "title": "High",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "low": {
+            "description": "Low risk positions.",
+            "title": "Low",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated margin at risk across all tiers.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "moderate": {
+            "description": "Moderate risk positions.",
+            "title": "Moderate",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "run_id": {
+            "description": "Selected successful run for this date.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "as_of_date",
+          "run_id",
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "margin_at_risk_usd"
+        ],
+        "title": "TrendPoint",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
         "type": "object"
       }
     }
@@ -54,9 +4180,31 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/filters": {
+      "get": {
+        "description": "Read sorted identifiers for filter controls.",
+        "operationId": "get_filters_api_v1_filters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FiltersResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Filters",
+        "tags": [
+          "Metadata"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
-        "description": "Return process status and database availability; always HTTP 200.",
+        "description": "Always return HTTP 200; expose dependencies as explicit status fields.",
         "operationId": "health_api_v1_health_get",
         "responses": {
           "200": {
@@ -71,6 +4219,1472 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "description": "Read provenance and actual persisted model settings.",
+        "operationId": "get_meta_api_v1_meta_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Meta",
+        "tags": [
+          "Metadata"
+        ]
+      }
+    },
+    "/api/v1/overview/category-heatmap": {
+      "get": {
+        "description": "Return a dense store-category risk matrix.",
+        "operationId": "category_heatmap_api_v1_overview_category_heatmap_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryHeatmap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Category Heatmap",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/overview/risk-distribution": {
+      "get": {
+        "description": "Count all four risk tiers, including empty tiers.",
+        "operationId": "risk_distribution_api_v1_overview_risk_distribution_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskDistribution"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Risk Distribution",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/overview/risk-trend": {
+      "get": {
+        "description": "Return filtered risk across available historical run dates.",
+        "operationId": "risk_trend_api_v1_overview_risk_trend_get",
+        "parameters": [
+          {
+            "description": "Weeks to include.",
+            "in": "query",
+            "name": "weeks",
+            "required": false,
+            "schema": {
+              "default": 13,
+              "description": "Weeks to include.",
+              "maximum": 26,
+              "minimum": 1,
+              "title": "Weeks",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskTrend"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Risk Trend",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/overview/store-comparison": {
+      "get": {
+        "description": "Compare stores, ignoring the selected store filter.",
+        "operationId": "store_comparison_api_v1_overview_store_comparison_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreComparison"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Store Comparison",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/overview/summary": {
+      "get": {
+        "description": "Summarize inventory risk and observed operational KPIs.",
+        "operationId": "summary_api_v1_overview_summary_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summary",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/overview/top-products": {
+      "get": {
+        "description": "Return products with the highest estimated margin at risk.",
+        "operationId": "top_products_api_v1_overview_top_products_get",
+        "parameters": [
+          {
+            "description": "Maximum products.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 8,
+              "description": "Maximum products.",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopProducts"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Top Products",
+        "tags": [
+          "overview"
+        ]
+      }
+    },
+    "/api/v1/positions/{store_id}/{product_id}": {
+      "get": {
+        "description": "Inspect the stored forecast, risk, policy and recommendation for a position.",
+        "operationId": "detail_api_v1_positions__store_id___product_id__get",
+        "parameters": [
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Product Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Detail",
+        "tags": [
+          "positions"
+        ]
+      }
+    },
+    "/api/v1/positions/{store_id}/{product_id}/history": {
+      "get": {
+        "description": "Read observed inventory/sales history and the next 28 forecast days.",
+        "operationId": "history_api_v1_positions__store_id___product_id__history_get",
+        "parameters": [
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Product Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Historical days ending at the model cutoff.",
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 56,
+              "description": "Historical days ending at the model cutoff.",
+              "maximum": 180,
+              "minimum": 7,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionHistory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "History",
+        "tags": [
+          "positions"
+        ]
+      }
+    },
+    "/api/v1/positions/{store_id}/{product_id}/projection": {
+      "get": {
+        "description": "Project inventory from full-precision model inputs with an approximate band.",
+        "operationId": "projection_api_v1_positions__store_id___product_id__projection_get",
+        "parameters": [
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Product Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Observed inventory days to include.",
+            "in": "query",
+            "name": "history_days",
+            "required": false,
+            "schema": {
+              "default": 28,
+              "description": "Observed inventory days to include.",
+              "maximum": 56,
+              "minimum": 7,
+              "title": "History Days",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Future inventory days to include.",
+            "in": "query",
+            "name": "horizon_days",
+            "required": false,
+            "schema": {
+              "default": 28,
+              "description": "Future inventory days to include.",
+              "maximum": 42,
+              "minimum": 7,
+              "title": "Horizon Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionProjection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Projection",
+        "tags": [
+          "positions"
+        ]
+      }
+    },
+    "/api/v1/positions/{store_id}/{product_id}/purchase-orders": {
+      "get": {
+        "description": "Read open and recently completed purchase-order lines as of the run cutoff.",
+        "operationId": "purchase_orders_api_v1_positions__store_id___product_id__purchase_orders_get",
+        "parameters": [
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Product Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Maximum completed purchase-order lines to include.",
+            "in": "query",
+            "name": "recent_received_limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "description": "Maximum completed purchase-order lines to include.",
+              "maximum": 20,
+              "minimum": 0,
+              "title": "Recent Received Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionOrders"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Purchase Orders",
+        "tags": [
+          "positions"
+        ]
+      }
+    },
+    "/api/v1/recommendations": {
+      "get": {
+        "description": "Preserve global priority rank while filtering stored suggestions.",
+        "operationId": "recommendations_api_v1_recommendations_get",
+        "parameters": [
+          {
+            "description": "Repeated actionable recommendation types.",
+            "in": "query",
+            "name": "action_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "expedite_po",
+                      "reorder",
+                      "monitor"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeated actionable recommendation types.",
+              "title": "Action Type"
+            }
+          },
+          {
+            "description": "Maximum recommendations.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "description": "Maximum recommendations.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Recommendations",
+        "tags": [
+          "recommendations"
+        ]
+      }
+    },
+    "/api/v1/risk/positions": {
+      "get": {
+        "description": "Return stable risk pages with a summary of the whole filtered set.",
+        "operationId": "positions_api_v1_risk_positions_get",
+        "parameters": [
+          {
+            "description": "Repeated risk tiers.",
+            "in": "query",
+            "name": "risk_tier",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "critical",
+                      "high",
+                      "moderate",
+                      "low"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeated risk tiers.",
+              "title": "Risk Tier"
+            }
+          },
+          {
+            "description": "Repeated action types.",
+            "in": "query",
+            "name": "action_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "expedite_po",
+                      "reorder",
+                      "monitor",
+                      "no_action"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeated action types.",
+              "title": "Action Type"
+            }
+          },
+          {
+            "description": "Restrict by reorder-point status.",
+            "in": "query",
+            "name": "below_reorder_point",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Restrict by reorder-point status.",
+              "title": "Below Reorder Point"
+            }
+          },
+          {
+            "description": "SKU prefix or product name substring.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SKU prefix or product name substring.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Whitelisted sort column.",
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "priority",
+              "description": "Whitelisted sort column.",
+              "enum": [
+                "priority",
+                "product_name",
+                "store_code",
+                "category_name",
+                "on_hand_units",
+                "avg_daily_demand_units",
+                "days_of_cover",
+                "next_receipt_date",
+                "stockout_probability",
+                "risk_tier",
+                "margin_at_risk_usd"
+              ],
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sort direction; defaults by column.",
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort direction; defaults by column.",
+              "title": "Sort Dir"
+            }
+          },
+          {
+            "description": "One-based page.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "description": "One-based page.",
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positions per page.",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Positions per page.",
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskPositions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Positions",
+        "tags": [
+          "risk"
+        ]
+      }
+    },
+    "/api/v1/scenarios/evaluate": {
+      "post": {
+        "description": "Recalculate risk and policy under bounded, reproducible assumptions.",
+        "operationId": "evaluate_scenario_api_v1_scenarios_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluate Scenario",
+        "tags": [
+          "Scenarios"
+        ]
       }
     }
   }

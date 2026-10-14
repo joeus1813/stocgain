@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "stocgain. — Service health",
+  title: "stocgain. — Inventory overview",
   description:
     "Predictive Retail Inventory Intelligence Platform. Predict stockouts. Replenish smarter.",
 };

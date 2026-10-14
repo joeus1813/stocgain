@@ -1,0 +1,32 @@
+model_version = "stocgain-baseline-1.0"
+lookback_days = 56
+half_life_days = 14
+min_clean_days_full = 14
+min_clean_days_blend = 7
+forecast_horizon_days = 42
+service_level = 0.95
+review_period_days = 7
+normal_min_mean_units = 20
+tier_critical_probability = 0.50
+tier_high_probability = 0.25
+tier_moderate_probability = 0.10
+exposure_escalation_usd = 250.0
+expedite_probability = 0.25
+lane_min_observations = 8
+contract_lead_time_cv = 0.25
+default_delay_when_late_days = 3
+carrying_cost_rate_annual = 0.25
+backfill_weeks = 12
+backtest_origins = 8
+on_time_window_days = 90
+dow_min_observations = 30
+
+[lost_sale_rates]
+PT = 0.50
+HT = 0.40
+EL = 0.55
+PL = 0.65
+BM = 0.70
+LG = 0.60
+PA = 0.45
+HW = 0.35

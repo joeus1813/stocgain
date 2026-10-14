@@ -1,6 +1,7 @@
 """Data-generation, SQL analysis and PostgreSQL maintenance commands."""
 
 import json
+from datetime import date
 from pathlib import Path
 from time import perf_counter
 from typing import Annotated
@@ -37,7 +38,7 @@ def not_implemented() -> None:
     raise typer.Exit(2)
 
 
-for name in ("analytics", "pipeline"):
+for name in ("pipeline",):
     app.add_typer(
         typer.Typer(invoke_without_command=True, callback=not_implemented), name=name
     )
@@ -150,5 +151,42 @@ def run_analysis(number: str) -> None:
             connection.execute(text("SET LOCAL max_parallel_workers_per_gather = 0"))
             rows = connection.execute(text(read_sql(path))).mappings().all()
             typer.echo(json.dumps([dict(row) for row in rows], default=str, indent=2))
+    finally:
+        engine.dispose()
+
+
+analytics = typer.Typer(no_args_is_help=True)
+app.add_typer(analytics, name="analytics")
+
+
+@analytics.command("run")
+def analytics_run(as_of: str | None = None, evaluate: bool = False) -> None:
+    """Persist an as-of forecast/risk run; optionally evaluate historical forecasts."""
+    from stocgain.analytics.pipeline import run
+
+    engine = create_db_engine(get_settings())
+    try:
+        typer.echo(
+            json.dumps(
+                run(
+                    engine,
+                    date.fromisoformat(as_of) if as_of else None,
+                    evaluate=evaluate,
+                ),
+                default=str,
+            )
+        )
+    finally:
+        engine.dispose()
+
+
+@analytics.command("backfill")
+def analytics_backfill(weeks: int = 12) -> None:
+    """Persist weekly point-in-time risk runs without forecast daily rows."""
+    from stocgain.analytics.pipeline import backfill
+
+    engine = create_db_engine(get_settings())
+    try:
+        typer.echo(json.dumps(backfill(engine, weeks), default=str))
     finally:
         engine.dispose()

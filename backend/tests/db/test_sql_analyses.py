@@ -175,12 +175,9 @@ def test_analysis_columns_and_invariants(db_tx, sql_run, number):
 
 
 @pytest.mark.requires_run
-def test_volatility_matches_real_forecast_patterns(db_tx):
+def test_volatility_matches_real_forecast_patterns(db_tx, actual_model_run):
     run = db_tx.scalar(text("SELECT run_id FROM analytics.v_current_run"))
-    if run is None:
-        pytest.skip(
-            "Phase 3 actual forecasts required for cross-engine classification comparison"
-        )
+    assert run == actual_model_run
     expected = dict(
         db_tx.execute(
             text("""SELECT s.store_code || '/' || p.sku, f.demand_pattern::text

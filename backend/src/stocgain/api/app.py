@@ -1,4 +1,4 @@
-"""FastAPI skeleton; no business endpoints are implemented in Stage 1."""
+"""FastAPI application serving PostgreSQL-backed stocgain analytics."""
 
 import logging
 from collections.abc import AsyncIterator, Awaitable, Callable
@@ -12,6 +12,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from stocgain import __version__
 from stocgain.api.errors import error_response, register_error_handlers
 from stocgain.api.routers.health import router
+from stocgain.api.routers.meta import router as meta_router
+from stocgain.api.routers.overview import router as overview_router
+from stocgain.api.routers.positions import router as positions_router
+from stocgain.api.routers.recommendations import router as recommendations_router
+from stocgain.api.routers.risk import router as risk_router
+from stocgain.api.routers.scenarios import router as scenario_router
 from stocgain.db.engine import create_db_engine
 from stocgain.logging_config import configure_logging
 from stocgain.settings import Settings, get_settings
@@ -35,6 +41,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title="stocgain.", version=__version__, lifespan=lifespan)
     register_error_handlers(application)
     application.include_router(router, prefix="/api/v1")
+    application.include_router(meta_router, prefix="/api/v1")
+    application.include_router(scenario_router, prefix="/api/v1")
+    for business_router in (
+        overview_router,
+        recommendations_router,
+        risk_router,
+        positions_router,
+    ):
+        application.include_router(business_router, prefix="/api/v1")
 
     @application.middleware("http")
     async def request_context(

@@ -8,7 +8,7 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stage 1 is complete.** Phases 0–2 are verified: the 26-table schema, deterministic retail generator, loader and all 18 quality checks work with PostgreSQL. The temporary service-health page is the only UI. The SQL layer has 12 views, 15 analyses and 11 as-of extractors. Forecasting, business API and dashboard remain unfinished. See [implementation status](IMPLEMENTATION_STATUS.md) and [phase progress](docs/PROGRESS.md).
+**Stage 1 and the Stage 2 implementation are delivered.** PostgreSQL holds the deterministic retail dataset and 13 verified analytics runs. The backend provides forecasting, risk, replenishment recommendations, historical evaluation, all 16 required Phase 4 endpoints and stateless scenarios. The existing minimal six-KPI page verifies the database → model → API path; Stage 3 frontend work has not started. See [implementation status](IMPLEMENTATION_STATUS.md) for final acceptance evidence and performance limitations.
 
 ## Prerequisites
 
@@ -25,7 +25,8 @@ make setup                       # root .env, locked Python + npm dependencies
 make db-up                       # PostgreSQL 17, localhost:5433, test database too
 make migrate                     # four revisions, then delivered views
 make seed PRESET=standard SEED=42 # deterministic data, safe load and validation
-make api                         # terminal 1: http://localhost:8000/api/v1/health
+make analytics                   # historical backfills + current model/evaluation
+make api                         # terminal 1: http://localhost:8000/docs
 make web                         # terminal 2: http://localhost:3000
 ```
 
@@ -41,7 +42,7 @@ Optional container configuration: `docker compose --profile full up --build`. Th
 make lint
 make typecheck
 make test                        # includes real PostgreSQL test; fails if DB unavailable
-make openapi                     # health-only schema and generated TypeScript
+make openapi                     # API schema and generated TypeScript
 make check-openapi
 make verify                      # lint + types + tests + schema drift
 cd frontend && npx playwright install chromium
@@ -67,7 +68,7 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 - `docs/00`–`docs/11`: authoritative product and engineering specifications.
 - `IMPLEMENTATION_CONTRACT.md`: compact compatibility contract and planned data interfaces.
 
-`make seed` revalidates identical content without replacement and refuses to overwrite a different dataset. To intentionally replace application rows, use `LOAD_FLAGS=--replace` only after reviewing the destination and backing it up; this also clears analytics outputs. Databases and volumes are retained. `make db-reset`, `analytics`, `pipeline`, `dev` and `demo-docker` remain unimplemented. `make schema-dump` writes actual DDL to `sql/schema/current.sql`.
+`make seed` revalidates identical content without replacement and refuses to overwrite a different dataset. To intentionally replace application rows, use `LOAD_FLAGS=--replace` only after reviewing the destination and backing it up; this also clears analytics outputs. Databases and volumes are retained. `make db-reset`, `pipeline`, `dev` and `demo-docker` remain unimplemented. `make analytics` is implemented and preserves operational data. `make schema-dump` writes actual DDL to `sql/schema/current.sql`.
 
 Standard verification after seeding:
 ```bash
@@ -88,7 +89,7 @@ The MV refresh is batch-only and non-concurrent; independent operational changes
 
 ## Known limitations
 
-Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Four schema revisions passed an empty-test-database downgrade/re-upgrade round trip, and were applied to the existing project database. The standard dataset is loaded and reconciles. Phase 2 SQL and historical extraction isolation are verified. Model-output comparison tests and fully populated model benchmarks await Stage 2. Optional large generation and full Compose image builds are unverified. Two on-time calibration deviations are documented in the decisions log.
+Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Four schema revisions passed an empty-test-database downgrade/re-upgrade round trip, and were applied to the existing project database. The standard dataset is loaded and reconciles. Phase 2 SQL and historical extraction isolation are verified. Model-output comparison tests now execute; Stage 2 measurements are recorded in docs/PHASE4_VERIFICATION.md. Optional large generation and full Compose image builds are unverified. Two on-time calibration deviations are documented in the decisions log.
 
 npm reports five high-severity development-only advisory entries rooted in `braces` through the Next ESLint plugin; latest available braces 3.0.3 is affected. ESLint 9 is deprecated upstream but currently required by the selected React/import lint plugins. No forced incompatible downgrade or hidden warning suppression was applied. Track these in `docs/DECISIONS_LOG.md`.
 

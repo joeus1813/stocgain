@@ -15,7 +15,8 @@ help:
 	@echo 'Phase 1: make migrate; make seed PRESET=standard SEED=42; stocgain data validate/profile'
 	@echo 'Loading preserves existing data unless LOAD_FLAGS=--replace is explicitly supplied.'
 	@echo 'Phase 2: stocgain db run-analysis 06; make explain benchmarks existing standard data'
-	@echo 'Later-phase commands and db-reset remain unimplemented.'
+	@echo 'Stage 2: make analytics creates 12 backfills and one evaluated current run; make api serves API documentation at /docs.'
+	@echo 'pipeline, dev, demo-docker and db-reset remain unimplemented.'
 	@echo 'Schema: make schema-dump writes sql/schema/current.sql from the running PostgreSQL container.'
 
 setup:
@@ -89,6 +90,10 @@ seed:
 explain:
 	$(BACKEND) python backend/scripts/bench_sql.py
 
-db-reset analytics pipeline dev demo-docker:
-	@echo 'Not implemented in the current Phase 2 checkpoint: $@. See IMPLEMENTATION_STATUS.md.' >&2
+analytics:
+	$(BACKEND) stocgain analytics backfill --weeks 12
+	$(BACKEND) stocgain analytics run --evaluate
+
+db-reset pipeline dev demo-docker:
+	@echo 'Not implemented in the current Stage 2 checkpoint: $@. See IMPLEMENTATION_STATUS.md.' >&2
 	@exit 2
