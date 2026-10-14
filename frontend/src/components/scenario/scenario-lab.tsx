@@ -331,7 +331,7 @@ function ScenarioForm({ meta }: { meta: Schema<"Meta"> }) {
                     title="Tier transitions"
                     subtitle="Baseline rows → scenario columns"
                   >
-                    <div className="table-scroll">
+                    <div className="table-scroll" tabIndex={0}>
                       <table className="data-table transition-matrix">
                         <thead>
                           <tr>
@@ -416,7 +416,7 @@ function ScenarioForm({ meta }: { meta: Schema<"Meta"> }) {
                   title="Largest changes"
                   subtitle="Product detail links show baseline values, not scenario-adjusted values"
                 >
-                  <div className="table-scroll">
+                  <div className="table-scroll" tabIndex={0}>
                     <table className="data-table">
                       <thead>
                         <tr>

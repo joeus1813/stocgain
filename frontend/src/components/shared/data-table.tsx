@@ -31,7 +31,7 @@ export function DataTable<T>({
     state: { sorting: sort ? [sort] : [] },
   });
   return (
-    <div className="table-scroll">
+    <div className="table-scroll" tabIndex={0}>
       <table className="data-table sticky-table">
         <thead>
           {table.getHeaderGroups().map((group) => (

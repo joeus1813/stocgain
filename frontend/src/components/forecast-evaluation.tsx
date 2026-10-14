@@ -66,7 +66,7 @@ export function ForecastEvaluation({ compact = false }: { compact?: boolean }) {
               {formatDate(d.last_origin_date)}
             </p>
             {d.rows.length ? (
-              <div className="table-scroll">
+              <div className="table-scroll" tabIndex={0}>
                 <table className="data-table">
                   <thead>
                     <tr>

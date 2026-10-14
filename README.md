@@ -8,7 +8,7 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stages 1–2 and the Stage 3 application are implemented.** PostgreSQL holds the deterministic retail dataset and verified analytics runs. The frontend provides Executive Overview, Inventory Risk Monitor, product detail, supplier performance, Scenario Lab and Methodology, backed by all 22 specified APIs. See [implementation status](IMPLEMENTATION_STATUS.md) for actual verification and the outstanding scenario latency target. No public deployment is included.
+**Stages 1–2 and the Stage 3 application are implemented.** PostgreSQL holds the deterministic retail dataset and verified analytics runs. The frontend provides Executive Overview, Inventory Risk Monitor, product detail, supplier performance, Scenario Lab and Methodology, backed by all 22 specified APIs. Warm Scenario Lab browser p95 is 1.383 s over 20 full-scope evaluations; cold first load is 7.014 s. See [implementation status](IMPLEMENTATION_STATUS.md) for final verification and outstanding fresh-setup acceptance. No public deployment is included.
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 - `docs/00`–`docs/11`: authoritative product and engineering specifications.
 - `IMPLEMENTATION_CONTRACT.md`: compact compatibility contract and planned data interfaces.
 
-`make seed` revalidates identical content without replacement and refuses to overwrite a different dataset. To intentionally replace application rows, use `LOAD_FLAGS=--replace` only after reviewing the destination and backing it up; this also clears analytics outputs. Databases and volumes are retained. `make db-reset`, `pipeline`, `dev` and `demo-docker` remain unimplemented. `make analytics` is implemented and preserves operational data. `make schema-dump` writes actual DDL to `sql/schema/current.sql`.
+`make seed` revalidates identical content without replacement and refuses to overwrite a different dataset. To intentionally replace application rows, use `LOAD_FLAGS=--replace` only after reviewing the destination and backing it up; this also clears analytics outputs. Databases and volumes are retained. `make pipeline` runs migrate, safe seed and analytics in order. `make db-reset`, `dev` and `demo-docker` remain unimplemented. `make analytics` is implemented and preserves operational data. `make schema-dump` writes actual DDL to `sql/schema/current.sql`.
 
 Standard verification after seeding:
 ```bash
@@ -96,3 +96,29 @@ npm reports five high-severity development-only advisory entries rooted in `brac
 The MIT copyright holder remains `<Project Owner>` as required by the Phase 0 specification; replace with the owner's preferred legal name before publishing.
 
 Setup references used: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [shadcn manual installation](https://ui.shadcn.com/docs/installation/manual), [uv locking and syncing](https://docs.astral.sh/uv/concepts/projects/sync/).
+
+## Portfolio walkthrough
+
+![Executive overview with real simulated-data KPIs](docs/screenshots/overview-1440.png)
+
+![Scenario Lab with real model comparisons](docs/screenshots/scenario-1440.png)
+
+[Two-minute demo and resume drafts](docs/INTERVIEW_DEMO.md) · [Forecast findings](docs/FORECAST_FINDINGS.md) · [Publication/deployment handoff](docs/PUBLICATION_AND_DEPLOYMENT.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+```mermaid
+flowchart LR
+  G[Seeded retail simulation] --> DB[(PostgreSQL 17)]
+  DB --> SQL[As-of SQL features]
+  SQL --> M[Forecast / risk / policy engines]
+  M --> DB
+  DB --> API[FastAPI: 22 endpoints]
+  API --> UI[Next.js: six analytical screens]
+  UI --> S[Stateless scenario calculation]
+  S --> M
+```
+
+The [26-table ERD](docs/03_DATABASE_DESIGN.md) and architecture specifications document the data relationships. SQL examples worth reviewing: availability classification in `sql/views/020_mv_daily_position.sql`, stockout gaps-and-islands in `sql/views/090_v_stockout_episodes.sql`, and receipt-cutoff-safe outstanding quantities in `sql/pipeline/extract_open_po_lines.sql`.
+
+The model excludes stockout-censored observations, uses recent-weighted demand and documented sparse-history fallbacks, and evaluates risk at receipt checkpoints. Safety stock is a policy decision; changing its service target does not change stock already on hand. All exposure is estimated, not realized financial loss.
+
+Observed-data WAPE is **57.66% versus 58.39%** for a 28-day naive average: **0.73 percentage points**, approximately **1.25% relative**. This is a limited improvement on synthetic backtests; erratic demand is worse than naive. Do not interpret it as proven real-retailer impact. Future work should validate a challenger on the same historical origins, improve uncertainty calibration, and complete isolated deployment verification before hosting.

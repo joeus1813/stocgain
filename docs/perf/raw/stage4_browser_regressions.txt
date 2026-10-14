@@ -1,0 +1,16 @@
+
+> stocgain-web@1.0.0 e2e
+> playwright test a11y.spec.ts states.spec.ts --workers=1
+
+
+Running 5 tests using 1 worker
+
+(node:12772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/e2e/a11y.spec.ts:4:1 › all primary pages and supplier detail have no serious or critical accessibility violations (16.8s)
+  ✓  2 tests/e2e/states.spec.ts:2:1 › widget failure is isolated and retry recovers real data (1.6s)
+  ✓  3 tests/e2e/states.spec.ts:31:1 › all navigation destinations and unknown route are reachable (418ms)
+  ✓  4 tests/e2e/states.spec.ts:58:1 › each primary screen reports analytics-not-ready with a retry action (13.3s)
+  ✓  5 tests/e2e/states.spec.ts:93:1 › an empty risk search offers a recovery path (231ms)
+
+  5 passed (33.0s)

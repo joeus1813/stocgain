@@ -147,7 +147,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             </p>
           </div>
           <details className="dataset-popover">
-            <summary className="dataset-badge">
+            <summary
+              className="dataset-badge"
+              aria-label="Simulated Retail Dataset"
+            >
               <FlaskConical size={14} />
               <span>Simulated Retail Dataset</span>
             </summary>

@@ -9,8 +9,8 @@
 | 4 — Backend API | Complete | 2026-10-13 | 239 backend, 4 frontend, 2 browser tests; DQ/type/lint/OpenAPI pass | Scenario warm/cold targets missed and documented |
 | 5 — Frontend foundations | Complete | 2026-10-13 | Shared formatting, shell, URL scope, states and types verified | Full Phase 8 accessibility audit not performed |
 | 6 — Main pages | Complete | 2026-10-13 | Real-data P0/P1 pages; 11 production browser tests; final 3 regressions pass | Inherited model/calibration limitations |
-| 7 — Scenario Lab | Functional checks pass; acceptance open | 2026-10-13 | Neutral/disruption/policy/reset/validation pass; 20 measured browser evaluations | p95 2.426 s exceeds 1.5 s target |
-| 8–9 | Not started | — | None | Stage 4 not authorized; explicitly requested Methodology delivered within Stage 3 |
+| 7 — Scenario Lab | Complete | 2026-10-14 | Functional gates and measured warm browser p95 1.383 s pass | Cold first load 7.014 s |
+| 8–9 — Polish and portfolio | Delivered with final acceptance open | 2026-10-14 | See STAGE4_VERIFICATION.md and implementation status | Isolated fresh-setup/pipeline verification outstanding |
 
 ## 2026-10-09 verification and limitations
 
@@ -115,3 +115,11 @@ Owner requested 3050 because 3000 is occupied. Updated local launch defaults, CO
 
 ## Stage 3 latency gate resolved; Stage 4 authorized
 Owner authorized both remaining Stage 3 remediation and Stage 4. Preserved the later 3050 port checkpoint 61eb8d7. Actual cProfile found repeated scalar distribution PPF/PMF overhead; exact count-tail/first-moment optimization now passes 43 distribution/golden/scenario tests (0.56 s), including near-Poisson numerical-boundary reference behavior. Production browser 20 distinct full-scope demand changes: median 1330.588 ms, p95 1382.796 ms including unchanged 400 ms debounce; target <1500 ms passes. Raw stage4_scenario.json includes genuine first-load timing after API restart. Existing functional gates plus this timing permit Phase 8 to begin. Full final acceptance and stored-output reconciliation remain scheduled once at completion.
+
+## 2026-10-14 final handoff
+
+Preserved owner checkpoint 846e292 and port 3050. Stage 3 warm p95 target passed at 1382.796 ms; first cold load 7014.114 ms. Final healthy-DB suite: 268 pass / 2 stale-port test failures, 88.04 s, all slow checks included, analytics coverage 92%; corrected port expectations and affected smoke tests 11 pass/1.00 s. Final lint/type/frontend/OpenAPI checks pass, 38 frontend tests/1.20 s; production build passes. DQ01–DQ18 all zero/9.022 s; all 4,800 neutral stored-model snapshots reconcile. Browser full run 12 pass/2 failures; focused fixes and follow-up recorded in STAGE4_VERIFICATION.md. No repeated comprehensive suite after targeted fixes.
+
+Delivered readability/accessibility changes, actual screenshots, honest forecast segment analysis, two-minute interview flow, verified resume drafts, dependency notices and publication/deployment instructions. Optional compact-density toggle and additional chart data disclosures explicitly deferred: existing dense tables/position-data disclosure are functional, prioritizing core flows. Fresh-clone setup/pipeline test and full Docker application image build remain unverified; no existing volume/data deleted. Therefore full Stage 4/project acceptance is not claimed. Remote Git actions/public deployment were not performed by this execution.
+
+Final accessibility/error/empty-state follow-up: 5 browser tests passed in 33.0 s; axe zero serious/critical violations on six primary screens plus supplier detail at 1440/390. Full Stage 4 acceptance still awaits isolated fresh-setup verification.

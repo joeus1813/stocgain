@@ -387,7 +387,7 @@ export function PositionDetail({
                     </p>
                     <details>
                       <summary>View observed daily data</summary>
-                      <div className="table-scroll">
+                      <div className="table-scroll" tabIndex={0}>
                         <table className="data-table">
                           <thead>
                             <tr>
@@ -422,7 +422,7 @@ export function PositionDetail({
                 path={`${base}/purchase-orders`}
               >
                 {(orders) => (
-                  <div className="table-scroll">
+                  <div className="table-scroll" tabIndex={0}>
                     {!orders.open.length && !orders.recent_received.length ? (
                       <p>No open or recent purchase orders.</p>
                     ) : (
@@ -575,7 +575,7 @@ export function PositionDetail({
                   : "Count-family tail probability: P(demand > supply)"}
               </code>
             </p>
-            <div className="table-scroll">
+            <div className="table-scroll" tabIndex={0}>
               <table className="data-table">
                 <thead>
                   <tr>

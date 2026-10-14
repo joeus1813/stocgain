@@ -139,7 +139,7 @@ export function OverviewDashboard() {
               >
                 {(data) =>
                   data.items.length ? (
-                    <div className="table-scroll">
+                    <div className="table-scroll" tabIndex={0}>
                       <table className="data-table">
                         <thead>
                           <tr>
@@ -430,7 +430,7 @@ export function OverviewDashboard() {
                 path={endpoint("category-heatmap")}
               >
                 {(data) => (
-                  <div className="table-scroll">
+                  <div className="table-scroll" tabIndex={0}>
                     <table className="data-table heatmap">
                       <thead>
                         <tr>

@@ -1,0 +1,578 @@
+{
+  "overall": {
+    "run_id": 14,
+    "first_origin_date": "2026-07-15",
+    "last_origin_date": "2026-09-02",
+    "n_origins": 8,
+    "rows": [
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 993797,
+        "mae": 1.2298,
+        "wape": 0.5839,
+        "bias_rate": -0.06
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 993797,
+        "mae": 1.6419,
+        "wape": 0.7796,
+        "bias_rate": -0.0754
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 993797,
+        "mae": 1.2142,
+        "wape": 0.5766,
+        "bias_rate": 0.0512
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 1075200,
+        "mae": 1.3455,
+        "wape": 0.574,
+        "bias_rate": -0.1055
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 1075200,
+        "mae": 1.8002,
+        "wape": 0.768,
+        "bias_rate": -0.1197
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "overall",
+        "segment_value": "all",
+        "n_observations": 1075200,
+        "mae": 1.3094,
+        "wape": 0.5586,
+        "bias_rate": 0.0211
+      }
+    ],
+    "notes": {
+      "observed_in_stock": "Compares forecasts with observed sales on in-stock days. Censored days are excluded because true demand is unknown.",
+      "simulated_latent": "Simulation-only check against hidden true demand. A real retailer cannot observe this basis."
+    }
+  },
+  "demand_pattern": {
+    "run_id": 14,
+    "first_origin_date": "2026-07-15",
+    "last_origin_date": "2026-09-02",
+    "n_origins": 8,
+    "rows": [
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 51375,
+        "mae": 3.0404,
+        "wape": 0.6901,
+        "bias_rate": -0.0588
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 51375,
+        "mae": 4.1863,
+        "wape": 0.9502,
+        "bias_rate": -0.0974
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 51375,
+        "mae": 3.1365,
+        "wape": 0.712,
+        "bias_rate": 0.0971
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 602743,
+        "mae": 0.5354,
+        "wape": 1.0626,
+        "bias_rate": -0.0034
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 602743,
+        "mae": 0.6283,
+        "wape": 1.247,
+        "bias_rate": -0.024
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 602743,
+        "mae": 0.5351,
+        "wape": 1.0621,
+        "bias_rate": 0.0311
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 26953,
+        "mae": 1.1522,
+        "wape": 0.8761,
+        "bias_rate": -0.0446
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 26953,
+        "mae": 1.5048,
+        "wape": 1.1442,
+        "bias_rate": -0.0503
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 26953,
+        "mae": 1.1498,
+        "wape": 0.8743,
+        "bias_rate": 0.0146
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13158,
+        "mae": 0.0256,
+        "wape": 1.0109,
+        "bias_rate": -0.9852
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13158,
+        "mae": 0.0253,
+        "wape": 1.0,
+        "bias_rate": -1.0
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13158,
+        "mae": 0.0253,
+        "wape": 1.0,
+        "bias_rate": -1.0
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 299568,
+        "mae": 2.3763,
+        "wape": 0.4661,
+        "bias_rate": -0.0716
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 299568,
+        "mae": 3.3282,
+        "wape": 0.6529,
+        "bias_rate": -0.0827
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 299568,
+        "mae": 2.309,
+        "wape": 0.4529,
+        "bias_rate": 0.0494
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 60508,
+        "mae": 3.3921,
+        "wape": 0.6857,
+        "bias_rate": -0.1468
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 60508,
+        "mae": 4.605,
+        "wape": 0.9309,
+        "bias_rate": -0.1774
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "erratic",
+        "n_observations": 60508,
+        "mae": 3.4254,
+        "wape": 0.6924,
+        "bias_rate": 0.0262
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 631652,
+        "mae": 0.5513,
+        "wape": 1.0415,
+        "bias_rate": -0.0417
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 631652,
+        "mae": 0.6471,
+        "wape": 1.2224,
+        "bias_rate": -0.0581
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "intermittent",
+        "n_observations": 631652,
+        "mae": 0.5503,
+        "wape": 1.0396,
+        "bias_rate": -0.0036
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 29008,
+        "mae": 1.1786,
+        "wape": 0.8623,
+        "bias_rate": -0.0804
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 29008,
+        "mae": 1.5376,
+        "wape": 1.125,
+        "bias_rate": -0.0823
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "lumpy",
+        "n_observations": 29008,
+        "mae": 1.1735,
+        "wape": 0.8586,
+        "bias_rate": -0.017
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13188,
+        "mae": 0.0258,
+        "wape": 1.0108,
+        "bias_rate": -0.9851
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13188,
+        "mae": 0.0255,
+        "wape": 1.0,
+        "bias_rate": -1.0
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "no_demand",
+        "n_observations": 13188,
+        "mae": 0.0255,
+        "wape": 1.0,
+        "bias_rate": -1.0
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 340844,
+        "mae": 2.5191,
+        "wape": 0.465,
+        "bias_rate": -0.1108
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 340844,
+        "mae": 3.5304,
+        "wape": 0.6516,
+        "bias_rate": -0.1221
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "demand_pattern",
+        "segment_value": "smooth",
+        "n_observations": 340844,
+        "mae": 2.4019,
+        "wape": 0.4433,
+        "bias_rate": 0.0257
+      }
+    ],
+    "notes": {
+      "observed_in_stock": "Compares forecasts with observed sales on in-stock days. Censored days are excluded because true demand is unknown.",
+      "simulated_latent": "Simulation-only check against hidden true demand. A real retailer cannot observe this basis."
+    }
+  },
+  "horizon_bucket": {
+    "run_id": 14,
+    "first_origin_date": "2026-07-15",
+    "last_origin_date": "2026-09-02",
+    "n_origins": 8,
+    "rows": [
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 496812,
+        "mae": 1.2279,
+        "wape": 0.5874,
+        "bias_rate": -0.051
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 496812,
+        "mae": 1.6384,
+        "wape": 0.7839,
+        "bias_rate": -0.0569
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 496812,
+        "mae": 1.2163,
+        "wape": 0.5819,
+        "bias_rate": 0.0612
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 248506,
+        "mae": 1.2379,
+        "wape": 0.5803,
+        "bias_rate": -0.0778
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 248506,
+        "mae": 1.6616,
+        "wape": 0.779,
+        "bias_rate": -0.1301
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 248506,
+        "mae": 1.2137,
+        "wape": 0.569,
+        "bias_rate": 0.0321
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 248479,
+        "mae": 1.2254,
+        "wape": 0.5806,
+        "bias_rate": -0.06
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 248479,
+        "mae": 1.629,
+        "wape": 0.7719,
+        "bias_rate": -0.0566
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "observed_in_stock",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 248479,
+        "mae": 1.2107,
+        "wape": 0.5737,
+        "bias_rate": 0.0505
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 537600,
+        "mae": 1.3439,
+        "wape": 0.5773,
+        "bias_rate": -0.0993
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 537600,
+        "mae": 1.7996,
+        "wape": 0.7731,
+        "bias_rate": -0.1135
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "15-28",
+        "n_observations": 537600,
+        "mae": 1.3112,
+        "wape": 0.5633,
+        "bias_rate": 0.0286
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 268800,
+        "mae": 1.3514,
+        "wape": 0.5697,
+        "bias_rate": -0.1161
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 268800,
+        "mae": 1.803,
+        "wape": 0.7601,
+        "bias_rate": -0.1301
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "1-7",
+        "n_observations": 268800,
+        "mae": 1.3101,
+        "wape": 0.5523,
+        "bias_rate": 0.0082
+      },
+      {
+        "model_name": "naive_28d_mean",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 268800,
+        "mae": 1.3426,
+        "wape": 0.5716,
+        "bias_rate": -0.1073
+      },
+      {
+        "model_name": "seasonal_naive_7d",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 268800,
+        "mae": 1.7987,
+        "wape": 0.7658,
+        "bias_rate": -0.1214
+      },
+      {
+        "model_name": "stocgain_v1",
+        "evaluation_basis": "simulated_latent",
+        "segment_type": "horizon_bucket",
+        "segment_value": "8-14",
+        "n_observations": 268800,
+        "mae": 1.3053,
+        "wape": 0.5557,
+        "bias_rate": 0.0192
+      }
+    ],
+    "notes": {
+      "observed_in_stock": "Compares forecasts with observed sales on in-stock days. Censored days are excluded because true demand is unknown.",
+      "simulated_latent": "Simulation-only check against hidden true demand. A real retailer cannot observe this basis."
+    }
+  }
+}

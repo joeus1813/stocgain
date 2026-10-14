@@ -1,0 +1,274 @@
+
+> stocgain-web@1.0.0 e2e
+> playwright test --workers=1
+
+
+Running 14 tests using 1 worker
+
+(node:11924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 tests/e2e/a11y.spec.ts:4:1 › all primary pages and supplier detail have no serious or critical accessibility violations (24.8s)
+(node:12086) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/e2e/foundation.spec.ts:2:1 › shell persists scope, is responsive, and shows actual provenance (435ms)
+  ✓   3 tests/e2e/foundation.spec.ts:25:1 › analytics not ready is explicit and recoverable (1.5s)
+  ✓   4 tests/e2e/health.spec.ts:3:1 › health page reaches the real API and PostgreSQL (515ms)
+  ✓   5 tests/e2e/overview.spec.ts:9:1 › overview renders six real API metrics (753ms)
+  ✓   6 tests/e2e/responsive.spec.ts:2:1 › all pages remain usable at desktop and mobile widths (14.2s)
+  ✓   7 tests/e2e/risk.spec.ts:2:1 › risk filters, server sorting, pagination, drilldown and back preserve state (986ms)
+  ✓   8 tests/e2e/risk.spec.ts:37:1 › heatmap drills into exactly the at-risk cell count (587ms)
+Scenario disruption end-to-end update: 2710 ms; server 913.3985419994133 ms
+  ✓   9 tests/e2e/scenario_lab.spec.ts:3:1 › neutral, disruption, policy tradeoff, reset and invalid inputs (6.6s)
+  ✓  10 tests/e2e/states.spec.ts:2:1 › widget failure is isolated and retry recovers real data (1.6s)
+  ✓  11 tests/e2e/states.spec.ts:31:1 › all navigation destinations and unknown route are reachable (493ms)
+  ✓  12 tests/e2e/states.spec.ts:58:1 › each primary screen reports analytics-not-ready with a retry action (12.2s)
+  ✘  13 tests/e2e/states.spec.ts:93:1 › an empty risk search offers a recovery path (5.1s)
+(node:12235) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  14 tests/e2e/suppliers.spec.ts:2:1 › supplier views drill into real delivery evidence and export matches scope (987ms)
+
+
+  1) tests/e2e/a11y.spec.ts:4:1 › all primary pages and supplier detail have no serious or critical accessibility violations
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 196
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "id": "scrollable-region-focusable",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<div class=\"table-scroll\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +     ],
+    +     "path": "/",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/risk",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "scrollable-region-focusable",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<div class=\"table-scroll\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +     ],
+    +     "path": "/positions/1/132",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/positions/1/132",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/suppliers",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "scrollable-region-focusable",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<div class=\"table-scroll\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +     ],
+    +     "path": "/suppliers/15",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/suppliers/15",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "scrollable-region-focusable",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<div class=\"table-scroll\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +     ],
+    +     "path": "/scenarios",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/scenarios",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "scrollable-region-focusable",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<div class=\"formula\"><code>weight(age) = 2^(−age / half_life)<br>forecast(t) = demand_level × weekday_index(t) × planned_promotion(t)</code></div>",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +       Object {
+    +         "html": "<div class=\"table-scroll\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +       Object {
+    +         "html": "<div class=\"formula\"><code>Normal: P(stockout) = 1 − Φ((supply − demand_mean) / demand_sd)</code></div>",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +       Object {
+    +         "html": "<div class=\"formula\">",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +       Object {
+    +         "html": "<div class=\"formula\"><code>expected_lost_units = expected_shortage × assumed_lost_sale_rate<br>est_margin_at_risk = expected_lost_units × (unit_price − unit_cost)</code></div>",
+    +         "summary": "Fix any of the following:
+    +   Element should have focusable content
+    +   Element should be focusable",
+    +       },
+    +     ],
+    +     "path": "/methodology",
+    +     "width": 390,
+    +   },
+    +   Object {
+    +     "id": "summary-name",
+    +     "nodes": Array [
+    +       Object {
+    +         "html": "<summary class=\"dataset-badge\">",
+    +         "summary": "Fix any of the following:
+    +   Element does not have text that is visible to screen readers
+    +   aria-label attribute does not exist or is empty
+    +   aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+    +   Element has no title attribute",
+    +       },
+    +     ],
+    +     "path": "/methodology",
+    +     "width": 390,
+    +   },
+    + ]
+
+      51 |     }
+      52 |   }
+    > 53 |   expect(findings).toEqual([]);
+         |                    ^
+      54 | });
+      55 |
+        at /Users/yuminsong/Desktop/StockSense/frontend/tests/e2e/a11y.spec.ts:53:20
+
+    Error Context: test-results/a11y-all-primary-pages-and-1dccb-al-accessibility-violations/error-context.md
+
+  2) tests/e2e/states.spec.ts:93:1 › an empty risk search offers a recovery path ───────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('No positions match these filters', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('No positions match these filters', { exact: true }) with timeout 5000ms
+      - waiting for getByText('No positions match these filters', { exact: true })
+
+
+       95 |   await expect(
+       96 |     page.getByText("No positions match these filters", { exact: true }),
+    >  97 |   ).toBeVisible();
+          |     ^
+       98 |   await expect(
+       99 |     page.getByText("Change the scope or reset filters to continue.", {
+      100 |       exact: true,
+        at /Users/yuminsong/Desktop/StockSense/frontend/tests/e2e/states.spec.ts:97:5
+
+    Error Context: test-results/states-an-empty-risk-search-offers-a-recovery-path/error-context.md
+
+  2 failed
+    tests/e2e/a11y.spec.ts:4:1 › all primary pages and supplier detail have no serious or critical accessibility violations
+    tests/e2e/states.spec.ts:93:1 › an empty risk search offers a recovery path ────────────────────
+  12 passed (1.2m)

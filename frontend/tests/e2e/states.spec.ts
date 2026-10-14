@@ -91,9 +91,12 @@ test("each primary screen reports analytics-not-ready with a retry action", asyn
 });
 
 test("an empty risk search offers a recovery path", async ({ page }) => {
-  await page.goto("/risk?search=NO-SUCH-STOCGAIN-SKU");
+  await page.goto("/risk?q=NO-SUCH-STOCGAIN-SKU");
   await expect(
-    page.getByText("No positions match these filters", { exact: true }),
+    page.getByRole("heading", {
+      name: "No SKU or product matches “NO-SUCH-STOCGAIN-SKU”",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByText("Change the scope or reset filters to continue.", {

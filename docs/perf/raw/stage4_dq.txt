@@ -1,0 +1,20 @@
+check	severity	violations
+DQ01_inventory_equation	error	0
+DQ02_continuity	error	0
+DQ03_sales_availability	error	0
+DQ04_dense_coverage	error	0
+DQ05_receipt_quantity	error	0
+DQ06_receipt_after_order	error	0
+DQ07_sourced_product	error	0
+DQ08_primary_supplier	error	0
+DQ09_promotion_overlap	error	0
+DQ10_sales_amount	error	0
+DQ11_cogs	error	0
+DQ12_history_end	error	0
+DQ13_primary_lanes	error	0
+DQ14_stockout_incidence	warning	0
+DQ15_latent_demand	error	0
+DQ16_manifest	error	0
+DQ17_price_cost	error	0
+DQ18_introduction	warning	0
+validation_seconds=9.022

@@ -1,6 +1,6 @@
 # stocgain implementation interface
 
-Updated 2026-10-13. **Implemented scope: Phases 0–7, with the Stage 3 scenario performance gate still open.** The owner authorized the six-page frontend and its supporting P1 endpoints. Stage 4, deployment and remote Git actions are not authorized.
+Updated 2026-10-14. **Implemented scope: Phases 0–8 plus Phase 9 documentation; fresh-setup acceptance remains open.** The owner authorized Stage 4. Public deployment and remote Git writes remain unauthorized. Current verified state is summarized in IMPLEMENTATION_STATUS.md.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 
@@ -101,3 +101,7 @@ Performance: standard full-scope scenario warm p95 1.794 seconds, above 1.5-seco
 Routes: `/`, `/risk`, `/positions/[storeId]/[productId]`, `/suppliers`, `/suppliers/[supplierId]`, `/scenarios`, `/methodology`. All metrics use generated OpenAPI types and real API responses. Global scope uses URL `region/store/category`, scenario controls use `lt/dem/sl/buf/store/category/supplier`; scenarios encode percentage controls in percentage points in the URL and convert to API ratios only at the request boundary. Query caches include the run ID. Search debounces 300 ms; scenario updates debounce 400 ms, abort stale requests and retain prior results while computing. Numeric validation uses `/meta` limits. Older stored explanation percentages are normalized for display only; database prose and formulas remain intact. Browser screenshots and actual verification are in `docs/STAGE3_VERIFICATION.md`. The 1.5-second Scenario Lab update target is not claimed met.
 
 Stage 3 measured production-browser performance: 20 full-scope updates, p50 2.242 s, p95 2.426 s including the 400 ms debounce. docs/07 §10.4 AC5 remains unmet; Phase 7 acceptance remains open. See `docs/perf/raw/stage3_scenario.json`.
+
+## Stage 4 handoff
+
+The historical Stage 3 latency statements above are superseded by the measured warm browser p95 1.383 s (20 distinct requests), preserved in stage4_scenario.json. Scalar count-family computations use the same tail and truncated first-moment identities as the existing batch implementation; reference tests retain singular NB numerical behavior. Cold first load remains 7.014 s. Local frontend port is 3050. Makefile pipeline runs migrate, safe seed and analytics sequentially; isolated fresh setup is prepared but unverified. No original database/volume may be removed for that test. See STAGE4_VERIFICATION for remaining acceptance limitations.

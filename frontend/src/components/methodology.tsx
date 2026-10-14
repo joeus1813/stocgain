@@ -64,7 +64,7 @@ export function Methodology() {
                 </p>
                 <details>
                   <summary>Actual loaded row counts</summary>
-                  <div className="table-scroll">
+                  <div className="table-scroll" tabIndex={0}>
                     <table className="data-table">
                       <thead>
                         <tr>
@@ -125,7 +125,7 @@ export function Methodology() {
               evidence. Sparser histories fall back to chain-wide demand. The
               model does not use hidden simulated demand.
             </p>
-            <div className="formula">
+            <div className="formula" tabIndex={0}>
               <code>
                 weight(age) = 2^(−age / half_life)
                 <br />
@@ -154,7 +154,7 @@ export function Methodology() {
               probability of any stockout across all checkpoints, not a union
               probability.
             </p>
-            <div className="formula">
+            <div className="formula" tabIndex={0}>
               <code>
                 Normal: P(stockout) = 1 − Φ((supply − demand_mean) / demand_sd)
               </code>
@@ -187,7 +187,7 @@ export function Methodology() {
               the probability of no stockout in a cycle, not the fraction of
               units fulfilled.
             </p>
-            <div className="formula">
+            <div className="formula" tabIndex={0}>
               <code>
                 window_demand_variance = L × demand_variance + demand_mean² ×
                 lead_time_variance
@@ -208,7 +208,7 @@ export function Methodology() {
           </section>
           <section id="method-7">
             <h2>07 · Financial exposure</h2>
-            <div className="formula">
+            <div className="formula" tabIndex={0}>
               <code>
                 expected_lost_units = expected_shortage × assumed_lost_sale_rate
                 <br />
@@ -223,7 +223,7 @@ export function Methodology() {
               shrink. Category lost-sale rates are assumptions, not measured
               conversion rates.
             </p>
-            <div className="table-scroll">
+            <div className="table-scroll" tabIndex={0}>
               <table className="data-table">
                 <thead>
                   <tr>

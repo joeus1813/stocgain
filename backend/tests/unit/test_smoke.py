@@ -47,11 +47,11 @@ def test_cors_preflight(client: TestClient) -> None:
     response = client.options(
         "/api/v1/health",
         headers={
-            "Origin": "http://localhost:3000",
+            "Origin": "http://localhost:3050",
             "Access-Control-Request-Method": "GET",
         },
     )
-    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3050"
 
 
 def test_database_connection_failure_is_not_reported_as_healthy() -> None:
@@ -71,10 +71,10 @@ def test_settings_parse_comma_separated_origins(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "API_CORS_ORIGINS", "http://localhost:3000, http://localhost:3001"
+        "API_CORS_ORIGINS", "http://localhost:3050, http://localhost:3001"
     )
     assert Settings(_env_file=None).cors_origins == [
-        "http://localhost:3000",
+        "http://localhost:3050",
         "http://localhost:3001",
     ]
 
@@ -95,13 +95,13 @@ def test_internal_errors_are_generic_and_have_request_ids() -> None:
 
     with TestClient(application, raise_server_exceptions=False) as test_client:
         response = test_client.get(
-            "/test-error", headers={"Origin": "http://localhost:3000"}
+            "/test-error", headers={"Origin": "http://localhost:3050"}
         )
     assert response.status_code == 500
     assert response.json()["error"]["code"] == "INTERNAL_ERROR"
     assert "secret" not in response.text
     assert response.headers["x-request-id"]
-    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3050"
 
 
 def test_validation_errors_use_the_envelope() -> None:

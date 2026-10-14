@@ -229,3 +229,20 @@ Optional variant, only if the backtest supports it: "…forecast reduced WAPE by
 - Fonts: Inter and JetBrains Mono (SIL Open Font License 1.1) via `next/font`.
 - Dependencies: summarized in `THIRD_PARTY_NOTICES.md` (Phase 9) with name, version, and license for direct dependencies (FastAPI MIT, SQLAlchemy MIT, Alembic MIT, Pydantic MIT, pandas BSD-3, NumPy BSD-3, SciPy BSD-3, psycopg LGPL-3.0, Typer MIT, Next.js MIT, React MIT, Tailwind MIT, Radix/shadcn MIT, Recharts MIT, TanStack MIT, lucide ISC, Playwright Apache-2.0, Vitest MIT). Codex must verify each license from package metadata rather than trusting this list.
 - No third-party datasets are used.
+
+## 2026-10-14 verified portfolio addendum
+
+Final interview script and resume drafts: [INTERVIEW_DEMO.md](INTERVIEW_DEMO.md). Honest segmented forecast analysis: [FORECAST_FINDINGS.md](FORECAST_FINDINGS.md). Local publication checklist: [PUBLICATION_AND_DEPLOYMENT.md](PUBLICATION_AND_DEPLOYMENT.md). These supersede the illustrative bracketed narration above; do not narrate example numbers as dataset facts.
+
+| Fact | Verified value / evidence |
+|---|---|
+| Physical application tables / standalone SQL analyses | 26 / 15 (existing Stage 1 verification) |
+| Store-SKU-day records | 864,000 per dense table; 12 stores × 400 SKUs × 180 days |
+| Scenario warm browser p95 | 1,382.796 ms, 20 distinct full-scope changes; raw stage4_scenario.json |
+| Cold first Scenario Lab load | 7,014.114 ms after API restart; includes page and model replay |
+| WAPE, observed in-stock | stocgain 0.5766; naive28 0.5839; seasonal7 0.7796 |
+| WAPE, simulation-only hidden demand | stocgain 0.5586; naive28 0.5740 |
+| SQL rolling-history MV / base table | 274.342 ms / 691.935 ms, retained EXPLAIN ANALYZE evidence |
+| Fresh setup / pipeline duration | Not verified in final session; do not fill with an estimate |
+
+Final test counts and unresolved acceptance items are recorded in IMPLEMENTATION_STATUS.md. No publication/deployment outcome is claimed.

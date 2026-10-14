@@ -191,7 +191,7 @@ export function Suppliers() {
                     : "Ascending ↑"}
                 </button>
               </div>
-              <div className="table-scroll">
+              <div className="table-scroll" tabIndex={0}>
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -303,7 +303,7 @@ export function SupplierDetail({ id }: { id: string }) {
           </div>
           <details>
             <summary>View weekly counts</summary>
-            <div className="table-scroll">
+            <div className="table-scroll" tabIndex={0}>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -360,7 +360,7 @@ export function SupplierDetail({ id }: { id: string }) {
       </div>
       <div className="stack">
         <Card title="Store lanes" subtitle="Store-level delivery performance">
-          <div className="table-scroll">
+          <div className="table-scroll" tabIndex={0}>
             <table className="data-table">
               <thead>
                 <tr>
@@ -392,7 +392,7 @@ export function SupplierDetail({ id }: { id: string }) {
           title="Exposed positions"
           subtitle="Moderate, High, and Critical · up to 50 positions"
         >
-          <div className="table-scroll">
+          <div className="table-scroll" tabIndex={0}>
             <table className="data-table">
               <thead>
                 <tr>

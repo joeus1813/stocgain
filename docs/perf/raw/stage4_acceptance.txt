@@ -1,0 +1,238 @@
+/Library/Developer/CommandLineTools/usr/bin/make lint
+uv run --project backend --locked ruff check backend
+All checks passed!
+uv run --project backend --locked ruff format --check backend
+103 files already formatted
+cd frontend && npm run lint
+
+> stocgain-web@1.0.0 lint
+> eslint
+
+/Library/Developer/CommandLineTools/usr/bin/make typecheck
+cd backend && uv run --locked mypy src/stocgain
+Success: no issues found in 67 source files
+cd frontend && npm run typecheck
+
+> stocgain-web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+/Library/Developer/CommandLineTools/usr/bin/make test
+uv run --project backend --locked pytest backend/tests
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/yuminsong/Desktop/StockSense/backend
+configfile: pyproject.toml
+plugins: anyio-4.11.0, cov-7.1.0
+collected 270 items
+
+backend/tests/api/test_contracts.py ...                                  [  1%]
+backend/tests/api/test_health.py .                                       [  1%]
+backend/tests/api/test_meta_scenarios.py ..........                      [  5%]
+backend/tests/api/test_overview.py .........                             [  8%]
+backend/tests/api/test_phase6.py .....                                   [ 10%]
+backend/tests/api/test_positions.py ........                             [ 13%]
+backend/tests/api/test_risk_positions.py ......................          [ 21%]
+backend/tests/db/test_constraints.py ........................            [ 30%]
+backend/tests/db/test_data_quality.py .................                  [ 36%]
+backend/tests/db/test_kpi_sql.py ...                                     [ 37%]
+backend/tests/db/test_loader.py ....                                     [ 39%]
+backend/tests/db/test_pipeline_outputs.py ....                           [ 40%]
+backend/tests/db/test_point_in_time.py ......                            [ 42%]
+backend/tests/db/test_reference_schema.py ...                            [ 44%]
+backend/tests/db/test_sql_analyses.py .................................  [ 56%]
+backend/tests/db/test_standard_dataset.py ..                             [ 57%]
+backend/tests/db/test_views.py ......                                    [ 59%]
+backend/tests/unit/test_backtest.py .......                              [ 61%]
+backend/tests/unit/test_distribution_equivalence.py ......               [ 64%]
+backend/tests/unit/test_forecasting.py ...................               [ 71%]
+backend/tests/unit/test_formatting.py ....................               [ 78%]
+backend/tests/unit/test_generator_rng.py .                               [ 78%]
+backend/tests/unit/test_generator_simulation.py .........                [ 82%]
+backend/tests/unit/test_golden_cases.py ..........                       [ 85%]
+backend/tests/unit/test_inventory_math.py .......................        [ 94%]
+backend/tests/unit/test_scenario.py ....                                 [ 95%]
+backend/tests/unit/test_smoke.py ..F...F....                             [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_cors_preflight ______________________________
+
+client = <starlette.testclient.TestClient object at 0x12254de80>
+
+    def test_cors_preflight(client: TestClient) -> None:
+        response = client.options(
+            "/api/v1/health",
+            headers={
+                "Origin": "http://localhost:3000",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+>       assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/test_smoke.py:54:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Headers({'vary': 'Origin', 'access-control-allow-methods': 'GET, POST', 'access-control-max-age': '600', 'access-contr...e, Content-Language, Content-Type, X-Request-ID', 'content-length': '22', 'content-type': 'text/plain; charset=utf-8'})
+key = 'access-control-allow-origin'
+
+    def __getitem__(self, key: str) -> str:
+        """
+        Return a single header value.
+
+        If there are multiple headers with the same key, then we concatenate
+        them with commas. See: https://tools.ietf.org/html/rfc7230#section-3.2.2
+        """
+        normalized_key = key.lower().encode(self.encoding)
+
+        items = [
+            header_value.decode(self.encoding)
+            for _, header_key, header_value in self._list
+            if header_key == normalized_key
+        ]
+
+        if items:
+            return ", ".join(items)
+
+>       raise KeyError(key)
+E       KeyError: 'access-control-allow-origin'
+
+backend/.venv/lib/python3.12/site-packages/httpx/_models.py:302: KeyError
+____________ test_internal_errors_are_generic_and_have_request_ids _____________
+
+    def test_internal_errors_are_generic_and_have_request_ids() -> None:
+        application = create_app(Settings(_env_file=None))
+
+        @application.get("/test-error")
+        def fail() -> None:
+            raise RuntimeError("secret credential must not escape")
+
+        with TestClient(application, raise_server_exceptions=False) as test_client:
+            response = test_client.get(
+                "/test-error", headers={"Origin": "http://localhost:3000"}
+            )
+        assert response.status_code == 500
+        assert response.json()["error"]["code"] == "INTERNAL_ERROR"
+        assert "secret" not in response.text
+        assert response.headers["x-request-id"]
+>       assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/test_smoke.py:104:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Headers({'content-length': '90', 'content-type': 'application/json', 'x-request-id': '84ac2d88-3fd1-4720-b49b-0a5f40544a89', 'access-control-expose-headers': 'X-Request-ID, X-Stocgain-Run-Id, X-Stocgain-As-Of, Content-Disposition'})
+key = 'access-control-allow-origin'
+
+    def __getitem__(self, key: str) -> str:
+        """
+        Return a single header value.
+
+        If there are multiple headers with the same key, then we concatenate
+        them with commas. See: https://tools.ietf.org/html/rfc7230#section-3.2.2
+        """
+        normalized_key = key.lower().encode(self.encoding)
+
+        items = [
+            header_value.decode(self.encoding)
+            for _, header_key, header_value in self._list
+            if header_key == normalized_key
+        ]
+
+        if items:
+            return ", ".join(items)
+
+>       raise KeyError(key)
+E       KeyError: 'access-control-allow-origin'
+
+backend/.venv/lib/python3.12/site-packages/httpx/_models.py:302: KeyError
+------------------------------ Captured log call -------------------------------
+ERROR    stocgain.api.app:app.py:65 request_id=84ac2d88-3fd1-4720-b49b-0a5f40544a89 unhandled_error
+Traceback (most recent call last):
+  File "/Users/yuminsong/Desktop/StockSense/backend/src/stocgain/api/app.py", line 63, in request_context
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 2786, in app
+    await route.handle(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 1310, in handle
+    await super().handle(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 165, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 151, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 727, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 362, in run_endpoint_function
+    return await run_in_threadpool(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2485, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 976, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/.venv/lib/python3.12/site-packages/fastapi/telemetry/_api.py", line 244, in _run_sync_endpoint
+    return function(**arguments)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/yuminsong/Desktop/StockSense/backend/tests/unit/test_smoke.py", line 94, in fail
+    raise RuntimeError("secret credential must not escape")
+RuntimeError: secret credential must not escape
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.12.7-final-0 _______________
+
+Name                                                Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------
+backend/src/stocgain/analytics/__init__.py              0      0   100%
+backend/src/stocgain/analytics/backtest.py             95      3    97%   21, 60, 112
+backend/src/stocgain/analytics/config.py               41      4    90%   57-60
+backend/src/stocgain/analytics/demand_patterns.py      18      0   100%
+backend/src/stocgain/analytics/distributions.py       100      2    98%   14, 136
+backend/src/stocgain/analytics/explanations.py         56      1    98%   168
+backend/src/stocgain/analytics/exposure.py              3      0   100%
+backend/src/stocgain/analytics/forecasting.py         112      2    98%   47, 155
+backend/src/stocgain/analytics/formatting.py           21      0   100%
+backend/src/stocgain/analytics/leadtime.py             32      0   100%
+backend/src/stocgain/analytics/pipeline.py            111     51    54%   46, 160-259, 264-274
+backend/src/stocgain/analytics/policy.py               17      0   100%
+backend/src/stocgain/analytics/replenishment.py        45      1    98%   58
+backend/src/stocgain/analytics/risk.py                105      1    99%   313
+backend/src/stocgain/analytics/scenario.py            116      3    97%   32, 43, 297
+backend/src/stocgain/analytics/serialization.py         5      0   100%
+backend/src/stocgain/analytics/types.py                27      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                 904     68    92%
+=========================== short test summary info ============================
+FAILED backend/tests/unit/test_smoke.py::test_cors_preflight - KeyError: 'acc...
+FAILED backend/tests/unit/test_smoke.py::test_internal_errors_are_generic_and_have_request_ids
+=================== 2 failed, 268 passed in 88.04s (0:01:28) ===================
+make[1]: *** [test-backend] Error 1
+make: *** [verify] Error 2

@@ -1,4 +1,4 @@
-> Current checkpoint update — 2026-10-13: Stage 3 application implemented on top of verified Stage 2 `646e2e2`. Read IMPLEMENTATION_STATUS.md and docs/STAGE3_VERIFICATION.md for actual verification, remaining scenario latency and resume instructions. Preserve all data, migrations, volumes and formulas. Stage 4, deployment and remote Git actions remain unauthorized.
+> Current handoff — 2026-10-14: Stage 3 warm latency gate passes (browser p95 1.383 s). Stage 4 delivery and final regression evidence are in IMPLEMENTATION_STATUS.md and docs/STAGE4_VERIFICATION.md; isolated fresh-setup acceptance remains open. Preserve port 3050 and existing databases/volumes. No external publication or deployment was performed by this execution.
 
 
 # CODEX_HANDOFF — stocgain Implementation Contract
