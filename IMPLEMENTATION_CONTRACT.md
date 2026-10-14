@@ -1,6 +1,6 @@
 # stocgain implementation interface
 
-Updated 2026-10-10. **Implemented scope: Phases 0–1 complete; Phase 2 not started.** Operational schema/data interfaces below are implemented; analytics interfaces remain planned.
+Updated 2026-10-11. **Implemented scope: Phases 0–2 complete; Stage 1 verified.** SQL analytics interfaces are implemented; forecasting/risk model outputs remain future Stage 2 work.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 
@@ -42,11 +42,11 @@ The simulator writes CSV; the transactional loader owns writes to ops and hidden
 
 26 tables total: 17 ops + 8 analytics + 1 sim_truth. All 26 tables exist at Alembic revision 0004. Operational/truth data is loaded; analytics tables remain empty.
 
-## Analytics and SQL contracts (planned)
+## SQL implemented; model-output generation planned
 
 Eight analytics tables: analytics_runs, demand_forecasts, demand_forecast_daily, forecast_evaluations, supplier_lane_estimates, inventory_risk_snapshots, risk_checkpoints, replenishment_recommendations. Outputs are versioned by run_id and deleted through run cascades as specified. Daily forecasts are current-run only (42 days). Risk snapshots preserve inputs, probability, exposure and explanation; recommendations never create or modify purchase orders.
 
-Only `100_v_inventory_reconciliation` is implemented for Phase 1. The complete Phase 2 contract has twelve ordered repeatable views: 010_v_current_run, 020_mv_daily_position (the one materialized view), 030_v_po_line_status, 040_v_po_status, 050_v_supplier_lane_performance, 060_v_supplier_performance, 070_v_category_dow_profile, 080_v_product_abc_class, 090_v_stockout_episodes, 100_v_inventory_reconciliation, 110_v_current_risk, 120_v_risk_trend. `mv_daily_position` derives in_stock/sold_out/out_all_day and censoring. See docs/04 for exact semantics.
+All twelve ordered repeatable views are implemented: 010_v_current_run, 020_mv_daily_position (the one materialized view), 030_v_po_line_status, 040_v_po_status, 050_v_supplier_lane_performance, 060_v_supplier_performance, 070_v_category_dow_profile, 080_v_product_abc_class, 090_v_stockout_episodes, 100_v_inventory_reconciliation, 110_v_current_risk, 120_v_risk_trend. `mv_daily_position` derives in_stock/sold_out/out_all_day and censoring. See docs/04 for exact semantics.
 
 Fifteen standalone analyses (docs/04 §5), eighteen DQ checks (docs/03 §10). Headers state file, purpose, grain, constructs, business question. Multi-line SQL lives in files; bind query parameters; whitelist sort keys. Views apply in filename order in one transaction, after Alembic. Never edit applied revisions.
 
@@ -69,7 +69,7 @@ Implemented: setup, db-up/down, migrate, seed, schema-dump, api/web health, lint
 
 Loader validates CSV hashes, counts and headers before writing. Same-checksum data is revalidated without replacement. Different existing data is refused unless `--replace` (or `make seed LOAD_FLAGS=--replace`) is explicitly supplied; that operation transactionally truncates all application tables, loads, validates and rolls back on failure. It never deletes the database or Docker volume. Replacement discards existing analytics outputs and requires owner authorization in agent sessions. Default tests populate only the existing test DB and do not silently replace a different dataset.
 
-`make db-reset`, analytics, pipeline, dev, demo-docker and explain remain explicit nonzero failures. `db refresh` reports zero MVs at Phase 1. Optional large generation is not implemented. Stage 2 / original Phase 3 forecasting is not authorized. Phase 2 must first prove SQL execution, historical isolation and measured EXPLAIN plans. New schema changes require new reversible migrations; never edit applied revisions.
+`make db-reset`, analytics, pipeline, dev and demo-docker remain explicit nonzero failures. `db refresh` refreshes the one populated MV. `db run-analysis 01..15` executes the selected standalone SQL. `make explain` measures the existing standard data and writes raw plans. Optional large generation is not implemented. Stage 2 / original Phase 3 forecasting is not authorized. Phase 2 SQL execution, historical isolation and measured EXPLAIN plans are verified. New schema changes require new reversible migrations; never edit applied revisions.
 
 ## Rebrand compatibility addendum (2026-10-09)
 
@@ -77,4 +77,10 @@ Official product name is `stocgain.`; full description is “Predictive Retail I
 
 ## Verified Phase 1 interface
 
-All SQLAlchemy metadata matches the existing PostgreSQL schema. Config paths are normalized against the repository root. Generator streams, stable row ordering and IDs produce deterministic CSV checksums. Atomic output publication avoids partial files. All 18 DQ SQL files return zero violations on small and standard datasets. The serial DQ/profile session setting avoids Docker shared-memory exhaustion without changing checks. See `docs/PHASE1_VERIFICATION.md` for actual commands, row counts, checksums, runtimes and calibration limits. Historical operational consistency is verified; future Phase 2 pipeline isolation remains unimplemented.
+All SQLAlchemy metadata matches the existing PostgreSQL schema. Config paths are normalized against the repository root. Generator streams, stable row ordering and IDs produce deterministic CSV checksums. Atomic output publication avoids partial files. All 18 DQ SQL files return zero violations on small and standard datasets. The serial DQ/profile session setting avoids Docker shared-memory exhaustion without changing checks. See `docs/PHASE1_VERIFICATION.md` for actual commands, row counts, checksums, runtimes and calibration limits. Historical operational consistency and Phase 2 extraction isolation are verified. See docs/PHASE2_VERIFICATION.md for scope and prescribed model-only deferrals.
+
+## Phase 2 temporal and refresh contracts
+
+Eleven extraction files accept `:as_of`; history/latent also take `:history_days`. Known future promotion plans extend 42 days; all observed facts are cutoff-bounded. Chain rate is deseasonalized per docs/05, with sparse-weekday flat fallback and full-history aggregates. Supplier reporting views aggregate receipts/POs at the current run cutoff; lifetime PO views remain intentionally lifetime. Missing prior run yields NULL, and current-run views remain empty without a successful run.
+
+MV population is batch-only: apply-views recreates/populates it, refresh rebuilds it transactionally/non-concurrently. No triggers or automatic per-request refresh. Reconciliation is independent of MV freshness. All objects use the unchanged 26-table schema; no new physical migration needed. The two actual-model comparison tests remain marked requires_run until Stage 2 supplies outputs. Test-only fixtures are rolled back and never persisted to the main database.

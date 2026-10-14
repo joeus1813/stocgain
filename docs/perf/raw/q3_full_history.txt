@@ -1,0 +1,4 @@
+Index Scan using ux_mv_daily_position on mv_daily_position  (cost=0.42..67122.20 rows=864000 width=59) (actual time=0.008..324.385 rows=864000 loops=1)
+  Buffers: shared hit=829274
+Planning Time: 0.042 ms
+Execution Time: 349.751 ms

@@ -258,12 +258,34 @@ GROUP BY purchase_order_id, po_number, supplier_id, store_id, order_date, promis
 
 ### 3.5 `analytics.v_supplier_lane_performance`
 
-Grain: supplier × store, relative to the current run's as-of date.
+Grain: supplier × store, relative to the current run's as-of date. Receipt aggregation and PO inclusion are bounded by that date, including when a current run is historical.
 
 ```sql
 DROP VIEW IF EXISTS analytics.v_supplier_lane_performance CASCADE;
 CREATE VIEW analytics.v_supplier_lane_performance AS
-WITH cr AS (SELECT as_of_date FROM analytics.v_current_run)
+WITH cr AS (SELECT as_of_date FROM analytics.v_current_run),
+receipt_as_of AS (
+    SELECT r.po_line_id, SUM(r.quantity_received) AS quantity_received,
+           MIN(r.received_date) AS first_receipt_date, COUNT(*) AS receipt_count
+    FROM ops.inventory_receipts r CROSS JOIN cr
+    WHERE r.received_date <= cr.as_of_date
+    GROUP BY r.po_line_id
+),
+po_as_of AS (
+    SELECT po.purchase_order_id, po.supplier_id, po.store_id,
+           po.order_date, po.promised_delivery_date,
+           MIN(r.first_receipt_date) AS first_receipt_date,
+           MIN(r.first_receipt_date) - po.order_date AS lead_time_days,
+           BOOL_AND(COALESCE(r.quantity_received, 0) = pol.quantity_ordered
+                    AND COALESCE(r.receipt_count, 0) = 1
+                    AND pol.quantity_cancelled = 0) AS in_full
+    FROM ops.purchase_orders po
+    JOIN ops.purchase_order_lines pol USING (purchase_order_id)
+    LEFT JOIN receipt_as_of r USING (po_line_id)
+    CROSS JOIN cr
+    WHERE po.order_date <= cr.as_of_date
+    GROUP BY po.purchase_order_id
+)
 SELECT p.supplier_id, p.store_id,
        COUNT(*) FILTER (WHERE p.first_receipt_date <= cr.as_of_date)                       AS received_pos,
        ROUND(AVG(p.lead_time_days) FILTER (WHERE p.first_receipt_date <= cr.as_of_date), 2) AS mean_lead_time_days,
@@ -273,7 +295,7 @@ SELECT p.supplier_id, p.store_id,
                           AND p.first_receipt_date <= p.promised_delivery_date)                AS on_time_pos_90d,
        COUNT(*) FILTER (WHERE p.promised_delivery_date <= cr.as_of_date
                           AND p.first_receipt_date IS NULL)                                    AS overdue_open_pos
-FROM analytics.v_po_status p
+FROM po_as_of p
 CROSS JOIN cr
 GROUP BY p.supplier_id, p.store_id;
 ```
@@ -286,6 +308,28 @@ Grain: supplier. Feeds the Supplier Performance page (`sql/api/suppliers_list.sq
 DROP VIEW IF EXISTS analytics.v_supplier_performance CASCADE;
 CREATE VIEW analytics.v_supplier_performance AS
 WITH cr AS (SELECT run_id, as_of_date FROM analytics.v_current_run),
+receipt_as_of AS (
+    SELECT r.po_line_id, SUM(r.quantity_received) AS quantity_received,
+           MIN(r.received_date) AS first_receipt_date, COUNT(*) AS receipt_count
+    FROM ops.inventory_receipts r CROSS JOIN cr
+    WHERE r.received_date <= cr.as_of_date
+    GROUP BY r.po_line_id
+),
+po_as_of AS (
+    SELECT po.purchase_order_id, po.supplier_id, po.store_id,
+           po.order_date, po.promised_delivery_date,
+           MIN(r.first_receipt_date) AS first_receipt_date,
+           MIN(r.first_receipt_date) - po.order_date AS lead_time_days,
+           BOOL_AND(COALESCE(r.quantity_received, 0) = pol.quantity_ordered
+                    AND COALESCE(r.receipt_count, 0) = 1
+                    AND pol.quantity_cancelled = 0) AS in_full
+    FROM ops.purchase_orders po
+    JOIN ops.purchase_order_lines pol USING (purchase_order_id)
+    LEFT JOIN receipt_as_of r USING (po_line_id)
+    CROSS JOIN cr
+    WHERE po.order_date <= cr.as_of_date
+    GROUP BY po.purchase_order_id
+),
 po_stats AS (
     SELECT p.supplier_id,
            COUNT(*) FILTER (WHERE p.promised_delivery_date BETWEEN cr.as_of_date - 89 AND cr.as_of_date) AS pos_due_90d,
@@ -298,7 +342,7 @@ po_stats AS (
            percentile_cont(0.9) WITHIN GROUP (ORDER BY p.lead_time_days)
                FILTER (WHERE p.first_receipt_date > cr.as_of_date - 180)                          AS p90_lead_time_days,
            COUNT(*) FILTER (WHERE p.first_receipt_date IS NULL AND p.promised_delivery_date <= cr.as_of_date) AS overdue_open_pos
-    FROM analytics.v_po_status p CROSS JOIN cr
+    FROM po_as_of p CROSS JOIN cr
     GROUP BY p.supplier_id
 ),
 exposure AS (
@@ -324,6 +368,7 @@ SELECT s.supplier_id, s.supplier_code, s.supplier_name, c.category_name,
          AND COALESCE(e.at_risk_positions,0) >= 1 )               AS review_flag,
        RANK() OVER (ORDER BY ps.on_time_pos_90d::numeric / NULLIF(ps.pos_due_90d,0) ASC NULLS LAST) AS reliability_rank
 FROM ops.suppliers s
+CROSS JOIN cr
 JOIN ops.product_categories c ON c.category_id = s.primary_category_id
 LEFT JOIN po_stats ps ON ps.supplier_id = s.supplier_id
 LEFT JOIN exposure e  ON e.supplier_id = s.supplier_id;
@@ -510,7 +555,7 @@ All pipeline queries take `:as_of` (date) and must not read any row dated after 
 | `extract_daily_history.sql` | store × product × date for `[:as_of − :history_days + 1, :as_of]` | `units_sold`, `availability_status`, `is_promo_day`, `iso_day_of_week`, `category_id` | From `mv_daily_position`; `:history_days` = 56 for forecasting, full history for backtest |
 | `extract_category_dow_profile.sql` | category × weekday | `dow_index`, `n_obs` | Same logic as §3.7 with `:as_of` |
 | `extract_store_scale.sql` | store × category | `store_scale` = store's mean clean-day units per position ÷ chain mean | Trailing 56 days |
-| `extract_product_chain_rate.sql` | product | chain mean clean non-promo units per position-day over 56 days, `n_clean_chain` | For chain fallback |
+| `extract_product_chain_rate.sql` | product | deseasonalized clean-day `chain_rate`, `n_clean_chain`, plus `chain_rate_full_history`, `n_clean_chain_full_history` | For chain fallback per 05 §3.6; category-wide flat weekday profile when any weekday has <30 observations (05 §3.4) |
 | `extract_on_hand.sql` | store × product | `closing_on_hand` at `:as_of`, `recent_censored_days` (last 28) | |
 | `extract_open_po_lines.sql` | PO line open at `:as_of` | `purchase_order_id`, `po_number`, `store_id`, `product_id`, `supplier_id`, `order_date`, `promised_delivery_date`, `open_quantity_as_of` | See below |
 | `extract_lane_lead_times.sql` | supplier × store | `n_received`, mean/std lead time, mean/std delay, mean delay when late, on-time rate (90d) | POs with first receipt ≤ `:as_of` within trailing 180 days |
@@ -666,7 +711,7 @@ ORDER BY category_name, region_name, week_start_date;
 
 - **Question:** How many days will current stock last, and how is cover distributed?
 - **Constructs:** CTEs, `CASE` bucketing, `percentile_cont`, `GROUPING SETS`.
-- **Note:** This is the *descriptive* days of cover (on hand ÷ trailing 28-day in-stock sales rate). The application's `days_of_cover` uses the forecast (05 §5.7). The analysis outputs both when a current run exists, for comparison.
+- **Note:** This is the *descriptive* days of cover (on hand ÷ trailing 28-day in-stock sales rate). The application's `days_of_cover` uses the forecast (05 §5.7). The normative analysis below reports descriptive bucket medians; forecast-based cover belongs to stored risk outputs and is not fabricated before Phase 3.
 
 ```sql
 WITH params AS (SELECT history_end_date AS as_of FROM ops.dataset_manifest),
@@ -868,9 +913,9 @@ WITH agg AS (
     GROUP BY ROLLUP (region_name)
 )
 SELECT region_name, positions, critical, high, moderate, low,
-       ROUND((critical + high)::numeric / positions, 4) AS at_risk_share,
-       ROUND((critical + high)::numeric / positions
-             - MAX(CASE WHEN is_total = 1 THEN (critical + high)::numeric / positions END) OVER (), 4)
+       ROUND((critical + high)::numeric / NULLIF(positions, 0), 4) AS at_risk_share,
+       ROUND((critical + high)::numeric / NULLIF(positions, 0)
+             - MAX(CASE WHEN is_total = 1 THEN (critical + high)::numeric / NULLIF(positions, 0) END) OVER (), 4)
                                                        AS at_risk_share_vs_chain,
        ROUND(margin_at_risk_usd, 2) AS margin_at_risk_usd,
        ROUND(mean_stockout_probability, 4) AS mean_stockout_probability
@@ -912,7 +957,7 @@ classified AS (
 SELECT s.store_code, p.sku, p.product_name, clean_days, nonzero_days,
        ROUND(mean_units, 3) AS mean_units, ROUND(cv, 3) AS cv,
        ROUND(adi, 2) AS adi, ROUND(cv_squared, 3) AS cv_squared,
-       ROUND(trend_units_per_day, 4) AS trend_units_per_day,
+       ROUND(trend_units_per_day::numeric, 4) AS trend_units_per_day,
        CASE WHEN nonzero_days = 0                 THEN 'no_demand'
             WHEN adi <= 1.32 AND COALESCE(cv_squared,0) < 0.49 THEN 'smooth'
             WHEN adi <= 1.32                      THEN 'erratic'
@@ -994,7 +1039,7 @@ ORDER BY s.store_code NULLS LAST, a.reason_code NULLS LAST;
 ### 5.14 `14_abc_xyz_matrix.sql` — ABC × XYZ segmentation
 
 - **Question:** Which SKUs are both high-value and volatile (the hardest to stock)?
-- XYZ by chain-level CV of daily clean-day units: X < 0.5, Y 0.5–1.0, Z > 1.0. Cross-tab with conditional aggregation.
+- XYZ by chain-level CV of daily observed units (the normative query includes censored/promotion days): X < 0.5, Y 0.5–1.0, Z > 1.0. Cross-tab with conditional aggregation.
 
 ```sql
 WITH params AS (SELECT history_end_date AS as_of FROM ops.dataset_manifest),
@@ -1121,7 +1166,7 @@ SELECT
     (SELECT COUNT(DISTINCT product_id) FROM pos)                                      AS active_skus,
     (SELECT COUNT(*) FILTER (WHERE risk_tier IN ('critical','high')) FROM pos)        AS at_risk_positions,
     (SELECT COUNT(*) FILTER (WHERE risk_tier = 'critical') FROM pos)                  AS critical_positions,
-    (SELECT at_risk_positions FROM prior)                                             AS prior_at_risk_positions,
+    (CASE WHEN CAST(:prior_run_id AS bigint) IS NULL THEN NULL ELSE (SELECT at_risk_positions FROM prior) END)                                             AS prior_at_risk_positions,
     (SELECT COALESCE(SUM(margin_at_risk_usd), 0) FROM pos)                            AS gross_margin_at_risk_usd,
     (SELECT COALESCE(SUM(revenue_at_risk_usd), 0) FROM pos)                           AS revenue_at_risk_usd,
     (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY days_of_cover)

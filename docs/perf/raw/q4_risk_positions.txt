@@ -1,0 +1,41 @@
+Limit  (cost=20.78..20.79 rows=1 width=429) (actual time=0.007..0.008 rows=0 loops=1)
+  ->  Sort  (cost=20.78..20.79 rows=1 width=429) (actual time=0.007..0.008 rows=0 loops=1)
+        Sort Key: r.margin_at_risk_usd DESC, r.store_id, r.product_id
+        Sort Method: quicksort  Memory: 25kB
+        ->  Nested Loop Left Join  (cost=0.59..20.77 rows=1 width=429) (actual time=0.004..0.006 rows=0 loops=1)
+              ->  Nested Loop  (cost=0.30..12.47 rows=1 width=419) (actual time=0.004..0.005 rows=0 loops=1)
+                    ->  Nested Loop  (cost=0.17..12.28 rows=1 width=408) (actual time=0.004..0.005 rows=0 loops=1)
+                          Join Filter: (r.product_id = p.product_id)
+                          ->  Nested Loop  (cost=0.02..4.10 rows=1 width=352) (actual time=0.004..0.005 rows=0 loops=1)
+                                Join Filter: ((analytics_runs.run_id = rr.run_id) AND (st.store_id = rr.store_id) AND (r.product_id = rr.product_id))
+                                ->  Nested Loop  (cost=0.02..4.08 rows=1 width=288) (actual time=0.004..0.005 rows=0 loops=1)
+                                      Join Filter: (st.region_id = rg.region_id)
+                                      ->  Nested Loop  (cost=0.02..2.99 rows=1 width=279) (actual time=0.004..0.005 rows=0 loops=1)
+                                            Join Filter: (r.store_id = st.store_id)
+                                            ->  Nested Loop  (cost=0.02..1.72 rows=1 width=254) (actual time=0.004..0.005 rows=0 loops=1)
+                                                  Join Filter: (r.run_id = analytics_runs.run_id)
+                                                  ->  Hash Join  (cost=0.01..1.68 rows=1 width=246) (actual time=0.004..0.004 rows=0 loops=1)
+                                                        Hash Cond: (su.supplier_id = r.supplier_id)
+                                                        ->  Seq Scan on suppliers su  (cost=0.00..1.48 rows=48 width=35) (never executed)
+                                                        ->  Hash  (cost=0.00..0.00 rows=1 width=213) (actual time=0.003..0.003 rows=0 loops=1)
+                                                              Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                                                              ->  Seq Scan on inventory_risk_snapshots r  (cost=0.00..0.00 rows=1 width=213) (actual time=0.002..0.002 rows=0 loops=1)
+                                                                    Filter: (risk_tier = ANY ('{high,critical}'::analytics.risk_tier[]))
+                                                  ->  Limit  (cost=0.01..0.02 rows=1 width=118) (never executed)
+                                                        ->  Sort  (cost=0.01..0.02 rows=1 width=118) (never executed)
+                                                              Sort Key: analytics_runs.as_of_date DESC, analytics_runs.completed_at DESC
+                                                              ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=118) (never executed)
+                                                                    Filter: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+                                            ->  Seq Scan on stores st  (cost=0.00..1.12 rows=12 width=25) (never executed)
+                                      ->  Seq Scan on regions rg  (cost=0.00..1.04 rows=4 width=11) (never executed)
+                                ->  Seq Scan on replenishment_recommendations rr  (cost=0.00..0.00 rows=1 width=84) (never executed)
+                          ->  Index Scan using products_pkey on products p  (cost=0.15..8.17 rows=1 width=64) (never executed)
+                                Index Cond: (product_id = rr.product_id)
+                    ->  Index Scan using product_categories_pkey on product_categories pc  (cost=0.13..0.18 rows=1 width=13) (never executed)
+                          Index Cond: (category_id = p.category_id)
+              ->  Index Scan using purchase_orders_pkey on purchase_orders npo  (cost=0.29..8.30 rows=1 width=14) (never executed)
+                    Index Cond: (purchase_order_id = r.next_receipt_po_id)
+Planning:
+  Buffers: shared hit=18
+Planning Time: 3.556 ms
+Execution Time: 0.044 ms

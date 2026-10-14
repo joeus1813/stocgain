@@ -18,7 +18,7 @@ def apply_views(engine: Engine) -> None:
 
 
 def refresh_views(engine: Engine) -> int:
-    """Refresh installed analytics materialized views; Phase 1 has none."""
+    """Refresh installed analytics materialized views after operational data changes."""
     with engine.begin() as connection:
         names = (
             connection.execute(text(read_sql("quality_support/materialized_views.sql")))

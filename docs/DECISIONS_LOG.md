@@ -107,3 +107,31 @@ Decision: follow the explicit promotion cadence over burn-in, history and future
 Reason: 8 categories × approximately 257/15 starts implies about 137 promotions plus scheduled events; actual standard count is 143 versus the rough 70–90 estimate. Receipts are 55,583 versus approximate 60k–75k, consistent with 55,415 lines, partial shipments and unreceived orders at cutoff.
 Alternatives: arbitrary extra receipts or fewer promotion events to match approximate counts; rejected.
 Impact: all 18 DQ checks and required dense counts pass. These are documented plausibility differences, not hidden acceptance failures. Post-analytics risk calibration remains outside Phase 1.
+
+
+## 2026-10-11 · Phase 2 SQL implementation and historical correctness
+Decision: preserve exactly 12 views, 15 standalone analyses and 11 pipeline extraction queries. Reuse the Phase 1 reconciliation view and applied migrations. No physical-table change, second database, generator retuning or forecasting implementation.
+Reason: explicit Phase 2-only scope. Model-dependent views execute empty in the project DB; rollback-only SQL fixtures exercise joins, rankings and KPIs. Actual forecast comparisons remain marked requires_run for Phase 3.
+Alternatives: generating fake production risk rows or beginning forecasting; rejected.
+Impact: Stage 1 SQL readiness does not claim model accuracy, dashboard readiness or populated-model performance.
+
+Decision: correct executable SQL to its documented intent: cast REGR_SLOPE to numeric before ROUND, guard zero position counts, return NULL for absent prior run, and keep current-run supplier views empty without a current run.
+Reason: the prose contracts and edge-case rules conflict with these omissions in the sample SQL. Tests reproduced missing-prior and empty-run failures before fixes.
+Impact: no formula, threshold or object-name change; docs/04 examples synchronized.
+
+Decision: bound supplier-view receipt aggregation and PO dates by the selected current run's as-of date, rather than using lifetime v_po_status directly.
+Reason: the historical regression failed: future first receipts hid overdue POs, changed in-full counts and contaminated lead-time summaries. The owner explicitly requested correction of historical receipt leakage. Local receipt/PO CTEs preserve the documented KPI definitions while enforcing the cutoff.
+Alternatives: documenting leakage as a permanent limitation or adding more global views; rejected.
+Impact: no extra views or changed end-of-history definitions. Historical fixture removes future receipts/POs in a rolled-back transaction; both supplier views must remain identical. Lifetime PO views remain intentionally lifetime views for descriptive history-end analyses.
+
+Decision: chain fallback SQL computes mean deseasonalized clean demand (z), including full-history sufficient aggregates, and applies the whole-category flat profile for missing/<30-observation weekdays.
+Reason: docs/05 §§3.4–3.6 give the exact formula, while docs/04's inventory summary only said mean clean units. Preserve the more explicit formula and future engine compatibility. Independent review identified the sparse-profile omission; nonzero sparse/missing-weekday tests failed then passed after correction.
+Impact: the category reporting extractor remains raw indices + observation counts; the later model must apply the same documented effective-profile rule. No forecasting engine implemented.
+
+Decision: retain normative analysis 14's observed chain units for XYZ and analysis 03's descriptive coverage buckets; correct contradictory descriptive sentences in docs/04.
+Reason: executable normative SQL was explicit; prose had incorrectly called XYZ clean-day and claimed a forecast comparison absent from that query.
+Impact: labels now describe delivered data. No numerical behavior altered.
+
+Decision: use existing prescribed MV unique/date indexes and record serial PostgreSQL plans. No additional index migration is justified by current measurements.
+Reason: the standard workload fits the existing architecture; serial execution avoids the previously observed Docker shared-memory limit. Q1 explains the MV SELECT and separately times actual REFRESH, because PostgreSQL does not EXPLAIN REFRESH directly.
+Impact: timings are local third-run warm measurements; Q4/Q7/Q8 empty-run plans do not establish populated-model targets. Eight required workloads plus two direct-ops comparison wrappers are retained.

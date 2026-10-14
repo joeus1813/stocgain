@@ -1,4 +1,4 @@
-"""Explicit Phase 1 data-generation and PostgreSQL maintenance commands."""
+"""Data-generation, SQL analysis and PostgreSQL maintenance commands."""
 
 import json
 from pathlib import Path
@@ -132,5 +132,23 @@ def refresh_command() -> None:
     engine = create_db_engine(get_settings())
     try:
         typer.echo(f"Refreshed {refresh_views(engine)} materialized views.")
+    finally:
+        engine.dispose()
+
+
+@db.command("run-analysis")
+def run_analysis(number: str) -> None:
+    """Execute one of the fifteen repository-owned SQL analyses by number."""
+    from stocgain.db.sql_loader import SQL_ROOT
+
+    if not number.isascii() or not number.isdigit() or not 1 <= int(number) <= 15:
+        raise typer.BadParameter("Choose an analysis number from 01 to 15")
+    path = next((SQL_ROOT / "analyses").glob(f"{int(number):02}_*.sql"))
+    engine = create_db_engine(get_settings())
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("SET LOCAL max_parallel_workers_per_gather = 0"))
+            rows = connection.execute(text(read_sql(path))).mappings().all()
+            typer.echo(json.dumps([dict(row) for row in rows], default=str, indent=2))
     finally:
         engine.dispose()

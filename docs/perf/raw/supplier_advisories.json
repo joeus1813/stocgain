@@ -1,0 +1,482 @@
+[
+  {
+    "supplier_code": "SUP-001",
+    "supplier_name": "Gulfmark Tool Distributors",
+    "received_sample": 151,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 153,
+    "on_time_pos": 153,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-002",
+    "supplier_name": "Westmont Tool Products Inc.",
+    "received_sample": 152,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 152,
+    "on_time_pos": 152,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-003",
+    "supplier_name": "Yellowpine Tool Wholesale",
+    "received_sample": 151,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 153,
+    "on_time_pos": 153,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-004",
+    "supplier_name": "Westmont Tool Distributors",
+    "received_sample": 150,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 150,
+    "on_time_pos": 150,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-005",
+    "supplier_name": "Pinecrest Tool Products Inc.",
+    "received_sample": 150,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 150,
+    "on_time_pos": 150,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-006",
+    "supplier_name": "Silverline Tool Distributors",
+    "received_sample": 150,
+    "received_sample_rate": "0.96000000000000000000",
+    "due_pos": 150,
+    "on_time_pos": 144,
+    "unreceived_due": 0,
+    "all_due_rate": "0.96000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-007",
+    "supplier_name": "Pinecrest Tool & Hardware Manufacturing",
+    "received_sample": 151,
+    "received_sample_rate": "0.95364238410596026490",
+    "due_pos": 152,
+    "on_time_pos": 144,
+    "unreceived_due": 1,
+    "all_due_rate": "0.94736842105263157895"
+  },
+  {
+    "supplier_code": "SUP-008",
+    "supplier_name": "Eastbrook Tool & Hardware Distributors",
+    "received_sample": 152,
+    "received_sample_rate": "0.90789473684210526316",
+    "due_pos": 151,
+    "on_time_pos": 138,
+    "unreceived_due": 0,
+    "all_due_rate": "0.91390728476821192053"
+  },
+  {
+    "supplier_code": "SUP-009",
+    "supplier_name": "Juniper Tool & Hardware Manufacturing",
+    "received_sample": 148,
+    "received_sample_rate": "0.99324324324324324324",
+    "due_pos": 148,
+    "on_time_pos": 147,
+    "unreceived_due": 0,
+    "all_due_rate": "0.99324324324324324324"
+  },
+  {
+    "supplier_code": "SUP-010",
+    "supplier_name": "Quarry Hill Tool & Hardware Supply Co.",
+    "received_sample": 150,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 150,
+    "on_time_pos": 150,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-011",
+    "supplier_name": "Juniper Tool & Hardware Supply Co.",
+    "received_sample": 153,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 152,
+    "on_time_pos": 152,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-012",
+    "supplier_name": "Pinecrest Tool & Hardware Distributors",
+    "received_sample": 149,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 149,
+    "on_time_pos": 149,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-013",
+    "supplier_name": "Oakhaven Electric Supply Co.",
+    "received_sample": 152,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 151,
+    "on_time_pos": 151,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-014",
+    "supplier_name": "Kingsway Electric Products Inc.",
+    "received_sample": 155,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 155,
+    "on_time_pos": 155,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-015",
+    "supplier_name": "Lakeshore Electric Distributors",
+    "received_sample": 153,
+    "received_sample_rate": "0.83006535947712418301",
+    "due_pos": 155,
+    "on_time_pos": 127,
+    "unreceived_due": 2,
+    "all_due_rate": "0.81935483870967741935"
+  },
+  {
+    "supplier_code": "SUP-016",
+    "supplier_name": "Bluewater Electric Products Inc.",
+    "received_sample": 152,
+    "received_sample_rate": "0.98684210526315789474",
+    "due_pos": 152,
+    "on_time_pos": 150,
+    "unreceived_due": 0,
+    "all_due_rate": "0.98684210526315789474"
+  },
+  {
+    "supplier_code": "SUP-017",
+    "supplier_name": "Eastbrook Electric Manufacturing",
+    "received_sample": 155,
+    "received_sample_rate": "0.96129032258064516129",
+    "due_pos": 154,
+    "on_time_pos": 149,
+    "unreceived_due": 0,
+    "all_due_rate": "0.96753246753246753247"
+  },
+  {
+    "supplier_code": "SUP-018",
+    "supplier_name": "Meridian Electric Manufacturing",
+    "received_sample": 154,
+    "received_sample_rate": "0.95454545454545454545",
+    "due_pos": 154,
+    "on_time_pos": 147,
+    "unreceived_due": 0,
+    "all_due_rate": "0.95454545454545454545"
+  },
+  {
+    "supplier_code": "SUP-019",
+    "supplier_name": "Cedarline Plumbing Products Inc.",
+    "received_sample": 152,
+    "received_sample_rate": "0.94078947368421052632",
+    "due_pos": 152,
+    "on_time_pos": 143,
+    "unreceived_due": 0,
+    "all_due_rate": "0.94078947368421052632"
+  },
+  {
+    "supplier_code": "SUP-020",
+    "supplier_name": "Yellowpine Plumbing Distributors",
+    "received_sample": 157,
+    "received_sample_rate": "0.94267515923566878981",
+    "due_pos": 156,
+    "on_time_pos": 148,
+    "unreceived_due": 0,
+    "all_due_rate": "0.94871794871794871795"
+  },
+  {
+    "supplier_code": "SUP-021",
+    "supplier_name": "Gulfmark Plumbing Supply Co.",
+    "received_sample": 155,
+    "received_sample_rate": "0.81935483870967741935",
+    "due_pos": 151,
+    "on_time_pos": 126,
+    "unreceived_due": 0,
+    "all_due_rate": "0.83443708609271523179"
+  },
+  {
+    "supplier_code": "SUP-022",
+    "supplier_name": "Cedarline Plumbing Supply Co.",
+    "received_sample": 151,
+    "received_sample_rate": "0.98675496688741721854",
+    "due_pos": 151,
+    "on_time_pos": 149,
+    "unreceived_due": 0,
+    "all_due_rate": "0.98675496688741721854"
+  },
+  {
+    "supplier_code": "SUP-023",
+    "supplier_name": "Redstone Plumbing Distributors",
+    "received_sample": 154,
+    "received_sample_rate": "0.98051948051948051948",
+    "due_pos": 154,
+    "on_time_pos": 151,
+    "unreceived_due": 0,
+    "all_due_rate": "0.98051948051948051948"
+  },
+  {
+    "supplier_code": "SUP-024",
+    "supplier_name": "Meridian Plumbing Distributors",
+    "received_sample": 155,
+    "received_sample_rate": "0.93548387096774193548",
+    "due_pos": 155,
+    "on_time_pos": 145,
+    "unreceived_due": 0,
+    "all_due_rate": "0.93548387096774193548"
+  },
+  {
+    "supplier_code": "SUP-025",
+    "supplier_name": "Quarry Hill Building Products Industries",
+    "received_sample": 147,
+    "received_sample_rate": "0.94557823129251700680",
+    "due_pos": 147,
+    "on_time_pos": 139,
+    "unreceived_due": 1,
+    "all_due_rate": "0.94557823129251700680"
+  },
+  {
+    "supplier_code": "SUP-026",
+    "supplier_name": "Northbay Building Products Supply Co.",
+    "received_sample": 154,
+    "received_sample_rate": "0.91558441558441558442",
+    "due_pos": 155,
+    "on_time_pos": 141,
+    "unreceived_due": 1,
+    "all_due_rate": "0.90967741935483870968"
+  },
+  {
+    "supplier_code": "SUP-027",
+    "supplier_name": "Cedarline Building Products Distributors",
+    "received_sample": 152,
+    "received_sample_rate": "0.90789473684210526316",
+    "due_pos": 152,
+    "on_time_pos": 138,
+    "unreceived_due": 0,
+    "all_due_rate": "0.90789473684210526316"
+  },
+  {
+    "supplier_code": "SUP-028",
+    "supplier_name": "Ironbridge Building Products Wholesale",
+    "received_sample": 130,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 130,
+    "on_time_pos": 130,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-029",
+    "supplier_name": "Ashford Building Products Wholesale",
+    "received_sample": 85,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 84,
+    "on_time_pos": 84,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-030",
+    "supplier_name": "Kingsway Building Products Products Inc.",
+    "received_sample": 143,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 143,
+    "on_time_pos": 143,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-031",
+    "supplier_name": "Bluewater Garden & Outdoor Wholesale",
+    "received_sample": 149,
+    "received_sample_rate": "0.89932885906040268456",
+    "due_pos": 150,
+    "on_time_pos": 134,
+    "unreceived_due": 1,
+    "all_due_rate": "0.89333333333333333333"
+  },
+  {
+    "supplier_code": "SUP-032",
+    "supplier_name": "Cedarline Garden & Outdoor Manufacturing",
+    "received_sample": 153,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 154,
+    "on_time_pos": 154,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-033",
+    "supplier_name": "Redstone Garden & Outdoor Industries",
+    "received_sample": 152,
+    "received_sample_rate": "0.97368421052631578947",
+    "due_pos": 151,
+    "on_time_pos": 147,
+    "unreceived_due": 0,
+    "all_due_rate": "0.97350993377483443709"
+  },
+  {
+    "supplier_code": "SUP-034",
+    "supplier_name": "Redstone Garden & Outdoor Distributors",
+    "received_sample": 149,
+    "received_sample_rate": "0.88590604026845637584",
+    "due_pos": 148,
+    "on_time_pos": 132,
+    "unreceived_due": 0,
+    "all_due_rate": "0.89189189189189189189"
+  },
+  {
+    "supplier_code": "SUP-035",
+    "supplier_name": "Westmont Garden & Outdoor Industries",
+    "received_sample": 151,
+    "received_sample_rate": "0.91390728476821192053",
+    "due_pos": 151,
+    "on_time_pos": 138,
+    "unreceived_due": 0,
+    "all_due_rate": "0.91390728476821192053"
+  },
+  {
+    "supplier_code": "SUP-036",
+    "supplier_name": "Ironbridge Garden & Outdoor Distributors",
+    "received_sample": 151,
+    "received_sample_rate": "0.97350993377483443709",
+    "due_pos": 151,
+    "on_time_pos": 147,
+    "unreceived_due": 0,
+    "all_due_rate": "0.97350993377483443709"
+  },
+  {
+    "supplier_code": "SUP-037",
+    "supplier_name": "Cedarline Coatings Wholesale",
+    "received_sample": 153,
+    "received_sample_rate": "0.90196078431372549020",
+    "due_pos": 151,
+    "on_time_pos": 137,
+    "unreceived_due": 0,
+    "all_due_rate": "0.90728476821192052980"
+  },
+  {
+    "supplier_code": "SUP-038",
+    "supplier_name": "Gulfmark Coatings Wholesale",
+    "received_sample": 145,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 145,
+    "on_time_pos": 145,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-039",
+    "supplier_name": "Harborview Coatings Products Inc.",
+    "received_sample": 152,
+    "received_sample_rate": "0.97368421052631578947",
+    "due_pos": 152,
+    "on_time_pos": 148,
+    "unreceived_due": 0,
+    "all_due_rate": "0.97368421052631578947"
+  },
+  {
+    "supplier_code": "SUP-040",
+    "supplier_name": "Northbay Coatings Distributors",
+    "received_sample": 152,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 152,
+    "on_time_pos": 152,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-041",
+    "supplier_name": "Valleyfield Coatings Wholesale",
+    "received_sample": 140,
+    "received_sample_rate": "0.95714285714285714286",
+    "due_pos": 140,
+    "on_time_pos": 134,
+    "unreceived_due": 0,
+    "all_due_rate": "0.95714285714285714286"
+  },
+  {
+    "supplier_code": "SUP-042",
+    "supplier_name": "Yellowpine Coatings Manufacturing",
+    "received_sample": 154,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 154,
+    "on_time_pos": 154,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-043",
+    "supplier_name": "Ashford Fastener Distributors",
+    "received_sample": 152,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 151,
+    "on_time_pos": 151,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-044",
+    "supplier_name": "Westmont Fastener Industries",
+    "received_sample": 154,
+    "received_sample_rate": "0.96103896103896103896",
+    "due_pos": 154,
+    "on_time_pos": 148,
+    "unreceived_due": 0,
+    "all_due_rate": "0.96103896103896103896"
+  },
+  {
+    "supplier_code": "SUP-045",
+    "supplier_name": "Oakhaven Fastener Products Inc.",
+    "received_sample": 153,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 153,
+    "on_time_pos": 153,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-046",
+    "supplier_name": "Copperfield Fastener Wholesale",
+    "received_sample": 153,
+    "received_sample_rate": "0.86274509803921568627",
+    "due_pos": 152,
+    "on_time_pos": 132,
+    "unreceived_due": 0,
+    "all_due_rate": "0.86842105263157894737"
+  },
+  {
+    "supplier_code": "SUP-047",
+    "supplier_name": "Harborview Fastener Manufacturing",
+    "received_sample": 140,
+    "received_sample_rate": "1.00000000000000000000",
+    "due_pos": 141,
+    "on_time_pos": 141,
+    "unreceived_due": 0,
+    "all_due_rate": "1.00000000000000000000"
+  },
+  {
+    "supplier_code": "SUP-048",
+    "supplier_name": "Copperfield Fastener Manufacturing",
+    "received_sample": 151,
+    "received_sample_rate": "0.94701986754966887417",
+    "due_pos": 150,
+    "on_time_pos": 142,
+    "unreceived_due": 0,
+    "all_due_rate": "0.94666666666666666667"
+  }
+]

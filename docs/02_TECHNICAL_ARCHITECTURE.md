@@ -456,9 +456,9 @@ Two supported modes:
 | `make schema-dump` | `pg_dump --schema-only` → `sql/schema/current.sql` |
 | `make verify` | `lint typecheck test check-openapi` (the "everything green" gate) |
 
-### 9.3 Current Phase 1 checkpoint commands (2026-10-10)
+### 9.3 Current Stage 1 checkpoint commands (2026-10-11)
 
-Run `make setup`, `make db-up`, `make migrate`, `make seed PRESET=standard SEED=42`, then API/web in separate terminals. Only the health UI exists. Seed refuses different existing data unless explicit `LOAD_FLAGS=--replace` is supplied; replacement clears application rows in one transaction, never databases or volumes. Same-checksum loads revalidate without replacement. `make schema-dump` is implemented. `db-reset`, analytics, pipeline, dev, demo-docker and explain remain unimplemented. Default tests use small data in `stocksense_test`; run the standard slow acceptance test separately as documented in README. OpenAPI remains health-only. See PHASE1_VERIFICATION.md for observed results.
+Run `make setup`, `make db-up`, `make migrate`, `make seed PRESET=standard SEED=42`, then API/web in separate terminals. Only the health UI exists. Seed refuses different existing data unless explicit `LOAD_FLAGS=--replace` is supplied; replacement clears application rows in one transaction, never databases or volumes. Same-checksum loads revalidate without replacement. `make schema-dump` is implemented. `db-reset`, analytics, pipeline, dev and demo-docker remain unimplemented. `stocgain db run-analysis 06` executes standalone SQL; `db refresh` rebuilds the daily MV; `make explain` executes standard-data plans and writes docs/perf/raw. Refresh is transactional/non-concurrent and is required after independent operational changes. Default tests use small data in `stocksense_test`; run the standard slow acceptance test separately as documented in README. OpenAPI remains health-only. See PHASE1_VERIFICATION.md and PHASE2_VERIFICATION.md for observed results.
 
 ### 9.4 Full-project fresh-clone procedure (future target)
 

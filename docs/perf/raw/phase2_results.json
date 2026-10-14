@@ -1,0 +1,520 @@
+{
+  "refresh_seconds": 1.6935977500397712,
+  "model_runs": 0,
+  "01_rolling_sales_velocity": {
+    "rows": 50,
+    "seconds": 0.576651250012219,
+    "columns": [
+      "store_code",
+      "sku",
+      "product_name",
+      "avg_units_7d",
+      "avg_units_28d",
+      "avg_units_28d_in_stock",
+      "censored_days_28d",
+      "censoring_gap_units"
+    ],
+    "examples": [
+      {
+        "store_code": "S07",
+        "sku": "PL-10160",
+        "product_name": "Aquaveld Kitchen Faucet - Variant 1",
+        "avg_units_7d": "21.57",
+        "avg_units_28d": "15.43",
+        "avg_units_28d_in_stock": "31.08",
+        "censored_days_28d": 15,
+        "censoring_gap_units": "15.65"
+      },
+      {
+        "store_code": "S04",
+        "sku": "PL-10160",
+        "product_name": "Aquaveld Kitchen Faucet - Variant 1",
+        "avg_units_7d": "6.86",
+        "avg_units_28d": "15.86",
+        "avg_units_28d_in_stock": "29.86",
+        "censored_days_28d": 14,
+        "censoring_gap_units": "14.00"
+      }
+    ]
+  },
+  "02_demand_trends": {
+    "rows": 800,
+    "seconds": 1.1836914590094239,
+    "columns": [
+      "week_start_date",
+      "category_name",
+      "region_name",
+      "units",
+      "revenue",
+      "censored_share",
+      "prior_week_units",
+      "wow_change_pct",
+      "units_4wk_moving_avg"
+    ],
+    "examples": [
+      {
+        "week_start_date": "2026-04-06",
+        "category_name": "Building Materials",
+        "region_name": "Midwest",
+        "units": 2428,
+        "revenue": "31885.71",
+        "censored_share": "0.0275",
+        "prior_week_units": null,
+        "wow_change_pct": null,
+        "units_4wk_moving_avg": "2428.0"
+      },
+      {
+        "week_start_date": "2026-04-13",
+        "category_name": "Building Materials",
+        "region_name": "Midwest",
+        "units": 2439,
+        "revenue": "33687.00",
+        "censored_share": "0.0317",
+        "prior_week_units": 2428,
+        "wow_change_pct": "0.5",
+        "units_4wk_moving_avg": "2433.5"
+      }
+    ]
+  },
+  "03_days_of_cover": {
+    "rows": 63,
+    "seconds": 0.04560041707009077,
+    "columns": [
+      "category_name",
+      "cover_bucket",
+      "positions",
+      "median_cover_days"
+    ],
+    "examples": [
+      {
+        "category_name": "All categories",
+        "cover_bucket": "0 \u00b7 out of stock",
+        "positions": 367,
+        "median_cover_days": "0.0"
+      },
+      {
+        "category_name": "All categories",
+        "cover_bucket": "1 \u00b7 < 7 days",
+        "positions": 864,
+        "median_cover_days": "4.1"
+      }
+    ]
+  },
+  "04_supplier_lead_time": {
+    "rows": 48,
+    "seconds": 0.04912250000052154,
+    "columns": [
+      "supplier_code",
+      "supplier_name",
+      "received_pos",
+      "avg_contract_lead_time_days",
+      "mean_lead_time_days",
+      "std_lead_time_days",
+      "p50_lead_time_days",
+      "p90_lead_time_days",
+      "lead_time_cv",
+      "mean_days_over_contract",
+      "variability_rank"
+    ],
+    "examples": [
+      {
+        "supplier_code": "SUP-021",
+        "supplier_name": "Gulfmark Plumbing Supply Co.",
+        "received_pos": 302,
+        "avg_contract_lead_time_days": "8.3",
+        "mean_lead_time_days": "9.11",
+        "std_lead_time_days": "2.40",
+        "p50_lead_time_days": 8.5,
+        "p90_lead_time_days": 12.0,
+        "lead_time_cv": "0.263",
+        "mean_days_over_contract": "0.78",
+        "variability_rank": 1
+      },
+      {
+        "supplier_code": "SUP-026",
+        "supplier_name": "Northbay Building Products Supply Co.",
+        "received_pos": 308,
+        "avg_contract_lead_time_days": "5.5",
+        "mean_lead_time_days": "5.69",
+        "std_lead_time_days": "1.46",
+        "p50_lead_time_days": 5.0,
+        "p90_lead_time_days": 7.0,
+        "lead_time_cv": "0.256",
+        "mean_days_over_contract": "0.20",
+        "variability_rank": 2
+      }
+    ]
+  },
+  "05_supplier_reliability": {
+    "rows": 48,
+    "seconds": 0.05234354198910296,
+    "columns": [
+      "supplier_code",
+      "supplier_name",
+      "pos_recent",
+      "on_time_rate_recent",
+      "on_time_rate_prior",
+      "in_full_rate_recent",
+      "otif_rate_recent",
+      "on_time_rate_change",
+      "worst_first_rank"
+    ],
+    "examples": [
+      {
+        "supplier_code": "SUP-015",
+        "supplier_name": "Lakeshore Electric Distributors",
+        "pos_recent": 155,
+        "on_time_rate_recent": "0.8194",
+        "on_time_rate_prior": "1.0000",
+        "in_full_rate_recent": "0.6774",
+        "otif_rate_recent": "0.5613",
+        "on_time_rate_change": "-0.1806",
+        "worst_first_rank": 1
+      },
+      {
+        "supplier_code": "SUP-021",
+        "supplier_name": "Gulfmark Plumbing Supply Co.",
+        "pos_recent": 151,
+        "on_time_rate_recent": "0.8344",
+        "on_time_rate_prior": "0.7748",
+        "in_full_rate_recent": "0.7682",
+        "otif_rate_recent": "0.6424",
+        "on_time_rate_change": "0.0596",
+        "worst_first_rank": 2
+      }
+    ]
+  },
+  "06_stockout_frequency": {
+    "rows": 50,
+    "seconds": 0.20613308297470212,
+    "columns": [
+      "store_code",
+      "sku",
+      "product_name",
+      "out_all_day_days",
+      "sold_out_days",
+      "stockout_day_rate",
+      "stockout_episodes",
+      "longest_episode_days",
+      "last_stockout_date"
+    ],
+    "examples": [
+      {
+        "store_code": "S10",
+        "sku": "PL-10191",
+        "product_name": "Pipestone Hose Bibb - Variant 3",
+        "out_all_day_days": 83,
+        "sold_out_days": 11,
+        "stockout_day_rate": "0.5222",
+        "stockout_episodes": 11,
+        "longest_episode_days": 14,
+        "last_stockout_date": "2026-09-24"
+      },
+      {
+        "store_code": "S09",
+        "sku": "HW-10393",
+        "product_name": "Boltright Wood Screws - Variant 4",
+        "out_all_day_days": 73,
+        "sold_out_days": 15,
+        "stockout_day_rate": "0.4889",
+        "stockout_episodes": 15,
+        "longest_episode_days": 10,
+        "last_stockout_date": "2026-09-28"
+      }
+    ]
+  },
+  "07_high_risk_identification": {
+    "rows": 0,
+    "seconds": 0.005580374971032143,
+    "columns": [
+      "store_code",
+      "rank_in_store",
+      "sku",
+      "product_name",
+      "category_name",
+      "risk_tier",
+      "stockout_probability_pct",
+      "on_hand_units",
+      "avg_daily_demand_units",
+      "days_of_cover",
+      "next_receipt_date",
+      "margin_at_risk_usd",
+      "action_type"
+    ],
+    "examples": []
+  },
+  "08_margin_exposure": {
+    "rows": 0,
+    "seconds": 0.003688666969537735,
+    "columns": [
+      "sku",
+      "product_name",
+      "category_name",
+      "at_risk_stores",
+      "margin_at_risk_usd",
+      "revenue_at_risk_usd",
+      "share_of_total",
+      "cumulative_share"
+    ],
+    "examples": []
+  },
+  "09_regional_risk_comparison": {
+    "rows": 1,
+    "seconds": 0.003393832826986909,
+    "columns": [
+      "region_name",
+      "positions",
+      "critical",
+      "high",
+      "moderate",
+      "low",
+      "at_risk_share",
+      "at_risk_share_vs_chain",
+      "margin_at_risk_usd",
+      "mean_stockout_probability"
+    ],
+    "examples": [
+      {
+        "region_name": "Chain total",
+        "positions": 0,
+        "critical": 0,
+        "high": 0,
+        "moderate": 0,
+        "low": 0,
+        "at_risk_share": null,
+        "at_risk_share_vs_chain": null,
+        "margin_at_risk_usd": null,
+        "mean_stockout_probability": null
+      }
+    ]
+  },
+  "10_demand_volatility": {
+    "rows": 4800,
+    "seconds": 0.11130900005809963,
+    "columns": [
+      "store_code",
+      "sku",
+      "product_name",
+      "clean_days",
+      "nonzero_days",
+      "mean_units",
+      "cv",
+      "adi",
+      "cv_squared",
+      "trend_units_per_day",
+      "demand_pattern"
+    ],
+    "examples": [
+      {
+        "store_code": "S10",
+        "sku": "HW-10358",
+        "product_name": "Anchorline Drywall Anchors - Variant 1",
+        "clean_days": 56,
+        "nonzero_days": 1,
+        "mean_units": "0.018",
+        "cv": "7.483",
+        "adi": "56.00",
+        "cv_squared": null,
+        "trend_units_per_day": "0.0019",
+        "demand_pattern": "intermittent"
+      },
+      {
+        "store_code": "S08",
+        "sku": "HT-10074",
+        "product_name": "Ironvale Utility Knife - Variant 3",
+        "clean_days": 56,
+        "nonzero_days": 1,
+        "mean_units": "0.018",
+        "cv": "7.483",
+        "adi": "56.00",
+        "cv_squared": null,
+        "trend_units_per_day": "0.0009",
+        "demand_pattern": "intermittent"
+      }
+    ]
+  },
+  "11_po_fulfillment": {
+    "rows": 288,
+    "seconds": 0.08561887498944998,
+    "columns": [
+      "supplier_code",
+      "promised_month",
+      "pos",
+      "lines",
+      "units_ordered",
+      "units_received",
+      "unit_fill_rate",
+      "split_deliveries",
+      "lines_closed_short",
+      "lines_still_open"
+    ],
+    "examples": [
+      {
+        "supplier_code": "SUP-001",
+        "promised_month": "2026-04-01",
+        "pos": 45,
+        "lines": 154,
+        "units_ordered": 2524,
+        "units_received": 2492,
+        "unit_fill_rate": "0.9873",
+        "split_deliveries": 11,
+        "lines_closed_short": 7,
+        "lines_still_open": 0
+      },
+      {
+        "supplier_code": "SUP-001",
+        "promised_month": "2026-05-01",
+        "pos": 57,
+        "lines": 207,
+        "units_ordered": 3336,
+        "units_received": 3315,
+        "unit_fill_rate": "0.9937",
+        "split_deliveries": 14,
+        "lines_closed_short": 5,
+        "lines_still_open": 0
+      }
+    ]
+  },
+  "12_replenishment_prioritization": {
+    "rows": 0,
+    "seconds": 0.0037003750912845135,
+    "columns": [
+      "priority_rank",
+      "store_code",
+      "store_rank",
+      "sku",
+      "product_name",
+      "risk_tier",
+      "action_type",
+      "urgency",
+      "stockout_probability",
+      "margin_at_risk_usd",
+      "recommended_order_units",
+      "recommended_order_cost_usd",
+      "cumulative_order_cost_usd"
+    ],
+    "examples": []
+  },
+  "13_inventory_reconciliation": {
+    "rows": 61,
+    "seconds": 0.005046916892752051,
+    "columns": [
+      "store_code",
+      "reason_code",
+      "adjustment_events",
+      "net_units",
+      "net_value_at_cost_usd"
+    ],
+    "examples": [
+      {
+        "store_code": "S01",
+        "reason_code": "shrink",
+        "adjustment_events": 241,
+        "net_units": -473,
+        "net_value_at_cost_usd": "-32995.92"
+      },
+      {
+        "store_code": "S01",
+        "reason_code": "damage",
+        "adjustment_events": 64,
+        "net_units": -97,
+        "net_value_at_cost_usd": "-5460.88"
+      }
+    ]
+  },
+  "14_abc_xyz_matrix": {
+    "rows": 0,
+    "seconds": 0.0013152500614523888,
+    "columns": [
+      "abc_class",
+      "x_products",
+      "y_products",
+      "z_products",
+      "revenue_56d"
+    ],
+    "examples": []
+  },
+  "15_in_stock_rate_trend": {
+    "rows": 108,
+    "seconds": 0.26891266694292426,
+    "columns": [
+      "week_start_date",
+      "region_name",
+      "in_stock_rate",
+      "in_stock_rate_promo",
+      "in_stock_rate_non_promo"
+    ],
+    "examples": [
+      {
+        "week_start_date": "2026-03-30",
+        "region_name": "Midwest",
+        "in_stock_rate": "0.9433",
+        "in_stock_rate_promo": "0.9561",
+        "in_stock_rate_non_promo": "0.9427"
+      },
+      {
+        "week_start_date": "2026-03-30",
+        "region_name": "Northeast",
+        "in_stock_rate": "0.9321",
+        "in_stock_rate_promo": "0.8039",
+        "in_stock_rate_non_promo": "0.9378"
+      }
+    ]
+  },
+  "q1_daily_position_build": [
+    "  Buffers: shared hit=12434",
+    "        Buffers: shared hit=12397",
+    "              Buffers: shared hit=11560",
+    "                    Buffers: shared hit=5560"
+  ],
+  "q2_daily_history": [
+    "  Buffers: shared hit=10239",
+    "        Buffers: shared hit=10239",
+    "              Buffers: shared hit=10233",
+    "                    Buffers: shared hit=10230"
+  ],
+  "q2_direct_ops": [
+    "  Buffers: shared hit=8830",
+    "        Buffers: shared hit=8830",
+    "              Buffers: shared hit=8824",
+    "                    Buffers: shared hit=8821"
+  ],
+  "q3_full_history": [
+    "  Buffers: shared hit=829274",
+    "Planning Time: 0.042 ms",
+    "Execution Time: 349.751 ms"
+  ],
+  "q4_risk_positions": [
+    "  Buffers: shared hit=18",
+    "Planning Time: 3.556 ms",
+    "Execution Time: 0.044 ms"
+  ],
+  "q5_overview_summary": [
+    "  Buffers: shared hit=272684",
+    "          Buffers: shared hit=839",
+    "                Buffers: shared hit=839",
+    "                      Buffers: shared hit=838"
+  ],
+  "q6_direct_ops": [
+    "  Buffers: shared hit=459",
+    "        Buffers: shared hit=459",
+    "              Buffers: shared hit=457",
+    "                    Buffers: shared hit=288"
+  ],
+  "q6_position_history": [
+    "  Buffers: shared hit=59",
+    "        Buffers: shared hit=59",
+    "              Buffers: shared hit=3",
+    "  Buffers: shared hit=5"
+  ],
+  "q7_supplier_performance": [
+    "  Buffers: shared hit=23",
+    "Planning Time: 0.438 ms",
+    "Execution Time: 0.064 ms"
+  ],
+  "q8_risk_trend": [
+    "  Buffers: shared hit=17",
+    "Planning Time: 0.173 ms",
+    "Execution Time: 0.020 ms"
+  ]
+}

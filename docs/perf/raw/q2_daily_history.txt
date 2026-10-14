@@ -1,0 +1,31 @@
+Sort  (cost=43865.43..44541.49 rows=270424 width=63) (actual time=263.942..274.171 rows=268800 loops=1)
+  Sort Key: m.store_id, m.product_id, m.position_date
+  Sort Method: quicksort  Memory: 30852kB
+  Buffers: shared hit=10239
+  ->  Hash Join  (cost=3733.13..19466.61 rows=270424 width=63) (actual time=7.407..98.057 rows=268800 loops=1)
+        Hash Cond: (m.product_id = p.product_id)
+        Buffers: shared hit=10239
+        ->  Hash Join  (cost=3718.13..18734.22 rows=270424 width=61) (actual time=7.341..69.343 rows=268800 loops=1)
+              Hash Cond: (m.position_date = c.calendar_date)
+              Buffers: shared hit=10233
+              ->  Bitmap Heap Scan on mv_daily_position m  (cost=3708.27..18004.63 rows=270424 width=59) (actual time=7.297..28.726 rows=268800 loops=1)
+                    Recheck Cond: ((position_date >= '2026-08-06'::date) AND (position_date <= '2026-09-30'::date))
+                    Heap Blocks: exact=9997
+                    Buffers: shared hit=10230
+                    ->  Bitmap Index Scan on ix_mv_daily_position_date  (cost=0.00..3640.67 rows=270424 width=0) (actual time=6.428..6.428 rows=268800 loops=1)
+                          Index Cond: ((position_date >= '2026-08-06'::date) AND (position_date <= '2026-09-30'::date))
+                          Buffers: shared hit=233
+              ->  Hash  (cost=6.05..6.05 rows=305 width=6) (actual time=0.040..0.041 rows=305 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 20kB
+                    Buffers: shared hit=3
+                    ->  Seq Scan on calendar c  (cost=0.00..6.05 rows=305 width=6) (actual time=0.002..0.021 rows=305 loops=1)
+                          Buffers: shared hit=3
+        ->  Hash  (cost=10.00..10.00 rows=400 width=6) (actual time=0.063..0.064 rows=400 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 24kB
+              Buffers: shared hit=6
+              ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=6) (actual time=0.005..0.033 rows=400 loops=1)
+                    Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=19
+Planning Time: 0.173 ms
+Execution Time: 282.110 ms

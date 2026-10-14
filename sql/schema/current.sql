@@ -385,6 +385,212 @@ CREATE TABLE analytics.inventory_risk_snapshots (
 
 
 --
+-- Name: daily_sales; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.daily_sales (
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    sales_date date NOT NULL,
+    units_sold integer NOT NULL,
+    net_sales_amount numeric(12,2) NOT NULL,
+    cogs_amount numeric(12,2) NOT NULL,
+    CONSTRAINT daily_sales_check CHECK (((units_sold > 0) OR ((net_sales_amount = (0)::numeric) AND (cogs_amount = (0)::numeric)))),
+    CONSTRAINT daily_sales_cogs_amount_check CHECK ((cogs_amount >= (0)::numeric)),
+    CONSTRAINT daily_sales_net_sales_amount_check CHECK ((net_sales_amount >= (0)::numeric)),
+    CONSTRAINT daily_sales_units_sold_check CHECK ((units_sold >= 0))
+);
+
+
+--
+-- Name: inventory_adjustments; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_adjustments (
+    adjustment_id integer NOT NULL,
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    adjustment_date date NOT NULL,
+    quantity_delta integer NOT NULL,
+    reason_code ops.adjustment_reason NOT NULL,
+    CONSTRAINT inventory_adjustments_check CHECK (((reason_code = 'cycle_count_correction'::ops.adjustment_reason) OR (quantity_delta < 0))),
+    CONSTRAINT inventory_adjustments_quantity_delta_check CHECK ((quantity_delta <> 0))
+);
+
+
+--
+-- Name: inventory_receipts; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_receipts (
+    receipt_id integer NOT NULL,
+    po_line_id integer NOT NULL,
+    received_date date NOT NULL,
+    quantity_received integer NOT NULL,
+    CONSTRAINT inventory_receipts_quantity_received_check CHECK ((quantity_received > 0))
+);
+
+
+--
+-- Name: inventory_snapshots; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.inventory_snapshots (
+    store_id smallint NOT NULL,
+    product_id integer NOT NULL,
+    snapshot_date date NOT NULL,
+    opening_on_hand integer NOT NULL,
+    closing_on_hand integer NOT NULL,
+    CONSTRAINT inventory_snapshots_closing_on_hand_check CHECK ((closing_on_hand >= 0)),
+    CONSTRAINT inventory_snapshots_opening_on_hand_check CHECK ((opening_on_hand >= 0))
+);
+
+
+--
+-- Name: promotion_products; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.promotion_products (
+    promotion_id integer NOT NULL,
+    product_id integer NOT NULL
+);
+
+
+--
+-- Name: promotions; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.promotions (
+    promotion_id integer NOT NULL,
+    promotion_code character varying(12) NOT NULL,
+    promotion_name character varying(80) NOT NULL,
+    region_id smallint,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    discount_rate numeric(4,3) NOT NULL,
+    planned_lift numeric(4,2) NOT NULL,
+    CONSTRAINT promotions_check CHECK ((end_date >= start_date)),
+    CONSTRAINT promotions_check1 CHECK (((end_date - start_date) <= 30)),
+    CONSTRAINT promotions_discount_rate_check CHECK (((discount_rate > (0)::numeric) AND (discount_rate < 0.6))),
+    CONSTRAINT promotions_planned_lift_check CHECK (((planned_lift >= 1.00) AND (planned_lift <= 3.00))),
+    CONSTRAINT promotions_promotion_code_check CHECK (((promotion_code)::text ~ '^PRM-[0-9]{4}$'::text))
+);
+
+
+--
+-- Name: purchase_order_lines; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.purchase_order_lines (
+    po_line_id integer NOT NULL,
+    purchase_order_id integer NOT NULL,
+    line_number smallint NOT NULL,
+    product_id integer NOT NULL,
+    quantity_ordered integer NOT NULL,
+    quantity_cancelled integer DEFAULT 0 NOT NULL,
+    unit_cost numeric(10,2) NOT NULL,
+    CONSTRAINT purchase_order_lines_check CHECK (((quantity_cancelled >= 0) AND (quantity_cancelled <= quantity_ordered))),
+    CONSTRAINT purchase_order_lines_line_number_check CHECK ((line_number >= 1)),
+    CONSTRAINT purchase_order_lines_quantity_ordered_check CHECK ((quantity_ordered > 0)),
+    CONSTRAINT purchase_order_lines_unit_cost_check CHECK ((unit_cost > (0)::numeric))
+);
+
+
+--
+-- Name: purchase_orders; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.purchase_orders (
+    purchase_order_id integer NOT NULL,
+    po_number character varying(12) NOT NULL,
+    supplier_id smallint NOT NULL,
+    store_id smallint NOT NULL,
+    order_date date NOT NULL,
+    promised_delivery_date date NOT NULL,
+    CONSTRAINT purchase_orders_check CHECK ((promised_delivery_date > order_date)),
+    CONSTRAINT purchase_orders_po_number_check CHECK (((po_number)::text ~ '^PO-[0-9]{6}$'::text))
+);
+
+
+--
+-- Name: stores; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.stores (
+    store_id smallint NOT NULL,
+    store_code character varying(4) NOT NULL,
+    store_name character varying(60) NOT NULL,
+    city character varying(40) NOT NULL,
+    state_code character(2) NOT NULL,
+    region_id smallint NOT NULL,
+    opened_date date NOT NULL,
+    sales_area_sqft integer NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    CONSTRAINT stores_sales_area_sqft_check CHECK ((sales_area_sqft > 0)),
+    CONSTRAINT stores_state_code_check CHECK ((state_code ~ '^[A-Z]{2}$'::text)),
+    CONSTRAINT stores_store_code_check CHECK (((store_code)::text ~ '^S[0-9]{2}$'::text))
+);
+
+
+--
+-- Name: mv_daily_position; Type: MATERIALIZED VIEW; Schema: analytics; Owner: -
+--
+
+CREATE MATERIALIZED VIEW analytics.mv_daily_position AS
+ WITH receipts_by_day AS (
+         SELECT po.store_id,
+            pol.product_id,
+            r.received_date AS position_date,
+            (sum(r.quantity_received))::integer AS units_received
+           FROM ((ops.inventory_receipts r
+             JOIN ops.purchase_order_lines pol ON ((pol.po_line_id = r.po_line_id)))
+             JOIN ops.purchase_orders po ON ((po.purchase_order_id = pol.purchase_order_id)))
+          GROUP BY po.store_id, pol.product_id, r.received_date
+        ), adjustments_by_day AS (
+         SELECT inventory_adjustments.store_id,
+            inventory_adjustments.product_id,
+            inventory_adjustments.adjustment_date AS position_date,
+            (sum(inventory_adjustments.quantity_delta))::integer AS net_adjustment
+           FROM ops.inventory_adjustments
+          GROUP BY inventory_adjustments.store_id, inventory_adjustments.product_id, inventory_adjustments.adjustment_date
+        ), promo_days AS (
+         SELECT s.store_id,
+            pp.product_id,
+            (gs.d)::date AS position_date,
+            p.promotion_id
+           FROM (((ops.promotions p
+             JOIN ops.promotion_products pp ON ((pp.promotion_id = p.promotion_id)))
+             JOIN ops.stores s ON (((p.region_id IS NULL) OR (s.region_id = p.region_id))))
+             CROSS JOIN LATERAL generate_series((p.start_date)::timestamp with time zone, (p.end_date)::timestamp with time zone, '1 day'::interval) gs(d))
+        )
+ SELECT i.store_id,
+    i.product_id,
+    i.snapshot_date AS position_date,
+    i.opening_on_hand,
+    COALESCE(rc.units_received, 0) AS units_received,
+    ds.units_sold,
+    COALESCE(ad.net_adjustment, 0) AS net_adjustment,
+    i.closing_on_hand,
+    (i.opening_on_hand + COALESCE(rc.units_received, 0)) AS available_units,
+        CASE
+            WHEN ((i.opening_on_hand + COALESCE(rc.units_received, 0)) = 0) THEN 'out_all_day'::text
+            WHEN (ds.units_sold >= (i.opening_on_hand + COALESCE(rc.units_received, 0))) THEN 'sold_out'::text
+            ELSE 'in_stock'::text
+        END AS availability_status,
+    (((i.opening_on_hand + COALESCE(rc.units_received, 0)) = 0) OR (ds.units_sold >= (i.opening_on_hand + COALESCE(rc.units_received, 0)))) AS is_censored,
+    ds.net_sales_amount,
+    ds.cogs_amount,
+    pd.promotion_id,
+    (pd.promotion_id IS NOT NULL) AS is_promo_day
+   FROM ((((ops.inventory_snapshots i
+     JOIN ops.daily_sales ds ON (((ds.store_id = i.store_id) AND (ds.product_id = i.product_id) AND (ds.sales_date = i.snapshot_date))))
+     LEFT JOIN receipts_by_day rc ON (((rc.store_id = i.store_id) AND (rc.product_id = i.product_id) AND (rc.position_date = i.snapshot_date))))
+     LEFT JOIN adjustments_by_day ad ON (((ad.store_id = i.store_id) AND (ad.product_id = i.product_id) AND (ad.position_date = i.snapshot_date))))
+     LEFT JOIN promo_days pd ON (((pd.store_id = i.store_id) AND (pd.product_id = i.product_id) AND (pd.position_date = i.snapshot_date))))
+  WITH NO DATA;
+
+
+--
 -- Name: replenishment_recommendations; Type: TABLE; Schema: analytics; Owner: -
 --
 
@@ -482,100 +688,196 @@ CREATE TABLE analytics.supplier_lane_estimates (
 
 
 --
--- Name: daily_sales; Type: TABLE; Schema: ops; Owner: -
+-- Name: v_current_run; Type: VIEW; Schema: analytics; Owner: -
 --
 
-CREATE TABLE ops.daily_sales (
-    store_id smallint NOT NULL,
-    product_id integer NOT NULL,
-    sales_date date NOT NULL,
-    units_sold integer NOT NULL,
-    net_sales_amount numeric(12,2) NOT NULL,
-    cogs_amount numeric(12,2) NOT NULL,
-    CONSTRAINT daily_sales_check CHECK (((units_sold > 0) OR ((net_sales_amount = (0)::numeric) AND (cogs_amount = (0)::numeric)))),
-    CONSTRAINT daily_sales_cogs_amount_check CHECK ((cogs_amount >= (0)::numeric)),
-    CONSTRAINT daily_sales_net_sales_amount_check CHECK ((net_sales_amount >= (0)::numeric)),
-    CONSTRAINT daily_sales_units_sold_check CHECK ((units_sold >= 0))
+CREATE VIEW analytics.v_current_run AS
+ SELECT run_id,
+    as_of_date,
+    model_version,
+    completed_at
+   FROM analytics.analytics_runs
+  WHERE ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+  ORDER BY as_of_date DESC, completed_at DESC
+ LIMIT 1;
+
+
+--
+-- Name: calendar; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.calendar (
+    calendar_date date NOT NULL,
+    iso_year smallint NOT NULL,
+    iso_week smallint NOT NULL,
+    iso_day_of_week smallint NOT NULL,
+    day_name character varying(9) NOT NULL,
+    month smallint NOT NULL,
+    month_name character varying(9) NOT NULL,
+    quarter smallint NOT NULL,
+    week_start_date date NOT NULL,
+    is_weekend boolean NOT NULL,
+    holiday_name character varying(40),
+    CONSTRAINT calendar_iso_day_of_week_check CHECK (((iso_day_of_week >= 1) AND (iso_day_of_week <= 7))),
+    CONSTRAINT calendar_iso_week_check CHECK (((iso_week >= 1) AND (iso_week <= 53))),
+    CONSTRAINT calendar_month_check CHECK (((month >= 1) AND (month <= 12))),
+    CONSTRAINT calendar_quarter_check CHECK (((quarter >= 1) AND (quarter <= 4)))
 );
 
 
 --
--- Name: inventory_adjustments; Type: TABLE; Schema: ops; Owner: -
+-- Name: products; Type: TABLE; Schema: ops; Owner: -
 --
 
-CREATE TABLE ops.inventory_adjustments (
-    adjustment_id integer NOT NULL,
-    store_id smallint NOT NULL,
+CREATE TABLE ops.products (
     product_id integer NOT NULL,
-    adjustment_date date NOT NULL,
-    quantity_delta integer NOT NULL,
-    reason_code ops.adjustment_reason NOT NULL,
-    CONSTRAINT inventory_adjustments_check CHECK (((reason_code = 'cycle_count_correction'::ops.adjustment_reason) OR (quantity_delta < 0))),
-    CONSTRAINT inventory_adjustments_quantity_delta_check CHECK ((quantity_delta <> 0))
-);
-
-
---
--- Name: inventory_receipts; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.inventory_receipts (
-    receipt_id integer NOT NULL,
-    po_line_id integer NOT NULL,
-    received_date date NOT NULL,
-    quantity_received integer NOT NULL,
-    CONSTRAINT inventory_receipts_quantity_received_check CHECK ((quantity_received > 0))
-);
-
-
---
--- Name: inventory_snapshots; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.inventory_snapshots (
-    store_id smallint NOT NULL,
-    product_id integer NOT NULL,
-    snapshot_date date NOT NULL,
-    opening_on_hand integer NOT NULL,
-    closing_on_hand integer NOT NULL,
-    CONSTRAINT inventory_snapshots_closing_on_hand_check CHECK ((closing_on_hand >= 0)),
-    CONSTRAINT inventory_snapshots_opening_on_hand_check CHECK ((opening_on_hand >= 0))
-);
-
-
---
--- Name: purchase_order_lines; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.purchase_order_lines (
-    po_line_id integer NOT NULL,
-    purchase_order_id integer NOT NULL,
-    line_number smallint NOT NULL,
-    product_id integer NOT NULL,
-    quantity_ordered integer NOT NULL,
-    quantity_cancelled integer DEFAULT 0 NOT NULL,
+    sku character varying(12) NOT NULL,
+    product_name character varying(120) NOT NULL,
+    category_id smallint NOT NULL,
+    brand_name character varying(40) NOT NULL,
+    unit_of_measure character varying(8) NOT NULL,
+    unit_price numeric(10,2) NOT NULL,
     unit_cost numeric(10,2) NOT NULL,
-    CONSTRAINT purchase_order_lines_check CHECK (((quantity_cancelled >= 0) AND (quantity_cancelled <= quantity_ordered))),
-    CONSTRAINT purchase_order_lines_line_number_check CHECK ((line_number >= 1)),
-    CONSTRAINT purchase_order_lines_quantity_ordered_check CHECK ((quantity_ordered > 0)),
-    CONSTRAINT purchase_order_lines_unit_cost_check CHECK ((unit_cost > (0)::numeric))
+    introduced_date date NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    CONSTRAINT products_check CHECK ((unit_price > unit_cost)),
+    CONSTRAINT products_sku_check CHECK (((sku)::text ~ '^[A-Z]{2}-[0-9]{5}$'::text)),
+    CONSTRAINT products_unit_cost_check CHECK ((unit_cost > (0)::numeric)),
+    CONSTRAINT products_unit_of_measure_check CHECK (((unit_of_measure)::text = ANY ((ARRAY['each'::character varying, 'pack'::character varying, 'bag'::character varying, 'gallon'::character varying, 'roll'::character varying, 'box'::character varying])::text[]))),
+    CONSTRAINT products_unit_price_check CHECK ((unit_price > (0)::numeric))
 );
 
 
 --
--- Name: purchase_orders; Type: TABLE; Schema: ops; Owner: -
+-- Name: v_category_dow_profile; Type: VIEW; Schema: analytics; Owner: -
 --
 
-CREATE TABLE ops.purchase_orders (
-    purchase_order_id integer NOT NULL,
-    po_number character varying(12) NOT NULL,
+CREATE VIEW analytics.v_category_dow_profile AS
+ WITH cr AS (
+         SELECT v_current_run.as_of_date
+           FROM analytics.v_current_run
+        ), base AS (
+         SELECT p.category_id,
+            c.iso_day_of_week,
+            m.units_sold
+           FROM (((analytics.mv_daily_position m
+             JOIN ops.products p ON ((p.product_id = m.product_id)))
+             JOIN ops.calendar c ON ((c.calendar_date = m.position_date)))
+             CROSS JOIN cr)
+          WHERE (((m.position_date >= (cr.as_of_date - 55)) AND (m.position_date <= cr.as_of_date)) AND (m.availability_status = 'in_stock'::text) AND (NOT m.is_promo_day))
+        ), by_dow AS (
+         SELECT base.category_id,
+            base.iso_day_of_week,
+            avg(base.units_sold) AS avg_units,
+            count(*) AS n_obs
+           FROM base
+          GROUP BY base.category_id, base.iso_day_of_week
+        )
+ SELECT category_id,
+    iso_day_of_week,
+    avg_units,
+    n_obs,
+    (avg_units / NULLIF(avg(avg_units) OVER (PARTITION BY category_id), (0)::numeric)) AS dow_index
+   FROM by_dow;
+
+
+--
+-- Name: product_categories; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.product_categories (
+    category_id smallint NOT NULL,
+    category_code character varying(4) NOT NULL,
+    category_name character varying(40) NOT NULL,
+    CONSTRAINT product_categories_category_code_check CHECK (((category_code)::text ~ '^[A-Z]{2}$'::text))
+);
+
+
+--
+-- Name: regions; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.regions (
+    region_id smallint NOT NULL,
+    region_code character varying(4) NOT NULL,
+    region_name character varying(40) NOT NULL,
+    CONSTRAINT regions_region_code_check CHECK (((region_code)::text ~ '^[A-Z]{2}$'::text))
+);
+
+
+--
+-- Name: suppliers; Type: TABLE; Schema: ops; Owner: -
+--
+
+CREATE TABLE ops.suppliers (
     supplier_id smallint NOT NULL,
-    store_id smallint NOT NULL,
-    order_date date NOT NULL,
-    promised_delivery_date date NOT NULL,
-    CONSTRAINT purchase_orders_check CHECK ((promised_delivery_date > order_date)),
-    CONSTRAINT purchase_orders_po_number_check CHECK (((po_number)::text ~ '^PO-[0-9]{6}$'::text))
+    supplier_code character varying(8) NOT NULL,
+    supplier_name character varying(80) NOT NULL,
+    primary_category_id smallint NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    CONSTRAINT suppliers_supplier_code_check CHECK (((supplier_code)::text ~ '^SUP-[0-9]{3}$'::text))
 );
+
+
+--
+-- Name: v_current_risk; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_current_risk AS
+ SELECT r.run_id,
+    r.store_id,
+    st.store_code,
+    st.store_name,
+    st.region_id,
+    rg.region_name,
+    r.product_id,
+    p.sku,
+    p.product_name,
+    p.category_id,
+    pc.category_name,
+    r.supplier_id,
+    su.supplier_name,
+    p.unit_price,
+    p.unit_cost,
+    r.on_hand_units,
+    r.on_order_units,
+    r.inventory_position_units,
+    r.avg_daily_demand_units,
+    r.days_of_cover,
+    r.next_receipt_date,
+    r.next_receipt_units,
+    r.next_receipt_po_id,
+    npo.po_number AS next_receipt_po_number,
+    r.next_receipt_overdue,
+    r.lead_time_mean_days,
+    r.safety_stock_units,
+    r.reorder_point_units,
+    r.order_up_to_units,
+    r.below_reorder_point,
+    r.stockout_probability,
+    r.risk_tier,
+    r.risk_drivers,
+    r.expected_shortage_units,
+    r.revenue_at_risk_usd,
+    r.margin_at_risk_usd,
+    r.projected_stockout_date,
+    r.days_until_projected_stockout,
+    r.currently_out_of_stock,
+    rr.action_type,
+    rr.urgency,
+    rr.priority_rank,
+    rr.recommended_order_units,
+    rr.recommended_order_cost_usd,
+    rr.related_purchase_order_id
+   FROM ((((((((analytics.inventory_risk_snapshots r
+     JOIN analytics.v_current_run cr ON ((cr.run_id = r.run_id)))
+     JOIN ops.stores st ON ((st.store_id = r.store_id)))
+     JOIN ops.regions rg ON ((rg.region_id = st.region_id)))
+     JOIN ops.products p ON ((p.product_id = r.product_id)))
+     JOIN ops.product_categories pc ON ((pc.category_id = p.category_id)))
+     JOIN ops.suppliers su ON ((su.supplier_id = r.supplier_id)))
+     JOIN analytics.replenishment_recommendations rr ON (((rr.run_id = r.run_id) AND (rr.store_id = r.store_id) AND (rr.product_id = r.product_id))))
+     LEFT JOIN ops.purchase_orders npo ON ((npo.purchase_order_id = r.next_receipt_po_id)));
 
 
 --
@@ -617,26 +919,203 @@ CREATE VIEW analytics.v_inventory_reconciliation AS
 
 
 --
--- Name: calendar; Type: TABLE; Schema: ops; Owner: -
+-- Name: v_po_line_status; Type: VIEW; Schema: analytics; Owner: -
 --
 
-CREATE TABLE ops.calendar (
-    calendar_date date NOT NULL,
-    iso_year smallint NOT NULL,
-    iso_week smallint NOT NULL,
-    iso_day_of_week smallint NOT NULL,
-    day_name character varying(9) NOT NULL,
-    month smallint NOT NULL,
-    month_name character varying(9) NOT NULL,
-    quarter smallint NOT NULL,
-    week_start_date date NOT NULL,
-    is_weekend boolean NOT NULL,
-    holiday_name character varying(40),
-    CONSTRAINT calendar_iso_day_of_week_check CHECK (((iso_day_of_week >= 1) AND (iso_day_of_week <= 7))),
-    CONSTRAINT calendar_iso_week_check CHECK (((iso_week >= 1) AND (iso_week <= 53))),
-    CONSTRAINT calendar_month_check CHECK (((month >= 1) AND (month <= 12))),
-    CONSTRAINT calendar_quarter_check CHECK (((quarter >= 1) AND (quarter <= 4)))
-);
+CREATE VIEW analytics.v_po_line_status AS
+ WITH rec AS (
+         SELECT inventory_receipts.po_line_id,
+            (sum(inventory_receipts.quantity_received))::integer AS quantity_received,
+            min(inventory_receipts.received_date) AS first_receipt_date,
+            max(inventory_receipts.received_date) AS last_receipt_date,
+            (count(*))::integer AS receipt_count
+           FROM ops.inventory_receipts
+          GROUP BY inventory_receipts.po_line_id
+        )
+ SELECT pol.po_line_id,
+    pol.purchase_order_id,
+    po.po_number,
+    po.supplier_id,
+    po.store_id,
+    pol.product_id,
+    po.order_date,
+    po.promised_delivery_date,
+    pol.quantity_ordered,
+    pol.quantity_cancelled,
+    COALESCE(rec.quantity_received, 0) AS quantity_received,
+    ((pol.quantity_ordered - pol.quantity_cancelled) - COALESCE(rec.quantity_received, 0)) AS open_quantity,
+    rec.first_receipt_date,
+    rec.last_receipt_date,
+    COALESCE(rec.receipt_count, 0) AS receipt_count,
+    pol.unit_cost,
+        CASE
+            WHEN ((((pol.quantity_ordered - pol.quantity_cancelled) - COALESCE(rec.quantity_received, 0)) > 0) AND (COALESCE(rec.quantity_received, 0) = 0)) THEN 'open'::text
+            WHEN (((pol.quantity_ordered - pol.quantity_cancelled) - COALESCE(rec.quantity_received, 0)) > 0) THEN 'partially_received'::text
+            WHEN (pol.quantity_cancelled > 0) THEN 'closed_short'::text
+            ELSE 'received'::text
+        END AS line_status
+   FROM ((ops.purchase_order_lines pol
+     JOIN ops.purchase_orders po ON ((po.purchase_order_id = pol.purchase_order_id)))
+     LEFT JOIN rec ON ((rec.po_line_id = pol.po_line_id)));
+
+
+--
+-- Name: v_po_status; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_po_status AS
+ SELECT purchase_order_id,
+    po_number,
+    supplier_id,
+    store_id,
+    order_date,
+    promised_delivery_date,
+    (count(*))::integer AS line_count,
+    (sum(quantity_ordered))::integer AS units_ordered,
+    (sum(quantity_received))::integer AS units_received,
+    (sum(quantity_cancelled))::integer AS units_cancelled,
+    (sum(open_quantity))::integer AS units_open,
+    min(first_receipt_date) AS first_receipt_date,
+    (min(first_receipt_date) - order_date) AS lead_time_days,
+    (min(first_receipt_date) - promised_delivery_date) AS delay_days,
+        CASE
+            WHEN (min(first_receipt_date) IS NULL) THEN NULL::boolean
+            ELSE (min(first_receipt_date) <= promised_delivery_date)
+        END AS on_time,
+    bool_and(((quantity_cancelled = 0) AND (receipt_count = 1) AND (quantity_received = quantity_ordered))) AS in_full,
+        CASE
+            WHEN ((sum(open_quantity) = 0) AND (sum(quantity_cancelled) > 0)) THEN 'closed_short'::text
+            WHEN (sum(open_quantity) = 0) THEN 'received'::text
+            WHEN (sum(quantity_received) > 0) THEN 'partially_received'::text
+            ELSE 'open'::text
+        END AS po_status
+   FROM analytics.v_po_line_status
+  GROUP BY purchase_order_id, po_number, supplier_id, store_id, order_date, promised_delivery_date;
+
+
+--
+-- Name: v_product_abc_class; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_product_abc_class AS
+ WITH cr AS (
+         SELECT v_current_run.as_of_date
+           FROM analytics.v_current_run
+        ), rev AS (
+         SELECT m.product_id,
+            sum(m.net_sales_amount) AS revenue
+           FROM (analytics.mv_daily_position m
+             CROSS JOIN cr)
+          WHERE ((m.position_date >= (cr.as_of_date - 55)) AND (m.position_date <= cr.as_of_date))
+          GROUP BY m.product_id
+        ), ranked AS (
+         SELECT rev.product_id,
+            rev.revenue,
+            (sum(rev.revenue) OVER (ORDER BY rev.revenue DESC, rev.product_id ROWS UNBOUNDED PRECEDING) - rev.revenue) AS revenue_before,
+            sum(rev.revenue) OVER () AS total_revenue
+           FROM rev
+        )
+ SELECT product_id,
+    revenue,
+    round((revenue_before / NULLIF(total_revenue, (0)::numeric)), 4) AS cumulative_share_before,
+        CASE
+            WHEN ((revenue_before / NULLIF(total_revenue, (0)::numeric)) < 0.80) THEN 'A'::text
+            WHEN ((revenue_before / NULLIF(total_revenue, (0)::numeric)) < 0.95) THEN 'B'::text
+            ELSE 'C'::text
+        END AS abc_class
+   FROM ranked;
+
+
+--
+-- Name: v_risk_trend; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_risk_trend AS
+ WITH latest_runs AS (
+         SELECT DISTINCT ON (analytics_runs.as_of_date) analytics_runs.run_id,
+            analytics_runs.as_of_date,
+            analytics_runs.run_type
+           FROM analytics.analytics_runs
+          WHERE (analytics_runs.status = 'succeeded'::analytics.run_status)
+          ORDER BY analytics_runs.as_of_date, (analytics_runs.run_type = 'current'::analytics.run_type) DESC, analytics_runs.completed_at DESC
+        )
+ SELECT lr.as_of_date,
+    lr.run_id,
+    r.store_id,
+    st.region_id,
+    p.category_id,
+    r.risk_tier,
+    (count(*))::integer AS positions,
+    sum(r.margin_at_risk_usd) AS margin_at_risk_usd,
+    sum(r.revenue_at_risk_usd) AS revenue_at_risk_usd
+   FROM (((latest_runs lr
+     JOIN analytics.inventory_risk_snapshots r ON ((r.run_id = lr.run_id)))
+     JOIN ops.products p ON ((p.product_id = r.product_id)))
+     JOIN ops.stores st ON ((st.store_id = r.store_id)))
+  GROUP BY lr.as_of_date, lr.run_id, r.store_id, st.region_id, p.category_id, r.risk_tier;
+
+
+--
+-- Name: v_stockout_episodes; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_stockout_episodes AS
+ WITH flagged AS (
+         SELECT mv_daily_position.store_id,
+            mv_daily_position.product_id,
+            mv_daily_position.position_date,
+            mv_daily_position.is_censored,
+            (mv_daily_position.position_date - (row_number() OVER (PARTITION BY mv_daily_position.store_id, mv_daily_position.product_id, mv_daily_position.is_censored ORDER BY mv_daily_position.position_date))::integer) AS island_key
+           FROM analytics.mv_daily_position
+        )
+ SELECT store_id,
+    product_id,
+    min(position_date) AS episode_start,
+    max(position_date) AS episode_end,
+    (count(*))::integer AS episode_days
+   FROM flagged
+  WHERE is_censored
+  GROUP BY store_id, product_id, island_key;
+
+
+--
+-- Name: v_supplier_lane_performance; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_supplier_lane_performance AS
+SELECT
+    NULL::smallint AS supplier_id,
+    NULL::smallint AS store_id,
+    NULL::bigint AS received_pos,
+    NULL::numeric AS mean_lead_time_days,
+    NULL::numeric AS std_lead_time_days,
+    NULL::bigint AS pos_due_90d,
+    NULL::bigint AS on_time_pos_90d,
+    NULL::bigint AS overdue_open_pos;
+
+
+--
+-- Name: v_supplier_performance; Type: VIEW; Schema: analytics; Owner: -
+--
+
+CREATE VIEW analytics.v_supplier_performance AS
+SELECT
+    NULL::smallint AS supplier_id,
+    NULL::character varying(8) AS supplier_code,
+    NULL::character varying(80) AS supplier_name,
+    NULL::character varying(40) AS category_name,
+    NULL::bigint AS pos_due_90d,
+    NULL::numeric AS on_time_rate,
+    NULL::numeric AS in_full_rate,
+    NULL::numeric AS mean_lead_time_days,
+    NULL::numeric AS std_lead_time_days,
+    NULL::numeric AS p90_lead_time_days,
+    NULL::numeric AS lead_time_cv,
+    NULL::bigint AS overdue_open_pos,
+    NULL::bigint AS at_risk_positions,
+    NULL::numeric AS margin_at_risk_usd,
+    NULL::boolean AS review_flag,
+    NULL::bigint AS reliability_rank;
 
 
 --
@@ -724,18 +1203,6 @@ ALTER SEQUENCE ops.inventory_receipts_receipt_id_seq OWNED BY ops.inventory_rece
 
 
 --
--- Name: product_categories; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.product_categories (
-    category_id smallint NOT NULL,
-    category_code character varying(4) NOT NULL,
-    category_name character varying(40) NOT NULL,
-    CONSTRAINT product_categories_category_code_check CHECK (((category_code)::text ~ '^[A-Z]{2}$'::text))
-);
-
-
---
 -- Name: product_categories_category_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -772,29 +1239,6 @@ CREATE TABLE ops.product_suppliers (
 
 
 --
--- Name: products; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.products (
-    product_id integer NOT NULL,
-    sku character varying(12) NOT NULL,
-    product_name character varying(120) NOT NULL,
-    category_id smallint NOT NULL,
-    brand_name character varying(40) NOT NULL,
-    unit_of_measure character varying(8) NOT NULL,
-    unit_price numeric(10,2) NOT NULL,
-    unit_cost numeric(10,2) NOT NULL,
-    introduced_date date NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    CONSTRAINT products_check CHECK ((unit_price > unit_cost)),
-    CONSTRAINT products_sku_check CHECK (((sku)::text ~ '^[A-Z]{2}-[0-9]{5}$'::text)),
-    CONSTRAINT products_unit_cost_check CHECK ((unit_cost > (0)::numeric)),
-    CONSTRAINT products_unit_of_measure_check CHECK (((unit_of_measure)::text = ANY ((ARRAY['each'::character varying, 'pack'::character varying, 'bag'::character varying, 'gallon'::character varying, 'roll'::character varying, 'box'::character varying])::text[]))),
-    CONSTRAINT products_unit_price_check CHECK ((unit_price > (0)::numeric))
-);
-
-
---
 -- Name: products_product_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -812,37 +1256,6 @@ CREATE SEQUENCE ops.products_product_id_seq
 --
 
 ALTER SEQUENCE ops.products_product_id_seq OWNED BY ops.products.product_id;
-
-
---
--- Name: promotion_products; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.promotion_products (
-    promotion_id integer NOT NULL,
-    product_id integer NOT NULL
-);
-
-
---
--- Name: promotions; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.promotions (
-    promotion_id integer NOT NULL,
-    promotion_code character varying(12) NOT NULL,
-    promotion_name character varying(80) NOT NULL,
-    region_id smallint,
-    start_date date NOT NULL,
-    end_date date NOT NULL,
-    discount_rate numeric(4,3) NOT NULL,
-    planned_lift numeric(4,2) NOT NULL,
-    CONSTRAINT promotions_check CHECK ((end_date >= start_date)),
-    CONSTRAINT promotions_check1 CHECK (((end_date - start_date) <= 30)),
-    CONSTRAINT promotions_discount_rate_check CHECK (((discount_rate > (0)::numeric) AND (discount_rate < 0.6))),
-    CONSTRAINT promotions_planned_lift_check CHECK (((planned_lift >= 1.00) AND (planned_lift <= 3.00))),
-    CONSTRAINT promotions_promotion_code_check CHECK (((promotion_code)::text ~ '^PRM-[0-9]{4}$'::text))
-);
 
 
 --
@@ -906,18 +1319,6 @@ ALTER SEQUENCE ops.purchase_orders_purchase_order_id_seq OWNED BY ops.purchase_o
 
 
 --
--- Name: regions; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.regions (
-    region_id smallint NOT NULL,
-    region_code character varying(4) NOT NULL,
-    region_name character varying(40) NOT NULL,
-    CONSTRAINT regions_region_code_check CHECK (((region_code)::text ~ '^[A-Z]{2}$'::text))
-);
-
-
---
 -- Name: regions_region_id_seq; Type: SEQUENCE; Schema: ops; Owner: -
 --
 
@@ -935,26 +1336,6 @@ CREATE SEQUENCE ops.regions_region_id_seq
 --
 
 ALTER SEQUENCE ops.regions_region_id_seq OWNED BY ops.regions.region_id;
-
-
---
--- Name: stores; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.stores (
-    store_id smallint NOT NULL,
-    store_code character varying(4) NOT NULL,
-    store_name character varying(60) NOT NULL,
-    city character varying(40) NOT NULL,
-    state_code character(2) NOT NULL,
-    region_id smallint NOT NULL,
-    opened_date date NOT NULL,
-    sales_area_sqft integer NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    CONSTRAINT stores_sales_area_sqft_check CHECK ((sales_area_sqft > 0)),
-    CONSTRAINT stores_state_code_check CHECK ((state_code ~ '^[A-Z]{2}$'::text)),
-    CONSTRAINT stores_store_code_check CHECK (((store_code)::text ~ '^S[0-9]{2}$'::text))
-);
 
 
 --
@@ -989,20 +1370,6 @@ CREATE TABLE ops.supplier_store_lanes (
     is_active boolean DEFAULT true NOT NULL,
     CONSTRAINT supplier_store_lanes_contract_lead_time_days_check CHECK (((contract_lead_time_days >= 1) AND (contract_lead_time_days <= 60))),
     CONSTRAINT supplier_store_lanes_review_weekday_check CHECK (((review_weekday >= 1) AND (review_weekday <= 7)))
-);
-
-
---
--- Name: suppliers; Type: TABLE; Schema: ops; Owner: -
---
-
-CREATE TABLE ops.suppliers (
-    supplier_id smallint NOT NULL,
-    supplier_code character varying(8) NOT NULL,
-    supplier_name character varying(80) NOT NULL,
-    primary_category_id smallint NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    CONSTRAINT suppliers_supplier_code_check CHECK (((supplier_code)::text ~ '^SUP-[0-9]{3}$'::text))
 );
 
 
@@ -1470,6 +1837,13 @@ ALTER TABLE ONLY sim_truth.latent_demand
 
 
 --
+-- Name: ix_mv_daily_position_date; Type: INDEX; Schema: analytics; Owner: -
+--
+
+CREATE INDEX ix_mv_daily_position_date ON analytics.mv_daily_position USING btree (position_date);
+
+
+--
 -- Name: ix_risk_run_product; Type: INDEX; Schema: analytics; Owner: -
 --
 
@@ -1509,6 +1883,13 @@ CREATE INDEX ix_runs_status_type_asof ON analytics.analytics_runs USING btree (s
 --
 
 CREATE UNIQUE INDEX ux_checkpoints_one_binding ON analytics.risk_checkpoints USING btree (run_id, store_id, product_id) WHERE is_binding;
+
+
+--
+-- Name: ux_mv_daily_position; Type: INDEX; Schema: analytics; Owner: -
+--
+
+CREATE UNIQUE INDEX ux_mv_daily_position ON analytics.mv_daily_position USING btree (store_id, product_id, position_date);
 
 
 --
@@ -1621,6 +2002,128 @@ CREATE INDEX ix_suppliers_primary_category_id ON ops.suppliers USING btree (prim
 --
 
 CREATE UNIQUE INDEX ux_product_suppliers_one_primary ON ops.product_suppliers USING btree (product_id) WHERE is_primary;
+
+
+--
+-- Name: v_supplier_lane_performance _RETURN; Type: RULE; Schema: analytics; Owner: -
+--
+
+CREATE OR REPLACE VIEW analytics.v_supplier_lane_performance AS
+ WITH cr AS (
+         SELECT v_current_run.as_of_date
+           FROM analytics.v_current_run
+        ), receipt_as_of AS (
+         SELECT r.po_line_id,
+            sum(r.quantity_received) AS quantity_received,
+            min(r.received_date) AS first_receipt_date,
+            count(*) AS receipt_count
+           FROM (ops.inventory_receipts r
+             CROSS JOIN cr cr_1)
+          WHERE (r.received_date <= cr_1.as_of_date)
+          GROUP BY r.po_line_id
+        ), po_as_of AS (
+         SELECT po.purchase_order_id,
+            po.supplier_id,
+            po.store_id,
+            po.order_date,
+            po.promised_delivery_date,
+            min(r.first_receipt_date) AS first_receipt_date,
+            (min(r.first_receipt_date) - po.order_date) AS lead_time_days,
+            bool_and(((COALESCE(r.quantity_received, (0)::bigint) = pol.quantity_ordered) AND (COALESCE(r.receipt_count, (0)::bigint) = 1) AND (pol.quantity_cancelled = 0))) AS in_full
+           FROM (((ops.purchase_orders po
+             JOIN ops.purchase_order_lines pol USING (purchase_order_id))
+             LEFT JOIN receipt_as_of r USING (po_line_id))
+             CROSS JOIN cr cr_1)
+          WHERE (po.order_date <= cr_1.as_of_date)
+          GROUP BY po.purchase_order_id
+        )
+ SELECT p.supplier_id,
+    p.store_id,
+    count(*) FILTER (WHERE (p.first_receipt_date <= cr.as_of_date)) AS received_pos,
+    round(avg(p.lead_time_days) FILTER (WHERE (p.first_receipt_date <= cr.as_of_date)), 2) AS mean_lead_time_days,
+    round(stddev_samp(p.lead_time_days) FILTER (WHERE (p.first_receipt_date <= cr.as_of_date)), 2) AS std_lead_time_days,
+    count(*) FILTER (WHERE ((p.promised_delivery_date >= (cr.as_of_date - 89)) AND (p.promised_delivery_date <= cr.as_of_date))) AS pos_due_90d,
+    count(*) FILTER (WHERE (((p.promised_delivery_date >= (cr.as_of_date - 89)) AND (p.promised_delivery_date <= cr.as_of_date)) AND (p.first_receipt_date <= p.promised_delivery_date))) AS on_time_pos_90d,
+    count(*) FILTER (WHERE ((p.promised_delivery_date <= cr.as_of_date) AND (p.first_receipt_date IS NULL))) AS overdue_open_pos
+   FROM (po_as_of p
+     CROSS JOIN cr)
+  GROUP BY p.supplier_id, p.store_id;
+
+
+--
+-- Name: v_supplier_performance _RETURN; Type: RULE; Schema: analytics; Owner: -
+--
+
+CREATE OR REPLACE VIEW analytics.v_supplier_performance AS
+ WITH cr AS (
+         SELECT v_current_run.run_id,
+            v_current_run.as_of_date
+           FROM analytics.v_current_run
+        ), receipt_as_of AS (
+         SELECT r.po_line_id,
+            sum(r.quantity_received) AS quantity_received,
+            min(r.received_date) AS first_receipt_date,
+            count(*) AS receipt_count
+           FROM (ops.inventory_receipts r
+             CROSS JOIN cr cr_1)
+          WHERE (r.received_date <= cr_1.as_of_date)
+          GROUP BY r.po_line_id
+        ), po_as_of AS (
+         SELECT po.purchase_order_id,
+            po.supplier_id,
+            po.store_id,
+            po.order_date,
+            po.promised_delivery_date,
+            min(r.first_receipt_date) AS first_receipt_date,
+            (min(r.first_receipt_date) - po.order_date) AS lead_time_days,
+            bool_and(((COALESCE(r.quantity_received, (0)::bigint) = pol.quantity_ordered) AND (COALESCE(r.receipt_count, (0)::bigint) = 1) AND (pol.quantity_cancelled = 0))) AS in_full
+           FROM (((ops.purchase_orders po
+             JOIN ops.purchase_order_lines pol USING (purchase_order_id))
+             LEFT JOIN receipt_as_of r USING (po_line_id))
+             CROSS JOIN cr cr_1)
+          WHERE (po.order_date <= cr_1.as_of_date)
+          GROUP BY po.purchase_order_id
+        ), po_stats AS (
+         SELECT p.supplier_id,
+            count(*) FILTER (WHERE ((p.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (p.promised_delivery_date <= cr_1.as_of_date))) AS pos_due_90d,
+            count(*) FILTER (WHERE (((p.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (p.promised_delivery_date <= cr_1.as_of_date)) AND (p.first_receipt_date <= p.promised_delivery_date))) AS on_time_pos_90d,
+            count(*) FILTER (WHERE (((p.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (p.promised_delivery_date <= cr_1.as_of_date)) AND p.in_full)) AS in_full_pos_90d,
+            avg(p.lead_time_days) FILTER (WHERE (p.first_receipt_date > (cr_1.as_of_date - 180))) AS mean_lead_time_days,
+            stddev_samp(p.lead_time_days) FILTER (WHERE (p.first_receipt_date > (cr_1.as_of_date - 180))) AS std_lead_time_days,
+            percentile_cont((0.9)::double precision) WITHIN GROUP (ORDER BY ((p.lead_time_days)::double precision)) FILTER (WHERE (p.first_receipt_date > (cr_1.as_of_date - 180))) AS p90_lead_time_days,
+            count(*) FILTER (WHERE ((p.first_receipt_date IS NULL) AND (p.promised_delivery_date <= cr_1.as_of_date))) AS overdue_open_pos
+           FROM (po_as_of p
+             CROSS JOIN cr cr_1)
+          GROUP BY p.supplier_id
+        ), exposure AS (
+         SELECT r.supplier_id,
+            count(*) FILTER (WHERE (r.risk_tier = ANY (ARRAY['critical'::analytics.risk_tier, 'high'::analytics.risk_tier]))) AS at_risk_positions,
+            sum(r.margin_at_risk_usd) AS margin_at_risk_usd
+           FROM (analytics.inventory_risk_snapshots r
+             JOIN cr cr_1 ON ((r.run_id = cr_1.run_id)))
+          GROUP BY r.supplier_id
+        )
+ SELECT s.supplier_id,
+    s.supplier_code,
+    s.supplier_name,
+    c.category_name,
+    ps.pos_due_90d,
+    round(((ps.on_time_pos_90d)::numeric / (NULLIF(ps.pos_due_90d, 0))::numeric), 4) AS on_time_rate,
+    round(((ps.in_full_pos_90d)::numeric / (NULLIF(ps.pos_due_90d, 0))::numeric), 4) AS in_full_rate,
+    round(ps.mean_lead_time_days, 2) AS mean_lead_time_days,
+    round(ps.std_lead_time_days, 2) AS std_lead_time_days,
+    round((ps.p90_lead_time_days)::numeric, 1) AS p90_lead_time_days,
+    round((ps.std_lead_time_days / NULLIF(ps.mean_lead_time_days, (0)::numeric)), 4) AS lead_time_cv,
+    ps.overdue_open_pos,
+    COALESCE(e.at_risk_positions, (0)::bigint) AS at_risk_positions,
+    COALESCE(e.margin_at_risk_usd, (0)::numeric) AS margin_at_risk_usd,
+    (((((ps.on_time_pos_90d)::numeric / (NULLIF(ps.pos_due_90d, 0))::numeric) < 0.80) OR ((ps.std_lead_time_days / NULLIF(ps.mean_lead_time_days, (0)::numeric)) > 0.35)) AND (COALESCE(e.at_risk_positions, (0)::bigint) >= 1)) AS review_flag,
+    rank() OVER (ORDER BY ((ps.on_time_pos_90d)::numeric / (NULLIF(ps.pos_due_90d, 0))::numeric)) AS reliability_rank
+   FROM ((((ops.suppliers s
+     CROSS JOIN cr)
+     JOIN ops.product_categories c ON ((c.category_id = s.primary_category_id)))
+     LEFT JOIN po_stats ps ON ((ps.supplier_id = s.supplier_id)))
+     LEFT JOIN exposure e ON ((e.supplier_id = s.supplier_id)));
 
 
 --

@@ -1,0 +1,63 @@
+Subquery Scan on v_supplier_performance  (cost=6657.27..6662.17 rows=48 width=311) (actual time=0.004..0.006 rows=0 loops=1)
+  ->  WindowAgg  (cost=6657.27..6661.69 rows=48 width=343) (actual time=0.004..0.005 rows=0 loops=1)
+        CTE cr
+          ->  Subquery Scan on v_current_run  (cost=0.01..0.03 rows=1 width=12) (actual time=0.002..0.003 rows=0 loops=1)
+                ->  Limit  (cost=0.01..0.02 rows=1 width=118) (actual time=0.002..0.003 rows=0 loops=1)
+                      ->  Sort  (cost=0.01..0.02 rows=1 width=118) (actual time=0.002..0.002 rows=0 loops=1)
+                            Sort Key: analytics_runs.as_of_date DESC, analytics_runs.completed_at DESC
+                            Sort Method: quicksort  Memory: 25kB
+                            ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=118) (actual time=0.001..0.001 rows=0 loops=1)
+                                  Filter: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+        ->  Sort  (cost=6657.23..6657.35 rows=48 width=230) (actual time=0.003..0.005 rows=0 loops=1)
+              Sort Key: ((((count(*) FILTER (WHERE ((po.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (po.promised_delivery_date <= cr_1.as_of_date) AND ((min(r.first_receipt_date)) <= po.promised_delivery_date)))))::numeric / (NULLIF((count(*) FILTER (WHERE ((po.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (po.promised_delivery_date <= cr_1.as_of_date)))), 0))::numeric))
+              Sort Method: quicksort  Memory: 25kB
+              ->  Nested Loop  (cost=5495.49..6655.89 rows=48 width=230) (actual time=0.003..0.004 rows=0 loops=1)
+                    ->  CTE Scan on cr  (cost=0.00..0.02 rows=1 width=0) (actual time=0.003..0.003 rows=0 loops=1)
+                    ->  Hash Join  (cost=5495.49..6654.91 rows=48 width=198) (never executed)
+                          Hash Cond: (s.primary_category_id = c.category_id)
+                          ->  Hash Right Join  (cost=5494.31..6653.53 rows=48 width=189) (never executed)
+                                Hash Cond: (po.supplier_id = s.supplier_id)
+                                ->  GroupAggregate  (cost=5492.01..6648.01 rows=200 width=106) (never executed)
+                                      Group Key: po.supplier_id
+                                      ->  Sort  (cost=5492.01..5534.70 rows=17074 width=19) (never executed)
+                                            Sort Key: po.supplier_id
+                                            ->  Nested Loop  (cost=3736.83..4291.75 rows=17074 width=19) (never executed)
+                                                  ->  CTE Scan on cr cr_1  (cost=0.00..0.02 rows=1 width=4) (never executed)
+                                                  ->  HashAggregate  (cost=3736.83..3950.25 rows=17074 width=25) (never executed)
+                                                        Group Key: po.purchase_order_id
+                                                        ->  Hash Left Join  (cost=2056.59..3459.75 rows=18472 width=42) (never executed)
+                                                              Hash Cond: (pol.po_line_id = r.po_line_id)
+                                                              ->  Hash Join  (cost=583.32..1937.99 rows=18472 width=26) (never executed)
+                                                                    Hash Cond: (pol.purchase_order_id = po.purchase_order_id)
+                                                                    ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=16) (never executed)
+                                                                    ->  Hash  (cost=512.19..512.19 rows=5691 width=14) (never executed)
+                                                                          ->  Nested Loop  (cost=0.00..512.19 rows=5691 width=14) (never executed)
+                                                                                Join Filter: (po.order_date <= cr_2.as_of_date)
+                                                                                ->  CTE Scan on cr cr_2  (cost=0.00..0.02 rows=1 width=4) (never executed)
+                                                                                ->  Seq Scan on purchase_orders po  (cost=0.00..298.74 rows=17074 width=14) (never executed)
+                                                              ->  Hash  (cost=1241.67..1241.67 rows=18528 width=24) (never executed)
+                                                                    ->  Subquery Scan on r  (cost=871.11..1241.67 rows=18528 width=24) (never executed)
+                                                                          ->  HashAggregate  (cost=871.11..1056.39 rows=18528 width=24) (never executed)
+                                                                                Group Key: r_1.po_line_id
+                                                                                ->  Nested Loop  (cost=0.29..685.83 rows=18528 width=12) (never executed)
+                                                                                      ->  CTE Scan on cr cr_3  (cost=0.00..0.02 rows=1 width=4) (never executed)
+                                                                                      ->  Index Scan using ix_receipts_received_date on inventory_receipts r_1  (cost=0.29..500.53 rows=18528 width=12) (never executed)
+                                                                                            Index Cond: (received_date <= cr_3.as_of_date)
+                                ->  Hash  (cost=1.69..1.69 rows=48 width=85) (never executed)
+                                      ->  Hash Left Join  (cost=0.08..1.69 rows=48 width=85) (never executed)
+                                            Hash Cond: (s.supplier_id = e.supplier_id)
+                                            ->  Seq Scan on suppliers s  (cost=0.00..1.48 rows=48 width=45) (never executed)
+                                            ->  Hash  (cost=0.07..0.07 rows=1 width=42) (never executed)
+                                                  ->  Subquery Scan on e  (cost=0.04..0.07 rows=1 width=42) (never executed)
+                                                        ->  HashAggregate  (cost=0.04..0.06 rows=1 width=42) (never executed)
+                                                              Group Key: r_2.supplier_id
+                                                              ->  Nested Loop  (cost=0.00..0.03 rows=1 width=22) (never executed)
+                                                                    Join Filter: (r_2.run_id = cr_4.run_id)
+                                                                    ->  Seq Scan on inventory_risk_snapshots r_2  (cost=0.00..0.00 rows=1 width=30) (never executed)
+                                                                    ->  CTE Scan on cr cr_4  (cost=0.00..0.02 rows=1 width=8) (never executed)
+                          ->  Hash  (cost=1.08..1.08 rows=8 width=13) (never executed)
+                                ->  Seq Scan on product_categories c  (cost=0.00..1.08 rows=8 width=13) (never executed)
+Planning:
+  Buffers: shared hit=23
+Planning Time: 0.438 ms
+Execution Time: 0.064 ms

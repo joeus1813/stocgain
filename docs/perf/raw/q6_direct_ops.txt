@@ -1,0 +1,108 @@
+Sort  (cost=1231.04..1231.76 rows=287 width=82) (actual time=0.432..0.438 rows=56 loops=1)
+  Sort Key: i.snapshot_date
+  Sort Method: quicksort  Memory: 29kB
+  Buffers: shared hit=459
+  ->  Nested Loop Left Join  (cost=738.05..1219.32 rows=287 width=82) (actual time=0.323..0.423 rows=56 loops=1)
+        Join Filter: (ad.position_date = i.snapshot_date)
+        Buffers: shared hit=459
+        ->  Hash Left Join  (cost=737.77..1200.23 rows=287 width=40) (actual time=0.319..0.405 rows=56 loops=1)
+              Hash Cond: (i.snapshot_date = rc.position_date)
+              Buffers: shared hit=457
+              ->  Nested Loop  (cost=229.95..691.18 rows=287 width=36) (actual time=0.045..0.124 rows=56 loops=1)
+                    Buffers: shared hit=288
+                    ->  Hash Right Join  (cost=229.52..257.33 rows=290 width=22) (actual time=0.041..0.048 rows=56 loops=1)
+                          Hash Cond: ((gs.d)::date = i.snapshot_date)
+                          Buffers: shared hit=64
+                          ->  Nested Loop  (cost=8.11..33.10 rows=1000 width=18) (actual time=0.007..0.008 rows=0 loops=1)
+                                Buffers: shared hit=5
+                                ->  Nested Loop  (cost=8.10..13.09 rows=1 width=18) (actual time=0.007..0.008 rows=0 loops=1)
+                                      Join Filter: ((p.region_id IS NULL) OR (s.region_id = p.region_id))
+                                      Buffers: shared hit=5
+                                      ->  Seq Scan on stores s  (cost=0.00..1.15 rows=1 width=4) (actual time=0.002..0.002 rows=1 loops=1)
+                                            Filter: (store_id = 1)
+                                            Rows Removed by Filter: 11
+                                            Buffers: shared hit=1
+                                      ->  Hash Join  (cost=8.10..11.91 rows=2 width=18) (actual time=0.004..0.005 rows=0 loops=1)
+                                            Hash Cond: (p.promotion_id = pp.promotion_id)
+                                            Buffers: shared hit=4
+                                            ->  Seq Scan on promotions p  (cost=0.00..3.43 rows=143 width=14) (actual time=0.002..0.002 rows=1 loops=1)
+                                                  Buffers: shared hit=2
+                                            ->  Hash  (cost=8.07..8.07 rows=2 width=8) (actual time=0.002..0.002 rows=0 loops=1)
+                                                  Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                                                  Buffers: shared hit=2
+                                                  ->  Bitmap Heap Scan on promotion_products pp  (cost=4.29..8.07 rows=2 width=8) (actual time=0.002..0.002 rows=0 loops=1)
+                                                        Recheck Cond: (product_id = 1)
+                                                        Buffers: shared hit=2
+                                                        ->  Bitmap Index Scan on ix_promotion_products_product_id  (cost=0.00..4.29 rows=2 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+                                                              Index Cond: (product_id = 1)
+                                                              Buffers: shared hit=2
+                                ->  Function Scan on generate_series gs  (cost=0.01..10.01 rows=1000 width=8) (never executed)
+                          ->  Hash  (cost=220.69..220.69 rows=58 width=18) (actual time=0.033..0.033 rows=56 loops=1)
+                                Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                                Buffers: shared hit=59
+                                ->  Bitmap Heap Scan on inventory_snapshots i  (cost=5.31..220.69 rows=58 width=18) (actual time=0.009..0.029 rows=56 loops=1)
+                                      Recheck Cond: ((store_id = 1) AND (product_id = 1) AND (snapshot_date >= '2026-08-06'::date) AND (snapshot_date <= '2026-09-30'::date))
+                                      Heap Blocks: exact=56
+                                      Buffers: shared hit=59
+                                      ->  Bitmap Index Scan on inventory_snapshots_pkey  (cost=0.00..5.29 rows=58 width=0) (actual time=0.005..0.005 rows=56 loops=1)
+                                            Index Cond: ((store_id = 1) AND (product_id = 1) AND (snapshot_date >= '2026-08-06'::date) AND (snapshot_date <= '2026-09-30'::date))
+                                            Buffers: shared hit=3
+                    ->  Memoize  (cost=0.43..8.46 rows=1 width=24) (actual time=0.001..0.001 rows=1 loops=56)
+                          Cache Key: i.snapshot_date
+                          Cache Mode: logical
+                          Hits: 0  Misses: 56  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                          Buffers: shared hit=224
+                          ->  Index Scan using daily_sales_pkey on daily_sales ds  (cost=0.42..8.45 rows=1 width=24) (actual time=0.001..0.001 rows=1 loops=56)
+                                Index Cond: ((store_id = 1) AND (product_id = 1) AND (sales_date = i.snapshot_date))
+                                Buffers: shared hit=224
+              ->  Hash  (cost=507.69..507.69 rows=10 width=14) (actual time=0.273..0.274 rows=2 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=169
+                    ->  Subquery Scan on rc  (cost=507.39..507.69 rows=10 width=14) (actual time=0.272..0.273 rows=2 loops=1)
+                          Buffers: shared hit=169
+                          ->  GroupAggregate  (cost=507.39..507.59 rows=10 width=14) (actual time=0.271..0.273 rows=2 loops=1)
+                                Group Key: r.received_date
+                                Buffers: shared hit=169
+                                ->  Sort  (cost=507.39..507.41 rows=10 width=14) (actual time=0.270..0.271 rows=2 loops=1)
+                                      Sort Key: r.received_date
+                                      Sort Method: quicksort  Memory: 25kB
+                                      Buffers: shared hit=169
+                                      ->  Nested Loop  (cost=290.39..507.22 rows=10 width=14) (actual time=0.154..0.270 rows=2 loops=1)
+                                            Buffers: shared hit=169
+                                            ->  Hash Join  (cost=290.10..439.85 rows=10 width=10) (actual time=0.152..0.265 rows=2 loops=1)
+                                                  Hash Cond: (po.purchase_order_id = pol.purchase_order_id)
+                                                  Buffers: shared hit=163
+                                                  ->  Bitmap Heap Scan on purchase_orders po  (cost=23.43..169.41 rows=1438 width=6) (actual time=0.028..0.175 rows=1438 loops=1)
+                                                        Recheck Cond: (store_id = 1)
+                                                        Heap Blocks: exact=126
+                                                        Buffers: shared hit=130
+                                                        ->  Bitmap Index Scan on ix_po_store_order_date  (cost=0.00..23.07 rows=1438 width=0) (actual time=0.020..0.020 rows=1438 loops=1)
+                                                              Index Cond: (store_id = 1)
+                                                              Buffers: shared hit=4
+                                                  ->  Hash  (cost=265.18..265.18 rows=119 width=12) (actual time=0.018..0.019 rows=36 loops=1)
+                                                        Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                                                        Buffers: shared hit=33
+                                                        ->  Bitmap Heap Scan on purchase_order_lines pol  (cost=5.21..265.18 rows=119 width=12) (actual time=0.005..0.015 rows=36 loops=1)
+                                                              Recheck Cond: (product_id = 1)
+                                                              Heap Blocks: exact=31
+                                                              Buffers: shared hit=33
+                                                              ->  Bitmap Index Scan on ix_po_lines_product_id  (cost=0.00..5.18 rows=119 width=0) (actual time=0.002..0.003 rows=36 loops=1)
+                                                                    Index Cond: (product_id = 1)
+                                                                    Buffers: shared hit=2
+                                            ->  Index Scan using inventory_receipts_po_line_id_received_date_key on inventory_receipts r  (cost=0.29..6.73 rows=1 width=12) (actual time=0.001..0.002 rows=1 loops=2)
+                                                  Index Cond: (po_line_id = pol.po_line_id)
+                                                  Buffers: shared hit=6
+        ->  Materialize  (cost=0.28..8.33 rows=1 width=14) (actual time=0.000..0.000 rows=0 loops=56)
+              Buffers: shared hit=2
+              ->  Subquery Scan on ad  (cost=0.28..8.33 rows=1 width=14) (actual time=0.002..0.002 rows=0 loops=1)
+                    Buffers: shared hit=2
+                    ->  GroupAggregate  (cost=0.28..8.32 rows=1 width=14) (actual time=0.002..0.002 rows=0 loops=1)
+                          Group Key: inventory_adjustments.adjustment_date
+                          Buffers: shared hit=2
+                          ->  Index Scan using inventory_adjustments_store_id_product_id_adjustment_date_r_key on inventory_adjustments  (cost=0.28..8.30 rows=1 width=14) (actual time=0.002..0.002 rows=0 loops=1)
+                                Index Cond: ((store_id = 1) AND (product_id = 1))
+                                Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=47
+Planning Time: 0.479 ms
+Execution Time: 0.473 ms
