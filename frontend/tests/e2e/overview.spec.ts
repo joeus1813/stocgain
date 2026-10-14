@@ -8,7 +8,7 @@ import {
 
 test("overview renders six real API metrics", async ({ page, request }) => {
   const response = await request.get(
-    "http://localhost:8000/api/v1/overview/summary",
+    `${process.env.TEST_API_BASE_URL ?? "http://localhost:8000/api/v1"}/overview/summary`,
   );
   expect(response.ok()).toBeTruthy();
   const data = await response.json();

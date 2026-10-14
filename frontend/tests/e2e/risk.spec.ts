@@ -8,7 +8,7 @@ test("risk filters, server sorting, pagination, drilldown and back preserve stat
   );
   await expect(page.locator("tbody tr")).toHaveCount(25);
   const api = await request.get(
-    "http://localhost:8000/api/v1/risk/positions?store_id=1&page_size=25&sort_by=margin_at_risk_usd&sort_dir=desc",
+    `${process.env.TEST_API_BASE_URL ?? "http://localhost:8000/api/v1"}/risk/positions?store_id=1&page_size=25&sort_by=margin_at_risk_usd&sort_dir=desc`,
   );
   const data = await api.json();
   await expect(page.locator("tbody tr").first()).toContainText(

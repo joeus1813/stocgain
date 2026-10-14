@@ -5,7 +5,9 @@ test("all pages remain usable at desktop and mobile widths", async ({
 }) => {
   test.setTimeout(120000);
   const positions = await (
-    await request.get("http://localhost:8000/api/v1/risk/positions?page_size=1")
+    await request.get(
+      `${process.env.TEST_API_BASE_URL ?? "http://localhost:8000/api/v1"}/risk/positions?page_size=1`,
+    )
   ).json();
   const p = positions.items[0];
   const routes = [

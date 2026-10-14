@@ -243,6 +243,7 @@ Final interview script and resume drafts: [INTERVIEW_DEMO.md](INTERVIEW_DEMO.md)
 | WAPE, observed in-stock | stocgain 0.5766; naive28 0.5839; seasonal7 0.7796 |
 | WAPE, simulation-only hidden demand | stocgain 0.5586; naive28 0.5740 |
 | SQL rolling-history MV / base table | 274.342 ms / 691.935 ms, retained EXPLAIN ANALYZE evidence |
-| Fresh setup / pipeline duration | Not verified in final session; do not fill with an estimate |
+| Final acceptance tests | 270 backend (96.38 s), 38 frontend (1.29 s), 14 browser (1.2 min); 92% analytics coverage |
+| Fresh setup / pipeline duration | Verified isolated clone: setup + pipeline 243 s; pipeline 222 s (2026-10-14) |
 
-Final test counts and unresolved acceptance items are recorded in IMPLEMENTATION_STATUS.md. No publication/deployment outcome is claimed.
+Final test counts and remaining limitations are recorded in IMPLEMENTATION_STATUS.md. No publication/deployment outcome is claimed.

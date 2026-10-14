@@ -647,3 +647,7 @@ No HTTP caching headers beyond defaults; no external cache.
 - **Context:** Backend and frontend schemas must not drift.
 - **Decision:** Export OpenAPI JSON from FastAPI (`make openapi`), generate `schema.ts` with `openapi-typescript`, commit both; `make check-openapi` fails on drift.
 - **Rationale:** One source of truth (Pydantic models).
+
+### Final local Docker verification (2026-10-14)
+
+The full Compose profile was built and passed all 14 browser tests against an isolated fresh PostgreSQL dataset. `API_HOST_PORT` and `WEB_HOST_PORT` optionally override host bindings (defaults 8000/3050); set matching `NEXT_PUBLIC_API_BASE_URL` at build time and `API_CORS_ORIGINS`. Browser tests use optional `TEST_API_BASE_URL` and `TEST_WEB_BASE_URL`, retaining default 8000/3050. See STAGE4_VERIFICATION.md for the fresh setup and complete acceptance results.

@@ -1,6 +1,6 @@
 # stocgain implementation interface
 
-Updated 2026-10-14. **Implemented scope: Phases 0–8 plus Phase 9 documentation; fresh-setup acceptance remains open.** The owner authorized Stage 4. Public deployment and remote Git writes remain unauthorized. Current verified state is summarized in IMPLEMENTATION_STATUS.md.
+Updated 2026-10-14. **Implemented and locally accepted scope: Phases 0–9. Isolated fresh setup and full-stack acceptance passed; see docs/STAGE4_VERIFICATION.md.** The owner authorized Stage 4. Public deployment and remote Git writes remain unauthorized. Current verified state is summarized in IMPLEMENTATION_STATUS.md.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 

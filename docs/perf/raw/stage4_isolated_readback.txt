@@ -1,0 +1,7 @@
+2026-10-14 final readback after Docker Desktop restart
+Compose full up -d --wait: db/api/web healthy; existing isolated volume reused
+GET /api/v1/health: {"status":"ok","database":"ok","analytics_ready":true,"current_run_id":13,"version":"1.0.0"}
+SELECT counts from ops.daily_sales, ops.inventory_snapshots, sim_truth.latent_demand:
+sales|864000
+inventory|864000
+latent|864000

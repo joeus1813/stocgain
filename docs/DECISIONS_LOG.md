@@ -170,3 +170,7 @@ Persisted Stage 2 prose uses one-decimal percentages, while binding UI rules req
 2026-10-13 · Phase 8 uses @axe-core/playwright as a development-only dependency for the approved accessibility gate (docs/09); no runtime dependency added. Typography is enlarged through shared CSS tokens; page structure and analytical formulas remain unchanged. Destructive clean-setup instructions are superseded by the owner restriction: never remove an existing volume or dataset.
 
 2026-10-14 · Final wrap-up preserves owner-created 846e292 and port 3050. Full regression found two stale 3000-origin tests; corrected their expected configured origin, not the CORS security policy. Axe exposed inaccessible scrolling regions and an icon-only mobile summary; added keyboard focus and accessible name without hiding violations. Fresh-clone acceptance remains explicitly unverified rather than deleting existing data or asserting readiness.
+
+2026-10-14 · Final Stage 4 acceptance runs the existing fresh-clone script in a new temporary checkout and unique Compose project. Application host ports are parameterized (defaults remain API 8000 / web 3050); acceptance uses 18000 / 13050 and PostgreSQL 55433. Browser test base URLs are environment-configurable so assertions reach the isolated data, not the existing application. Existing database/volumes/history remain untouched; no deployment or remote action.
+
+2026-10-14 · Owner explicitly selected “Yumin Song” for MIT copyright attribution; LICENSE updated accordingly. No ownership was inferred from Git metadata.

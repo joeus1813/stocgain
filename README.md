@@ -8,7 +8,7 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stages 1–2 and the Stage 3 application are implemented.** PostgreSQL holds the deterministic retail dataset and verified analytics runs. The frontend provides Executive Overview, Inventory Risk Monitor, product detail, supplier performance, Scenario Lab and Methodology, backed by all 22 specified APIs. Warm Scenario Lab browser p95 is 1.383 s over 20 full-scope evaluations; cold first load is 7.014 s. See [implementation status](IMPLEMENTATION_STATUS.md) for final verification and outstanding fresh-setup acceptance. No public deployment is included.
+**Stages 1–2 and the Stage 3 application are implemented.** PostgreSQL holds the deterministic retail dataset and verified analytics runs. The frontend provides Executive Overview, Inventory Risk Monitor, product detail, supplier performance, Scenario Lab and Methodology, backed by all 22 specified APIs. Warm Scenario Lab browser p95 is 1.383 s over 20 full-scope evaluations; cold first load is 7.014 s. See [implementation status](IMPLEMENTATION_STATUS.md) for successful final fresh-setup/full-stack acceptance and remaining limitations. No public deployment is included.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ For this already-populated checkout, only `make db-up`, `make api` and `make web
 
 `.env.example` contains local-only example credentials. `make setup` preserves an existing `.env`; the backend and Next config load it from the repository root. Adjust both connection URLs if changing the database port or credentials. Never commit `.env`. `DATABASE_URL_PSQL` is the libpq form for future SQL tools. Only localhost ports are published by Compose.
 
-Optional container configuration: `docker compose --profile full up --build`. The full profile has not been verified. Browser API URL is baked into the frontend image via the build argument; rebuild the image after changing it.
+Optional container configuration: `docker compose --profile full up --build`. The full profile passed isolated image builds, health checks and all 14 browser tests. Optional `API_HOST_PORT` / `WEB_HOST_PORT` overrides preserve default ports 8000 / 3050; set the matching browser API URL and CORS origin when overriding. Browser API URL is baked into the frontend image via the build argument; rebuild the image after changing it.
 
 ## Verification
 
@@ -93,7 +93,7 @@ Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database
 
 npm reports five high-severity development-only advisory entries rooted in `braces` through the Next ESLint plugin; latest available braces 3.0.3 is affected. ESLint 9 is deprecated upstream but currently required by the selected React/import lint plugins. No forced incompatible downgrade or hidden warning suppression was applied. Track these in `docs/DECISIONS_LOG.md`.
 
-The MIT copyright holder remains `<Project Owner>` as required by the Phase 0 specification; replace with the owner's preferred legal name before publishing.
+MIT copyright: **Yumin Song (2026)**, confirmed by the owner.
 
 Setup references used: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [shadcn manual installation](https://ui.shadcn.com/docs/installation/manual), [uv locking and syncing](https://docs.astral.sh/uv/concepts/projects/sync/).
 

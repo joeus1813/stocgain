@@ -10,7 +10,7 @@
 | 5 — Frontend foundations | Complete | 2026-10-13 | Shared formatting, shell, URL scope, states and types verified | Full Phase 8 accessibility audit not performed |
 | 6 — Main pages | Complete | 2026-10-13 | Real-data P0/P1 pages; 11 production browser tests; final 3 regressions pass | Inherited model/calibration limitations |
 | 7 — Scenario Lab | Complete | 2026-10-14 | Functional gates and measured warm browser p95 1.383 s pass | Cold first load 7.014 s |
-| 8–9 — Polish and portfolio | Delivered with final acceptance open | 2026-10-14 | See STAGE4_VERIFICATION.md and implementation status | Isolated fresh-setup/pipeline verification outstanding |
+| 8–9 — Polish and portfolio | Complete (local scope) | 2026-10-14 | Fresh setup 243 s; 270 backend + 38 frontend + 14 browser tests; full Docker stack passed | Cold load ~7 s; optional P1 deferrals; public hosting requires approval |
 
 ## 2026-10-09 verification and limitations
 
@@ -123,3 +123,19 @@ Preserved owner checkpoint 846e292 and port 3050. Stage 3 warm p95 target passed
 Delivered readability/accessibility changes, actual screenshots, honest forecast segment analysis, two-minute interview flow, verified resume drafts, dependency notices and publication/deployment instructions. Optional compact-density toggle and additional chart data disclosures explicitly deferred: existing dense tables/position-data disclosure are functional, prioritizing core flows. Fresh-clone setup/pipeline test and full Docker application image build remain unverified; no existing volume/data deleted. Therefore full Stage 4/project acceptance is not claimed. Remote Git actions/public deployment were not performed by this execution.
 
 Final accessibility/error/empty-state follow-up: 5 browser tests passed in 33.0 s; axe zero serious/critical violations on six primary screens plus supplier detail at 1440/390. Full Stage 4 acceptance still awaits isolated fresh-setup verification.
+
+## Final isolated acceptance — 2026-10-14
+
+**Stage 4 is accepted for the local portfolio scope.** The remaining fresh-install and full-stack gates passed; public hosting/publication was not performed or approved.
+
+- Ran `scripts/verify_fresh_setup.sh` from checkpoint `cba3f96`: clean locked install, migrations, standard dataset, DQ, all 13 analytics runs, full verification and production build succeeded (exit 0). Setup + pipeline **243 s**, pipeline **222 s**; generation **8.471 s**, load/validation **36.507 s**, separate DQ **9.112 s**. Fresh data contains **864,000 rows each** of sales, inventory and latent demand for 12 stores × 400 SKUs × 180 days. All **18 DQ checks returned zero violations**.
+- `PYTEST_ADDOPTS="-m '' --cov=stocgain.analytics --cov-report=term-missing" make verify`: **270 backend tests passed in 96.38 s**, no slow-test deselection, **92% analytics coverage**; **38 frontend tests passed in 1.29 s**. Ruff/check-format, ESLint, mypy (67 source files), TypeScript and OpenAPI drift checks passed. Next.js production build passed.
+- Built both application images with `docker compose --profile full build`, then `up -d --wait`: PostgreSQL, API and web healthy. Real API health reports database `ok`, analytics ready and current run **13**.
+- All **14 Playwright tests passed in 1.2 min** against the isolated Docker stack: real KPI equality, filtering/sorting/pagination/drilldown, supplier CSV, scenario neutral/disruption/policy/reset, responsive layouts, failure/retry/empty states and accessibility. Six screens plus supplier detail had zero serious/critical axe violations at desktop/mobile sizes.
+- Isolation: checkout `/private/tmp/stocgain-fresh-ZXmDDs/repo`, Compose project `stocgain_verify_1791997566`, PostgreSQL **55433**, API **18000**, web **13050**. The original database, volumes and port-3050 configuration were preserved. Containers/volume are retained for inspection. The clone began at `cba3f96`; only Compose host-port parameters and browser test URL parameters were copied in before final verification to exercise this isolated stack. Defaults remain 8000/3050; no business logic changed.
+- Audited all **13 reachable commits / 568 unique blobs / 22,590,379 bytes** at `cba3f96`, including historical/deleted versions: no credential-pattern or sensitive-file findings. Runtime `.env`, dependencies, data, backups and tools are ignored; public local-development example credentials are intentional. Pattern scanning cannot prove arbitrary unknown secrets absent. Evidence: `perf/raw/stage4_secrets_audit.json`.
+- MIT attribution is **Yumin Song**, explicitly supplied by the owner.
+
+Logs: `perf/raw/stage4_fresh_acceptance.txt`, `stage4_docker_build.txt`, `stage4_isolated_stack.txt`, and `stage4_isolated_browser.txt`. Earlier failed attempts below remain historical evidence, superseded by this successful full run.
+
+The existing warm p95 **1.383 s** remains the dedicated 20-request benchmark, not a new result from this acceptance run. The isolated browser scenario changed real outputs (server **924.57 ms**, single UI update **2,750 ms** while the full regression suite was also running). This is neither a representative p95 nor a cold-start benchmark. Cold first load ~7 s, modest forecast improvement, five previously reported development dependency advisories, and optional P1 presentation deferrals remain documented limitations. Local acceptance is not public-production readiness.

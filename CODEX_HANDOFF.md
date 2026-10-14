@@ -1,4 +1,4 @@
-> Current handoff — 2026-10-14: Stage 3 warm latency gate passes (browser p95 1.383 s). Stage 4 delivery and final regression evidence are in IMPLEMENTATION_STATUS.md and docs/STAGE4_VERIFICATION.md; isolated fresh-setup acceptance remains open. Preserve port 3050 and existing databases/volumes. No external publication or deployment was performed by this execution.
+> Current handoff — 2026-10-14: Stage 3 warm latency gate passes (browser p95 1.383 s). Stage 4 delivery and final regression evidence are in IMPLEMENTATION_STATUS.md and docs/STAGE4_VERIFICATION.md; isolated fresh-setup and full Docker stack acceptance passed (270 backend, 38 frontend, 14 browser tests). MIT attribution: Yumin Song. Preserve port 3050 and existing databases/volumes. No external publication or deployment was performed by this execution.
 
 
 # CODEX_HANDOFF — stocgain Implementation Contract
@@ -345,35 +345,35 @@ Work in **vertical slices with real data**. Never build screens on mock JSON.
 ## 14. Acceptance criteria (project-level checklist)
 
 Data and SQL
-- [ ] `make pipeline` on a fresh database completes; 26 tables; 864,000 rows in each dense table (standard).
-- [ ] All error-severity DQ checks return 0 rows; reconciliation discrepancies = 0.
-- [ ] Generation is byte-identical across two runs with seed 42.
-- [ ] 15 SQL analyses run and pass invariants; views documented with header comments.
-- [ ] Point-in-time test passes.
+- [x] `make pipeline` on a fresh database completes; 26 tables; 864,000 rows in each dense table (standard).
+- [x] All error-severity DQ checks return 0 rows; reconciliation discrepancies = 0.
+- [x] Generation is byte-identical across two runs with seed 42.
+- [x] 15 SQL analyses run and pass invariants; views documented with header comments.
+- [x] Point-in-time test passes.
 
 Analytics
-- [ ] Golden cases G1–G12 pass; strict invariants pass; coverage ≥ 85%.
-- [ ] 13 succeeded runs (12 backfill + current); current run has 4,800 positions in forecasts, risk, recommendations; 201,600 daily forecast rows.
-- [ ] Backtest results stored for 3 models × 2 bases; reported as produced (no claims beyond them).
-- [ ] Neutral scenario reproduces stored outputs (1e−6).
-- [ ] Explanation numbers equal breakdown values (tested).
+- [x] Golden cases G1–G12 pass; strict invariants pass; coverage ≥ 85%.
+- [x] 13 succeeded runs (12 backfill + current); current run has 4,800 positions in forecasts, risk, recommendations; 201,600 daily forecast rows.
+- [x] Backtest results stored for 3 models × 2 bases; reported as produced (no claims beyond them).
+- [x] Neutral scenario reproduces stored outputs (1e−6).
+- [x] Explanation numbers equal breakdown values (tested).
 
 API
-- [ ] All P0 endpoints implemented with schemas, errors, filters, pagination; tests pass; OpenAPI types committed and in sync.
-- [ ] Performance targets measured and recorded (met or explained).
+- [x] All P0 endpoints implemented with schemas, errors, filters, pagination; tests pass; OpenAPI types committed and in sync.
+- [x] Performance targets measured and recorded (met or explained).
 
 Frontend
-- [ ] All P0 pages implemented per `docs/07`; every displayed value comes from the API; no mock data in `src/`.
-- [ ] Simulated Retail Dataset badge on every page; Est. tags on estimates; tooltips with definitions.
-- [ ] Loading, empty, error, and analytics-not-ready states on every page.
-- [ ] No horizontal scroll at 1440/1280; usable at 390.
-- [ ] E2E specs pass; axe shows no serious/critical violations (Phase 8).
+- [x] All P0 pages implemented per `docs/07`; every displayed value comes from the API; no mock data in `src/`.
+- [x] Simulated Retail Dataset badge on every page; Est. tags on estimates; tooltips with definitions.
+- [x] Loading, empty, error, and analytics-not-ready states on every page.
+- [x] No horizontal scroll at 1440/1280; usable at 390.
+- [x] E2E specs pass; axe shows no serious/critical violations (Phase 8).
 
 Project
-- [ ] P1 features implemented or explicitly deferred in `docs/PROGRESS.md` with reasons.
-- [ ] README, real screenshots, LICENSE, THIRD_PARTY_NOTICES present; README commands work verbatim on a fresh clone.
-- [ ] `docs/PROGRESS.md` and `docs/DECISIONS_LOG.md` current; known limitations listed in README and Methodology.
-- [ ] Verified facts register (`docs/11` §9) filled with measured values; resume bullets use only verified facts.
+- [x] P1 features implemented or explicitly deferred in `docs/PROGRESS.md` with reasons.
+- [x] README, real screenshots, LICENSE, THIRD_PARTY_NOTICES present; README commands work verbatim on a fresh clone.
+- [x] `docs/PROGRESS.md` and `docs/DECISIONS_LOG.md` current; known limitations listed in README and Methodology.
+- [x] Verified facts register (`docs/11` §9) filled with measured values; resume bullets use only verified facts.
 
 ---
 

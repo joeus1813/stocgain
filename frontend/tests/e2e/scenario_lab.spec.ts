@@ -6,7 +6,9 @@ test("neutral, disruption, policy tradeoff, reset and invalid inputs", async ({
 }) => {
   test.setTimeout(120000);
   const overview = await (
-    await request.get("http://localhost:8000/api/v1/overview/summary")
+    await request.get(
+      `${process.env.TEST_API_BASE_URL ?? "http://localhost:8000/api/v1"}/overview/summary`,
+    )
   ).json();
   await page.goto("/scenarios");
   await expect(

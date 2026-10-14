@@ -1,0 +1,309 @@
+Fresh checkout: /private/tmp/stocgain-fresh-ZXmDDs/repo
+Compose project: stocgain_verify_1791997566
+Cloning into '/private/tmp/stocgain-fresh-ZXmDDs/repo'...
+done.
+uv sync --project backend --locked
+Using CPython 3.12.7 interpreter at: /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12
+Creating virtual environment at: backend/.venv
+Resolved 54 packages in 14ms
+   Building stocgain @ file:///private/tmp/stocgain-fresh-ZXmDDs/repo/backend
+Downloading pygments (1.2MiB)
+Downloading pandas (10.2MiB)
+Downloading scipy (19.5MiB)
+Downloading ast-serialize (1.2MiB)
+Downloading sqlalchemy (2.1MiB)
+Downloading mypy (13.7MiB)
+Downloading ruff (8.8MiB)
+Downloading numpy (5.2MiB)
+Downloading pydantic-core (1.9MiB)
+Downloading psycopg-binary (4.5MiB)
+ Downloaded ast-serialize
+ Downloaded pygments
+ Downloaded pydantic-core
+ Downloaded sqlalchemy
+      Built stocgain @ file:///private/tmp/stocgain-fresh-ZXmDDs/repo/backend
+ Downloaded psycopg-binary
+ Downloaded numpy
+ Downloaded ruff
+ Downloaded pandas
+ Downloaded mypy
+ Downloaded scipy
+Prepared 52 packages in 4.44s
+Installed 52 packages in 138ms
+ + alembic==1.20.0
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.11.0
+ + ast-serialize==0.12.1
+ + certifi==2026.7.22
+ + click==8.5.0
+ + coverage==7.16.2
+ + fastapi==0.143.0
+ + h11==0.16.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + idna==3.20
+ + iniconfig==2.3.1
+ + librt==0.16.0
+ + mako==1.4.3
+ + markdown-it-py==4.2.0
+ + markupsafe==3.0.4
+ + mdurl==0.1.2
+ + mypy==2.4.0
+ + mypy-extensions==1.1.0
+ + numpy==2.5.3
+ + opentelemetry-api==1.45.1
+ + packaging==26.3
+ + pandas==2.3.3
+ + pathspec==1.1.1
+ + pluggy==1.6.0
+ + psycopg==3.3.6
+ + psycopg-binary==3.3.6
+ + pydantic==2.14.0
+ + pydantic-core==2.50.0
+ + pydantic-settings==2.15.0
+ + pygments==2.21.0
+ + pytest==9.1.1
+ + pytest-cov==7.1.0
+ + python-dateutil==2.9.0.post0
+ + python-dotenv==1.2.4
+ + pytz==2026.5
+ + rich==15.0.0
+ + ruff==0.17.0
+ + scipy==1.18.1
+ + shellingham==1.5.4
+ + six==1.17.0
+ + sniffio==1.3.1
+ + sqlalchemy==2.0.54
+ + starlette==0.52.1
+ + stocgain==1.0.0 (from file:///private/tmp/stocgain-fresh-ZXmDDs/repo/backend)
+ + typer==0.27.3
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.4
+ + tzdata==2026.5
+ + uvicorn==0.54.0
+cd frontend && npm ci
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 516 packages, and audited 517 packages in 10s
+
+178 packages are looking for funding
+  run `npm fund` for details
+
+5 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn allow-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+docker compose up -d --wait db
+ Volume stocgain_verify_1791997566_pgdata Creating
+ Network stocgain_verify_1791997566_default Creating
+ Volume stocgain_verify_1791997566_pgdata Creating
+ Network stocgain_verify_1791997566_default Creating
+ Volume stocgain_verify_1791997566_pgdata Created
+ Volume stocgain_verify_1791997566_pgdata Created
+ Network stocgain_verify_1791997566_default Created
+ Network stocgain_verify_1791997566_default Created
+ Container stocgain_verify_1791997566-db-1 Creating
+ Container stocgain_verify_1791997566-db-1 Created
+ Container stocgain_verify_1791997566-db-1 Starting
+ Container stocgain_verify_1791997566-db-1 Started
+ Container stocgain_verify_1791997566-db-1 Waiting
+ Container stocgain_verify_1791997566-db-1 Healthy
+/Library/Developer/CommandLineTools/usr/bin/make migrate
+uv run --project backend --locked alembic -c backend/alembic.ini upgrade head
+uv run --project backend --locked stocgain db apply-views
+/Library/Developer/CommandLineTools/usr/bin/make seed
+uv run --project backend --locked stocgain data generate --preset standard --seed 42
+{"preset": "standard", "seed": 42, "content_checksum": "752b9d2d9f29b702003d3e86496e48912e4df0f0e00b223ef47cc477422684ba", "row_counts": {"regions": 4, "product_categories": 8, "stores": 12, "suppliers": 48, "products": 400, "product_suppliers": 473, "supplier_store_lanes": 576, "calendar": 305, "promotions": 143, "promotion_products": 846, "purchase_orders": 17074, "purchase_order_lines": 55415, "inventory_receipts": 55583, "inventory_adjustments": 5802, "daily_sales": 864000, "inventory_snapshots": 864000, "latent_demand": 864000}, "elapsed_seconds": 8.471}
+uv run --project backend --locked stocgain data load --path data/generated/standard
+check	severity	violations
+DQ01_inventory_equation	error	0
+DQ02_continuity	error	0
+DQ03_sales_availability	error	0
+DQ04_dense_coverage	error	0
+DQ05_receipt_quantity	error	0
+DQ06_receipt_after_order	error	0
+DQ07_sourced_product	error	0
+DQ08_primary_supplier	error	0
+DQ09_promotion_overlap	error	0
+DQ10_sales_amount	error	0
+DQ11_cogs	error	0
+DQ12_history_end	error	0
+DQ13_primary_lanes	error	0
+DQ14_stockout_incidence	warning	0
+DQ15_latent_demand	error	0
+DQ16_manifest	error	0
+DQ17_price_cost	error	0
+DQ18_introduction	warning	0
+load_and_validate_seconds=36.507
+uv run --project backend --locked stocgain db apply-views
+uv run --project backend --locked stocgain data validate
+check	severity	violations
+DQ01_inventory_equation	error	0
+DQ02_continuity	error	0
+DQ03_sales_availability	error	0
+DQ04_dense_coverage	error	0
+DQ05_receipt_quantity	error	0
+DQ06_receipt_after_order	error	0
+DQ07_sourced_product	error	0
+DQ08_primary_supplier	error	0
+DQ09_promotion_overlap	error	0
+DQ10_sales_amount	error	0
+DQ11_cogs	error	0
+DQ12_history_end	error	0
+DQ13_primary_lanes	error	0
+DQ14_stockout_incidence	warning	0
+DQ15_latent_demand	error	0
+DQ16_manifest	error	0
+DQ17_price_cost	error	0
+DQ18_introduction	warning	0
+validation_seconds=9.112
+uv run --project backend --locked stocgain db refresh
+Refreshed 1 materialized views.
+/Library/Developer/CommandLineTools/usr/bin/make analytics
+uv run --project backend --locked stocgain analytics backfill --weeks 12
+[{"run_id": 1, "as_of_date": "2026-07-08", "positions_scored": 4800, "step_timings": {"extract": 7.912477167000361, "compute": 2.9346662910002124, "persist": 1.1887845829996877, "total": 12.0439541249998}}, {"run_id": 2, "as_of_date": "2026-07-15", "positions_scored": 4800, "step_timings": {"extract": 8.058097500000258, "compute": 2.832798415999605, "persist": 1.1584390839998377, "total": 12.055378291000125}}, {"run_id": 3, "as_of_date": "2026-07-22", "positions_scored": 4800, "step_timings": {"extract": 2.3867496659995595, "compute": 2.748762042000635, "persist": 1.101102333000199, "total": 6.244151666999642}}, {"run_id": 4, "as_of_date": "2026-07-29", "positions_scored": 4800, "step_timings": {"extract": 2.802049625000109, "compute": 3.042763499999637, "persist": 1.3668611670000246, "total": 7.2171754580003835}}, {"run_id": 5, "as_of_date": "2026-08-05", "positions_scored": 4800, "step_timings": {"extract": 2.6797464589999436, "compute": 3.0993278339992685, "persist": 1.1109357499999533, "total": 6.896016583999881}}, {"run_id": 6, "as_of_date": "2026-08-12", "positions_scored": 4800, "step_timings": {"extract": 2.6950206249994153, "compute": 3.9543698340003175, "persist": 1.529278083000463, "total": 8.184756458000265}}, {"run_id": 7, "as_of_date": "2026-08-19", "positions_scored": 4800, "step_timings": {"extract": 2.904779082999994, "compute": 2.91509670799951, "persist": 1.1102868329999183, "total": 6.9375325829996655}}, {"run_id": 8, "as_of_date": "2026-08-26", "positions_scored": 4800, "step_timings": {"extract": 2.590294707999419, "compute": 2.909479416999602, "persist": 1.0445598750002318, "total": 6.550907625000036}}, {"run_id": 9, "as_of_date": "2026-09-02", "positions_scored": 4800, "step_timings": {"extract": 2.8260189160000664, "compute": 3.024849207999978, "persist": 1.1156211249999615, "total": 6.970275040999695}}, {"run_id": 10, "as_of_date": "2026-09-09", "positions_scored": 4800, "step_timings": {"extract": 2.649162124999748, "compute": 2.911126625000179, "persist": 1.0628166249998685, "total": 6.627221042000201}}, {"run_id": 11, "as_of_date": "2026-09-16", "positions_scored": 4800, "step_timings": {"extract": 2.965918791999684, "compute": 2.967808833000163, "persist": 1.1017633749997913, "total": 7.039407125000253}}, {"run_id": 12, "as_of_date": "2026-09-23", "positions_scored": 4800, "step_timings": {"extract": 2.7382233749995066, "compute": 3.05338487500012, "persist": 1.1969275419996848, "total": 6.992486582999845}}]
+uv run --project backend --locked stocgain analytics run --evaluate
+{"run_id": 13, "as_of_date": "2026-09-30", "positions_scored": 4800, "step_timings": {"extract": 2.86705612500009, "compute": 3.209855291999702, "backtest": 32.81545854199976, "persist": 8.635591915999612, "total": 47.56238979199952}}
+Pipeline seconds: 222
+Setup + pipeline seconds: 243
+/Library/Developer/CommandLineTools/usr/bin/make lint
+uv run --project backend --locked ruff check backend
+All checks passed!
+uv run --project backend --locked ruff format --check backend
+103 files already formatted
+cd frontend && npm run lint
+
+> stocgain-web@1.0.0 lint
+> eslint
+
+/Library/Developer/CommandLineTools/usr/bin/make typecheck
+cd backend && uv run --locked mypy src/stocgain
+Success: no issues found in 67 source files
+cd frontend && npm run typecheck
+
+> stocgain-web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+/Library/Developer/CommandLineTools/usr/bin/make test
+uv run --project backend --locked pytest backend/tests
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-9.1.1, pluggy-1.6.0
+rootdir: /private/tmp/stocgain-fresh-ZXmDDs/repo/backend
+configfile: pyproject.toml
+plugins: anyio-4.11.0, cov-7.1.0
+collected 270 items
+
+backend/tests/api/test_contracts.py ...                                  [  1%]
+backend/tests/api/test_health.py .                                       [  1%]
+backend/tests/api/test_meta_scenarios.py ..........                      [  5%]
+backend/tests/api/test_overview.py .........                             [  8%]
+backend/tests/api/test_phase6.py .....                                   [ 10%]
+backend/tests/api/test_positions.py ........                             [ 13%]
+backend/tests/api/test_risk_positions.py ......................          [ 21%]
+backend/tests/db/test_constraints.py ........................            [ 30%]
+backend/tests/db/test_data_quality.py .................                  [ 36%]
+backend/tests/db/test_kpi_sql.py ...                                     [ 37%]
+backend/tests/db/test_loader.py ....                                     [ 39%]
+backend/tests/db/test_pipeline_outputs.py ....                           [ 40%]
+backend/tests/db/test_point_in_time.py ......                            [ 42%]
+backend/tests/db/test_reference_schema.py ...                            [ 44%]
+backend/tests/db/test_sql_analyses.py .................................  [ 56%]
+backend/tests/db/test_standard_dataset.py ..                             [ 57%]
+backend/tests/db/test_views.py ......                                    [ 59%]
+backend/tests/unit/test_backtest.py .......                              [ 61%]
+backend/tests/unit/test_distribution_equivalence.py ......               [ 64%]
+backend/tests/unit/test_forecasting.py ...................               [ 71%]
+backend/tests/unit/test_formatting.py ....................               [ 78%]
+backend/tests/unit/test_generator_rng.py .                               [ 78%]
+backend/tests/unit/test_generator_simulation.py .........                [ 82%]
+backend/tests/unit/test_golden_cases.py ..........                       [ 85%]
+backend/tests/unit/test_inventory_math.py .......................        [ 94%]
+backend/tests/unit/test_scenario.py ....                                 [ 95%]
+backend/tests/unit/test_smoke.py ...........                             [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.12.7-final-0 _______________
+
+Name                                                Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------
+backend/src/stocgain/analytics/__init__.py              0      0   100%
+backend/src/stocgain/analytics/backtest.py             95      3    97%   21, 60, 112
+backend/src/stocgain/analytics/config.py               41      4    90%   57-60
+backend/src/stocgain/analytics/demand_patterns.py      18      0   100%
+backend/src/stocgain/analytics/distributions.py       100      2    98%   14, 136
+backend/src/stocgain/analytics/explanations.py         56      1    98%   168
+backend/src/stocgain/analytics/exposure.py              3      0   100%
+backend/src/stocgain/analytics/forecasting.py         112      2    98%   47, 155
+backend/src/stocgain/analytics/formatting.py           21      0   100%
+backend/src/stocgain/analytics/leadtime.py             32      0   100%
+backend/src/stocgain/analytics/pipeline.py            111     51    54%   46, 160-259, 264-274
+backend/src/stocgain/analytics/policy.py               17      0   100%
+backend/src/stocgain/analytics/replenishment.py        45      1    98%   58
+backend/src/stocgain/analytics/risk.py                105      1    99%   313
+backend/src/stocgain/analytics/scenario.py            116      3    97%   32, 43, 297
+backend/src/stocgain/analytics/serialization.py         5      0   100%
+backend/src/stocgain/analytics/types.py                27      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                 904     68    92%
+======================== 270 passed in 96.38s (0:01:36) ========================
+cd frontend && npm run test
+
+> stocgain-web@1.0.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /private/tmp/stocgain-fresh-ZXmDDs/repo/frontend
+
+
+ Test Files  6 passed (6)
+      Tests  38 passed (38)
+   Start at  13:12:03
+   Duration  1.29s (environment 73%, setup 14%, tests 6%, transform 5%, import 2%)
+
+/Library/Developer/CommandLineTools/usr/bin/make check-openapi
+✨ openapi-typescript 7.13.0
+🚀 /var/folders/3s/wtmjmld13lnd2r98kb9jl35r0000gn/T/tmp.hvlGgYcLnE/openapi.json → /var/folders/3s/wtmjmld13lnd2r98kb9jl35r0000gn/T/tmp.hvlGgYcLnE/schema.ts [93.7ms]
+
+> stocgain-web@1.0.0 build
+> next build
+
+▲ Next.js 16.4.0 (Turbopack)
+✓ Running next.config.ts took 16ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.5s
+  Running TypeScript ...
+  Finished TypeScript in 2.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/7) ...
+  Generating static pages using 7 workers (1/7)
+  Generating static pages using 7 workers (3/7)
+  Generating static pages using 7 workers (5/7)
+✓ Generating static pages using 7 workers (7/7) in 179ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /methodology
+├ ƒ /positions/[storeId]/[productId]
+├ ○ /risk
+├ ○ /scenarios
+├ ○ /suppliers
+└ ƒ /suppliers/[supplierId]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Fresh verification complete. Checkout: /private/tmp/stocgain-fresh-ZXmDDs/repo
+Project: stocgain_verify_1791997566
