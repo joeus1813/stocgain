@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-13",
+  "environment": {
+    "os": "darwin",
+    "release": "24.6.0",
+    "arch": "arm64",
+    "node": "v22.23.3",
+    "frontend": "Next.js production build",
+    "browser": "Playwright Chromium"
+  },
+  "method": "20 distinct full-scope automatic changes; includes input, 400 ms debounce, HTTP and rendered results; warm model cache; nearest-rank p95",
+  "samples": [
+    {
+      "demand_change_rate": -0.5,
+      "end_to_end_ms": 2441.9036249999995,
+      "server_computation_ms": 1955.3209168370813,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.45,
+      "end_to_end_ms": 2425.841958,
+      "server_computation_ms": 1974.7529169544578,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.4,
+      "end_to_end_ms": 2313.793584,
+      "server_computation_ms": 1869.632750051096,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.35,
+      "end_to_end_ms": 2272.421415999999,
+      "server_computation_ms": 1827.7638328727335,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.3,
+      "end_to_end_ms": 2314.2003750000003,
+      "server_computation_ms": 1865.7560842111707,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.25,
+      "end_to_end_ms": 2275.2644170000003,
+      "server_computation_ms": 1832.2002498898655,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.2,
+      "end_to_end_ms": 2283.2008750000023,
+      "server_computation_ms": 1835.744749987498,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.15,
+      "end_to_end_ms": 2288.7829170000005,
+      "server_computation_ms": 1840.458415914327,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.1,
+      "end_to_end_ms": 2285.537124999999,
+      "server_computation_ms": 1831.2814999371767,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.05,
+      "end_to_end_ms": 2224.457499999997,
+      "server_computation_ms": 1777.2882080171257,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.05,
+      "end_to_end_ms": 2216.3472079999992,
+      "server_computation_ms": 1773.116083117202,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.1,
+      "end_to_end_ms": 2260.538625000001,
+      "server_computation_ms": 1813.0405840929598,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.15,
+      "end_to_end_ms": 2226.5547079999997,
+      "server_computation_ms": 1779.2755418922752,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.2,
+      "end_to_end_ms": 2171.2099590000034,
+      "server_computation_ms": 1732.536124996841,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.25,
+      "end_to_end_ms": 2147.317041000002,
+      "server_computation_ms": 1700.3070840146393,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.3,
+      "end_to_end_ms": 2241.6092500000013,
+      "server_computation_ms": 1792.9001250304282,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.35,
+      "end_to_end_ms": 2138.0644580000007,
+      "server_computation_ms": 1692.0782080851495,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.4,
+      "end_to_end_ms": 2142.8300000000017,
+      "server_computation_ms": 1693.3247500564903,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.45,
+      "end_to_end_ms": 2100.839374999996,
+      "server_computation_ms": 1649.886165978387,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.5,
+      "end_to_end_ms": 2151.3572910000003,
+      "server_computation_ms": 1704.9250421114266,
+      "positions_in_scope": 4800
+    }
+  ],
+  "p50_ms": 2241.6092500000013,
+  "p95_ms": 2425.841958,
+  "target_ms": 1500
+}

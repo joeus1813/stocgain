@@ -674,6 +674,157 @@
         "title": "Driver",
         "type": "object"
       },
+      "Evaluation": {
+        "additionalProperties": false,
+        "properties": {
+          "first_origin_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "First origin date.",
+            "title": "First Origin Date"
+          },
+          "last_origin_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Last origin date.",
+            "title": "Last Origin Date"
+          },
+          "n_origins": {
+            "description": "N origins.",
+            "title": "N Origins",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "notes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Notes.",
+            "title": "Notes",
+            "type": "object"
+          },
+          "rows": {
+            "description": "Rows.",
+            "items": {
+              "$ref": "#/components/schemas/EvaluationRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "run_id": {
+            "description": "Run id.",
+            "title": "Run Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "run_id",
+          "first_origin_date",
+          "last_origin_date",
+          "n_origins",
+          "rows",
+          "notes"
+        ],
+        "title": "Evaluation",
+        "type": "object"
+      },
+      "EvaluationRow": {
+        "additionalProperties": false,
+        "properties": {
+          "bias_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sum forecast minus actual units divided by actual units.",
+            "title": "Bias Rate"
+          },
+          "evaluation_basis": {
+            "description": "Observed in-stock sales or simulation-only hidden-demand evaluation basis.",
+            "title": "Evaluation Basis",
+            "type": "string"
+          },
+          "mae": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Mean absolute error in units.",
+            "title": "Mae",
+            "x-unit": "units"
+          },
+          "model_name": {
+            "description": "Model name.",
+            "title": "Model Name",
+            "type": "string"
+          },
+          "n_observations": {
+            "description": "N observations.",
+            "title": "N Observations",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "segment_type": {
+            "description": "Segment type.",
+            "title": "Segment Type",
+            "type": "string"
+          },
+          "segment_value": {
+            "description": "Segment value.",
+            "title": "Segment Value",
+            "type": "string"
+          },
+          "wape": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sum absolute error divided by total actual units; null at zero denominator.",
+            "title": "Wape"
+          }
+        },
+        "required": [
+          "model_name",
+          "evaluation_basis",
+          "segment_type",
+          "segment_value",
+          "n_observations",
+          "mae",
+          "wape",
+          "bias_rate"
+        ],
+        "title": "EvaluationRow",
+        "type": "object"
+      },
       "Event": {
         "additionalProperties": false,
         "properties": {
@@ -699,6 +850,61 @@
           "description"
         ],
         "title": "Event",
+        "type": "object"
+      },
+      "ExposedPosition": {
+        "additionalProperties": false,
+        "properties": {
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposure from persisted current-run positions.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "product_id": {
+            "description": "Product id.",
+            "title": "Product Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "product_name": {
+            "description": "Product name.",
+            "title": "Product Name",
+            "type": "string"
+          },
+          "risk_tier": {
+            "description": "Risk tier.",
+            "title": "Risk Tier",
+            "type": "string"
+          },
+          "sku": {
+            "description": "Sku.",
+            "title": "Sku",
+            "type": "string"
+          },
+          "stockout_probability": {
+            "description": "Estimated probability at the binding checkpoint.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "store_id": {
+            "description": "Store id.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "store_id",
+          "product_id",
+          "sku",
+          "product_name",
+          "risk_tier",
+          "stockout_probability",
+          "margin_at_risk_usd"
+        ],
+        "title": "ExposedPosition",
         "type": "object"
       },
       "ExposureInfo": {
@@ -1143,6 +1349,29 @@
           "next_receipt"
         ],
         "title": "InventoryInfo",
+        "type": "object"
+      },
+      "LeadBin": {
+        "additionalProperties": false,
+        "properties": {
+          "lead_time_days": {
+            "description": "Lead time days.",
+            "title": "Lead Time Days",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "pos": {
+            "description": "Pos.",
+            "title": "Pos",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "lead_time_days",
+          "pos"
+        ],
+        "title": "LeadBin",
         "type": "object"
       },
       "Meta": {
@@ -3624,6 +3853,65 @@
         "title": "Scope",
         "type": "object"
       },
+      "Sensitivity": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_probability": {
+            "description": "Baseline estimated probability from the unchanged risk model.",
+            "title": "Baseline Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          },
+          "note": {
+            "description": "Note.",
+            "title": "Note",
+            "type": "string"
+          },
+          "scenarios": {
+            "description": "Scenarios.",
+            "items": {
+              "$ref": "#/components/schemas/SensitivityItem"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          }
+        },
+        "required": [
+          "baseline_probability",
+          "scenarios",
+          "note"
+        ],
+        "title": "Sensitivity",
+        "type": "object"
+      },
+      "SensitivityItem": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "description": "Key.",
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "description": "Label.",
+            "title": "Label",
+            "type": "string"
+          },
+          "stockout_probability": {
+            "description": "Estimated probability at the binding checkpoint.",
+            "title": "Stockout Probability",
+            "type": "number",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "stockout_probability"
+        ],
+        "title": "SensitivityItem",
+        "type": "object"
+      },
       "Store": {
         "additionalProperties": false,
         "properties": {
@@ -3822,6 +4110,115 @@
         "title": "Supplier",
         "type": "object"
       },
+      "SupplierDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_lead_time_days_avg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Contract lead time days avg.",
+            "title": "Contract Lead Time Days Avg"
+          },
+          "disclaimer": {
+            "description": "Disclaimer.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "exposed_positions": {
+            "description": "Exposed positions.",
+            "items": {
+              "$ref": "#/components/schemas/ExposedPosition"
+            },
+            "title": "Exposed Positions",
+            "type": "array"
+          },
+          "lanes": {
+            "description": "Lanes.",
+            "items": {
+              "$ref": "#/components/schemas/SupplierLane"
+            },
+            "title": "Lanes",
+            "type": "array"
+          },
+          "lead_time_histogram": {
+            "description": "Lead time histogram.",
+            "items": {
+              "$ref": "#/components/schemas/LeadBin"
+            },
+            "title": "Lead Time Histogram",
+            "type": "array"
+          },
+          "performance": {
+            "$ref": "#/components/schemas/SupplierPerformance",
+            "description": "Performance."
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/SupplierIdentity",
+            "description": "Supplier."
+          },
+          "weekly_on_time": {
+            "description": "Weekly on time.",
+            "items": {
+              "$ref": "#/components/schemas/WeeklyOnTime"
+            },
+            "title": "Weekly On Time",
+            "type": "array"
+          }
+        },
+        "required": [
+          "supplier",
+          "performance",
+          "weekly_on_time",
+          "lead_time_histogram",
+          "contract_lead_time_days_avg",
+          "lanes",
+          "exposed_positions",
+          "disclaimer"
+        ],
+        "title": "SupplierDetail",
+        "type": "object"
+      },
+      "SupplierIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "category_name": {
+            "description": "Category name.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "supplier_code": {
+            "description": "Supplier code.",
+            "title": "Supplier Code",
+            "type": "string"
+          },
+          "supplier_id": {
+            "description": "Supplier id.",
+            "title": "Supplier Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_name": {
+            "description": "Supplier name.",
+            "title": "Supplier Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "supplier_id",
+          "supplier_code",
+          "supplier_name",
+          "category_name"
+        ],
+        "title": "SupplierIdentity",
+        "type": "object"
+      },
       "SupplierInfo": {
         "additionalProperties": false,
         "properties": {
@@ -3862,6 +4259,396 @@
           "min_order_qty"
         ],
         "title": "SupplierInfo",
+        "type": "object"
+      },
+      "SupplierItem": {
+        "additionalProperties": false,
+        "properties": {
+          "at_risk_positions": {
+            "description": "At risk positions.",
+            "title": "At Risk Positions",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "category_name": {
+            "description": "Category name.",
+            "title": "Category Name",
+            "type": "string"
+          },
+          "in_full_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Share of due POs fully received in one receipt per line without cancellations.",
+            "title": "In Full Rate"
+          },
+          "lead_time_cv": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Lead time cv.",
+            "title": "Lead Time Cv"
+          },
+          "margin_at_risk_usd": {
+            "description": "Estimated gross margin exposure from persisted current-run positions.",
+            "title": "Margin At Risk Usd",
+            "type": "number",
+            "x-unit": "usd"
+          },
+          "mean_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PO-weighted mean received lead time over the trailing 180 days.",
+            "title": "Mean Lead Time Days"
+          },
+          "on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "POs first received by the promise divided by all POs due in the trailing 90 days.",
+            "title": "On Time Rate"
+          },
+          "overdue_open_pos": {
+            "description": "Overdue open pos.",
+            "title": "Overdue Open Pos",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "p90_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "P90 lead time days.",
+            "title": "P90 Lead Time Days"
+          },
+          "pos_due_90d": {
+            "description": "Pos due 90d.",
+            "title": "Pos Due 90D",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "reliability_rank": {
+            "description": "Rank by on-time rate ascending, null rates last.",
+            "title": "Reliability Rank",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "review_flag": {
+            "description": "Low on-time rate or high lead-time CV associated with at least one at-risk position.",
+            "title": "Review Flag",
+            "type": "boolean"
+          },
+          "std_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sample standard deviation of received lead time in days.",
+            "title": "Std Lead Time Days"
+          },
+          "supplier_code": {
+            "description": "Supplier code.",
+            "title": "Supplier Code",
+            "type": "string"
+          },
+          "supplier_id": {
+            "description": "Supplier id.",
+            "title": "Supplier Id",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "supplier_name": {
+            "description": "Supplier name.",
+            "title": "Supplier Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "supplier_id",
+          "supplier_code",
+          "supplier_name",
+          "category_name",
+          "pos_due_90d",
+          "on_time_rate",
+          "in_full_rate",
+          "mean_lead_time_days",
+          "std_lead_time_days",
+          "p90_lead_time_days",
+          "lead_time_cv",
+          "overdue_open_pos",
+          "at_risk_positions",
+          "margin_at_risk_usd",
+          "review_flag",
+          "reliability_rank"
+        ],
+        "title": "SupplierItem",
+        "type": "object"
+      },
+      "SupplierLane": {
+        "additionalProperties": false,
+        "properties": {
+          "mean_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PO-weighted mean received lead time over the trailing 180 days.",
+            "title": "Mean Lead Time Days"
+          },
+          "on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "POs first received by the promise divided by all POs due in the trailing 90 days.",
+            "title": "On Time Rate"
+          },
+          "overdue_open_pos": {
+            "description": "Overdue open pos.",
+            "title": "Overdue Open Pos",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "pos_received_180d": {
+            "description": "Purchase orders first received in the trailing 180 days.",
+            "title": "Pos Received 180D",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "std_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sample standard deviation of received lead time in days.",
+            "title": "Std Lead Time Days"
+          },
+          "store_code": {
+            "description": "Store code.",
+            "title": "Store Code",
+            "type": "string"
+          },
+          "store_id": {
+            "description": "Store id.",
+            "title": "Store Id",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "store_id",
+          "store_code",
+          "pos_received_180d",
+          "on_time_rate",
+          "mean_lead_time_days",
+          "std_lead_time_days",
+          "overdue_open_pos"
+        ],
+        "title": "SupplierLane",
+        "type": "object"
+      },
+      "SupplierList": {
+        "additionalProperties": false,
+        "properties": {
+          "disclaimer": {
+            "description": "Disclaimer.",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "items": {
+            "description": "Items.",
+            "items": {
+              "$ref": "#/components/schemas/SupplierItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "disclaimer"
+        ],
+        "title": "SupplierList",
+        "type": "object"
+      },
+      "SupplierPerformance": {
+        "additionalProperties": false,
+        "properties": {
+          "in_full_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Share of due POs fully received in one receipt per line without cancellations.",
+            "title": "In Full Rate"
+          },
+          "mean_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PO-weighted mean received lead time over the trailing 180 days.",
+            "title": "Mean Lead Time Days"
+          },
+          "on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "POs first received by the promise divided by all POs due in the trailing 90 days.",
+            "title": "On Time Rate"
+          },
+          "review_flag": {
+            "description": "Low on-time rate or high lead-time CV associated with at least one at-risk position.",
+            "title": "Review Flag",
+            "type": "boolean"
+          },
+          "std_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sample standard deviation of received lead time in days.",
+            "title": "Std Lead Time Days"
+          }
+        },
+        "required": [
+          "on_time_rate",
+          "in_full_rate",
+          "mean_lead_time_days",
+          "std_lead_time_days",
+          "review_flag"
+        ],
+        "title": "SupplierPerformance",
+        "type": "object"
+      },
+      "SupplierSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "flagged_suppliers": {
+            "description": "Flagged suppliers.",
+            "title": "Flagged Suppliers",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "mean_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "days"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PO-weighted mean received lead time over the trailing 180 days.",
+            "title": "Mean Lead Time Days"
+          },
+          "on_time_rate_90d": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PO-weighted on-time proportion across suppliers in scope.",
+            "title": "On Time Rate 90D"
+          },
+          "overdue_open_pos": {
+            "description": "Overdue open pos.",
+            "title": "Overdue Open Pos",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "suppliers": {
+            "description": "Suppliers.",
+            "title": "Suppliers",
+            "type": "integer",
+            "x-unit": "count"
+          }
+        },
+        "required": [
+          "suppliers",
+          "flagged_suppliers",
+          "on_time_rate_90d",
+          "mean_lead_time_days",
+          "overdue_open_pos"
+        ],
+        "title": "SupplierSummary",
         "type": "object"
       },
       "SupplyInfo": {
@@ -4171,6 +4958,43 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "WeeklyOnTime": {
+        "additionalProperties": false,
+        "properties": {
+          "on_time_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "x-unit": "ratio"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "POs first received by the promise divided by all POs due in the trailing 90 days.",
+            "title": "On Time Rate"
+          },
+          "pos_due": {
+            "description": "Pos due.",
+            "title": "Pos Due",
+            "type": "integer",
+            "x-unit": "count"
+          },
+          "week_start_date": {
+            "description": "Week start date.",
+            "format": "date",
+            "title": "Week Start Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "week_start_date",
+          "pos_due",
+          "on_time_rate"
+        ],
+        "title": "WeeklyOnTime",
+        "type": "object"
       }
     }
   },
@@ -4199,6 +5023,76 @@
         "summary": "Get Filters",
         "tags": [
           "Metadata"
+        ]
+      }
+    },
+    "/api/v1/forecasts/evaluation": {
+      "get": {
+        "description": "Read stored leakage-free backtest results.",
+        "operationId": "evaluation_api_v1_forecasts_evaluation_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "segment_type",
+            "required": false,
+            "schema": {
+              "default": "horizon_bucket",
+              "enum": [
+                "overall",
+                "horizon_bucket",
+                "velocity_class",
+                "demand_pattern"
+              ],
+              "title": "Segment Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "evaluation_basis",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "observed_in_stock",
+                    "simulated_latent"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Evaluation Basis"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluation",
+        "tags": [
+          "suppliers"
         ]
       }
     },
@@ -5219,6 +6113,64 @@
         ]
       }
     },
+    "/api/v1/positions/{store_id}/{product_id}/sensitivity": {
+      "get": {
+        "description": "Calculate the four specified one-at-a-time counterfactuals.",
+        "operationId": "sensitivity_api_v1_positions__store_id___product_id__sensitivity_get",
+        "parameters": [
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "store_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Store Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Positive database identifier.",
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "description": "Positive database identifier.",
+              "minimum": 1,
+              "title": "Product Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sensitivity"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sensitivity",
+        "tags": [
+          "positions"
+        ]
+      }
+    },
     "/api/v1/recommendations": {
       "get": {
         "description": "Preserve global priority rank while filtering stored suggestions.",
@@ -5645,6 +6597,243 @@
         ]
       }
     },
+    "/api/v1/risk/positions/export.csv": {
+      "get": {
+        "description": "Export the complete scoped result, with simulation and estimate labels.",
+        "operationId": "export_positions_api_v1_risk_positions_export_csv_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "risk_tier",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "critical",
+                      "high",
+                      "moderate",
+                      "low"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Risk Tier"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "enum": [
+                      "expedite_po",
+                      "reorder",
+                      "monitor",
+                      "no_action"
+                    ],
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "below_reorder_point",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Below Reorder Point"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "priority",
+              "enum": [
+                "priority",
+                "product_name",
+                "store_code",
+                "category_name",
+                "on_hand_units",
+                "avg_daily_demand_units",
+                "days_of_cover",
+                "next_receipt_date",
+                "stockout_probability",
+                "risk_tier",
+                "margin_at_risk_usd"
+              ],
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Dir"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Scoped simulated-data export with estimated column labels."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Positions",
+        "tags": [
+          "risk"
+        ]
+      }
+    },
     "/api/v1/scenarios/evaluate": {
       "post": {
         "description": "Recalculate risk and policy under bounded, reproducible assumptions.",
@@ -5684,6 +6873,311 @@
         "summary": "Evaluate Scenario",
         "tags": [
           "Scenarios"
+        ]
+      }
+    },
+    "/api/v1/suppliers": {
+      "get": {
+        "description": "List scope-aware supplier delivery performance.",
+        "operationId": "listing_api_v1_suppliers_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "flagged_only",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Flagged Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "reliability_rank",
+              "enum": [
+                "reliability_rank",
+                "on_time_rate",
+                "lead_time_cv",
+                "margin_at_risk_usd",
+                "at_risk_positions"
+              ],
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_dir",
+            "required": false,
+            "schema": {
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "title": "Sort Dir",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Listing",
+        "tags": [
+          "suppliers"
+        ]
+      }
+    },
+    "/api/v1/suppliers/summary": {
+      "get": {
+        "description": "Return weighted supplier delivery KPIs.",
+        "operationId": "summary_api_v1_suppliers_summary_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "region_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Store Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "supplier_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Supplier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summary",
+        "tags": [
+          "suppliers"
+        ]
+      }
+    },
+    "/api/v1/suppliers/{supplier_id}": {
+      "get": {
+        "description": "Inspect historical delivery evidence and current exposed positions.",
+        "operationId": "detail_api_v1_suppliers__supplier_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "supplier_id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "Supplier Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplierDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Detail",
+        "tags": [
+          "suppliers"
         ]
       }
     }

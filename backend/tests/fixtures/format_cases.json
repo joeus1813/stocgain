@@ -1,0 +1,102 @@
+[
+  {
+    "kind": "count",
+    "value": 0,
+    "expected": "0"
+  },
+  {
+    "kind": "count",
+    "value": 1248,
+    "expected": "1,248"
+  },
+  {
+    "kind": "count",
+    "value": 100000,
+    "expected": "100,000"
+  },
+  {
+    "kind": "decimal",
+    "value": 12,
+    "expected": "12.0"
+  },
+  {
+    "kind": "decimal",
+    "value": 1.27,
+    "expected": "1.3"
+  },
+  {
+    "kind": "decimal",
+    "value": null,
+    "expected": "\u2014"
+  },
+  {
+    "kind": "days",
+    "value": 8.33,
+    "expected": "8.3 days"
+  },
+  {
+    "kind": "days",
+    "value": null,
+    "expected": "\u2014"
+  },
+  {
+    "kind": "rate",
+    "value": 0.884,
+    "expected": "88.4%"
+  },
+  {
+    "kind": "rate",
+    "value": null,
+    "expected": "\u2014"
+  },
+  {
+    "kind": "probability",
+    "value": 0,
+    "expected": "0.0%"
+  },
+  {
+    "kind": "probability",
+    "value": 1e-05,
+    "expected": "<0.1%"
+  },
+  {
+    "kind": "probability",
+    "value": 0.001,
+    "expected": "0.1%"
+  },
+  {
+    "kind": "probability",
+    "value": 0.7568,
+    "expected": "75.7%"
+  },
+  {
+    "kind": "probability",
+    "value": 0.9999,
+    "expected": ">99.9%"
+  },
+  {
+    "kind": "probability",
+    "value": 1,
+    "expected": "100.0%"
+  },
+  {
+    "kind": "money",
+    "value": 148.88,
+    "expected": "$149"
+  },
+  {
+    "kind": "money",
+    "value": 2602,
+    "expected": "$2,602"
+  },
+  {
+    "kind": "price",
+    "value": 24.98,
+    "expected": "$24.98"
+  },
+  {
+    "kind": "price",
+    "value": 2,
+    "expected": "$2.00"
+  }
+]

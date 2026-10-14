@@ -1,0 +1,14 @@
+
+> stocgain-web@1.0.0 e2e
+> playwright test risk.spec.ts responsive.spec.ts --workers=1
+
+
+Running 3 tests using 1 worker
+
+(node:72138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/e2e/responsive.spec.ts:2:1 › all pages remain usable at desktop and mobile widths (18.9s)
+  ✓  2 tests/e2e/risk.spec.ts:2:1 › risk filters, server sorting, pagination, drilldown and back preserve state (963ms)
+  ✓  3 tests/e2e/risk.spec.ts:37:1 › heatmap drills into exactly the at-risk cell count (561ms)
+
+  3 passed (20.9s)

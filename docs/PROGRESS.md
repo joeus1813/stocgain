@@ -7,7 +7,10 @@
 | 2 — SQL analytics | Complete | 2026-10-11 | 12 views, 15 analyses, 11 extractors; historical leakage tests and measured standard-data plans pass | Actual-model comparisons/performance deferred to Phase 3 as prescribed |
 | 3 — Model engines | Complete | 2026-10-12 | 13 real model runs; golden/leakage/neutrality gates pass | Risk calibration advisory documented |
 | 4 — Backend API | Complete | 2026-10-13 | 239 backend, 4 frontend, 2 browser tests; DQ/type/lint/OpenAPI pass | Scenario warm/cold targets missed and documented |
-| 5–9 | Not started | — | None | Stage 3/frontend not authorized |
+| 5 — Frontend foundations | Complete | 2026-10-13 | Shared formatting, shell, URL scope, states and types verified | Full Phase 8 accessibility audit not performed |
+| 6 — Main pages | Complete | 2026-10-13 | Real-data P0/P1 pages; 11 production browser tests; final 3 regressions pass | Inherited model/calibration limitations |
+| 7 — Scenario Lab | Functional checks pass; acceptance open | 2026-10-13 | Neutral/disruption/policy/reset/validation pass; 20 measured browser evaluations | p95 2.426 s exceeds 1.5 s target |
+| 8–9 | Not started | — | None | Stage 4 not authorized; explicitly requested Methodology delivered within Stage 3 |
 
 ## 2026-10-09 verification and limitations
 
@@ -88,3 +91,21 @@ Final commands and real outputs: `make lint` passes Ruff/96-file formatting/ESLi
 Measured HTTP p95 from 20 warm requests each: overview summary225.043 ms, risk list24.888 ms, detail9.862 ms, projection81.889 ms, scenario1793.594 ms. First cold projection6431.645 ms includes full-precision baseline replay. Optimized neutral core1526.985 ms; scalar SciPy object construction/promotion scans removed, no changed assumptions. Scenario1.5s and cold3s targets remain gaps allowed to be documented by Phase4; all other warm endpoint targets pass. Standard current counts unchanged: 4,800 forecasts/risks/recommendations, 201,600 daily forecasts, 7,206 checkpoints, 72 evaluation rows. Calibration advisory and original model limitations remain. Full evidence: PHASE4_VERIFICATION and docs/perf/raw/stage2_*.
 
 Stage 2 acceptance gates pass with those explicit performance/calibration limitations. Local checkpoint only; no push. No owner approval or manual step pending.
+
+## 2026-10-13 · Phase 5 foundation gate
+
+Owner authorized Stage 3, superseding the old no-frontend handoff restriction. Single-agent implementation on the existing branch. Shared shell, canonical design tokens, Inter/JetBrains fonts, provenance popover, URL filters and local storage, typed cancellable API client, run-keyed queries, shared states/table/KPI/status components and friendly error/404 routes added. `npm --prefix frontend run typecheck` and lint pass; frontend unit tests 13 passed (1.06 s); real browser foundation checks 2 passed (1.9 s), with 1440/1280 screenshots under screenshots/wip. PostgreSQL-backed health reports current run 14 ready. Screen-specific acceptance continues in Phase 6. Remaining foundation follow-up: full 20-case cross-language formatting fixture and final browser checks across all implemented routes; these are tracked for final acceptance, not claimed verified.
+
+### Phase 5/6 verification follow-up
+Shared cross-language formatting fixtures now pass: 20 Python cases (0.02 s), frontend 33 tests (1.75 s). Phase 6 P0 real browser KPI/risk sorting/pagination/back/heatmap workflows: 3 passed (5.7 s). Supplier API results match the existing PostgreSQL view; scoped summary, CSV contents and existing-engine sensitivity baseline: 3 integration tests passed (3.68 s). No model or database changes. Next.js typecheck passes. The TanStack Table component explicitly opts out of React Compiler memoization because the library's table instance is mutable; SQL still owns sort/page state. Supplier CSV browser testing exposed a missing Content-Disposition CORS exposure; fixed, rerun pending. Scenario Lab implementation follows after that gate.
+
+### Phase 6 gate and Phase 7 continuation
+Supplier detail/CSV browser test passed (2.2 s) after CORS filename fix. P0 browser workflows and supplier API/view equality checks passed as recorded above; proceed to Scenario Lab. Stage 2 engines are reused unchanged. Scenario browser run confirmed neutral Overview equality, disruption aggregate increase and higher-service policy tradeoff, then failed on a test selector matching Next.js's route-announcement alert in addition to the intended field error. Narrowed the selector; rerun remains required. Observed development-server disruption update 5,322 ms (server calculation 1,691 ms), above the 1.5-second target; this is not claimed as a met performance gate.
+
+## 2026-10-13 · Stage 3 final checkpoint
+
+The earlier pending CORS/scenario-selector reruns above are resolved. All six requested pages plus supplier detail, CSV and sensitivity are implemented. Final `make lint typecheck test-frontend check-openapi` passes (Ruff102, mypy67, 38 frontend tests/1.08 s); production build and Prettier pass. Production `npm --prefix frontend run e2e -- --workers=1`: 11 passed/35.3 s. Last action-label regression followed by risk/responsive browser tests: 3 passed/20.9 s. Actual screenshots at 1440/390 and responsive checks at 1440/1280/390 retained.
+
+Comprehensive `make lint typecheck test check-openapi` initially stopped on one new API metadata failure (259 passed, 1 failed, 2 default slow deselections/47.20 s). After schema metadata/CSV contract fix, targeted Phase6/contracts/position API tests: 16 passed/11.57 s, including future supplier receipt isolation. Full backend suite not rerun after repair; retained evidence distinguishes initial failure from targeted success. Formatter Python cases: 20 passed/0.02 s. No prior-stage data regeneration or engine investigations repeated.
+
+One full-scope production browser benchmark (20 distinct demand changes, warm model cache, includes 400 ms debounce and rendered results): median 2241.609 ms, p95 2425.842 ms. **docs/07 §10.4 AC5 is unmet; Phase 7 and Stage 3 are not fully accepted.** Functional checks pass. Remaining latency is documented rather than changing formulas, dropping debounce or undertaking excluded major Stage 2 optimization. No Stage 4, deployment or remote action. Full evidence, limitations and launch instructions: [STAGE3_VERIFICATION.md](STAGE3_VERIFICATION.md).

@@ -1,0 +1,36 @@
+{
+  "health": {
+    "status": "ok",
+    "database": "ok",
+    "analytics_ready": true,
+    "current_run_id": 14,
+    "version": "1.0.0"
+  },
+  "overview": {
+    "as_of_date": "2026-09-30",
+    "run_id": 14,
+    "active_positions": 4800,
+    "active_skus": 400,
+    "at_risk_positions": 1058,
+    "critical_positions": 727,
+    "at_risk_rate": 0.2204,
+    "prior_at_risk_positions": 1003,
+    "at_risk_positions_change": 55,
+    "gross_margin_at_risk_usd": 122138.83,
+    "revenue_at_risk_usd": 327737.92,
+    "median_days_of_cover": 14.8,
+    "supplier_on_time_rate": 0.9617,
+    "supplier_pos_due": 7161,
+    "supplier_on_time_window_days": 90,
+    "in_stock_rate": 0.9213,
+    "in_stock_rate_prior": 0.9266,
+    "in_stock_window_days": 28
+  },
+  "suppliers": {
+    "suppliers": 48,
+    "flagged_suppliers": 0,
+    "on_time_rate_90d": 0.9617,
+    "mean_lead_time_days": 8.9,
+    "overdue_open_pos": 6
+  }
+}

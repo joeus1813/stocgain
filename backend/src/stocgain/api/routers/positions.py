@@ -11,6 +11,7 @@ from stocgain.api.schemas.positions import (
     PositionOrders,
     PositionProjection,
 )
+from stocgain.api.schemas.suppliers import Sensitivity
 from stocgain.services import positions
 
 router = APIRouter(prefix="/positions", tags=["positions"])
@@ -77,4 +78,14 @@ def purchase_orders(
     """Read open and recently completed purchase-order lines as of the run cutoff."""
     return PositionOrders.model_validate(
         positions.purchase_orders(ctx, store_id, product_id, recent_received_limit)
+    )
+
+
+@router.get("/{store_id}/{product_id}/sensitivity", response_model=Sensitivity)
+def sensitivity(
+    store_id: Identifier, product_id: Identifier, ctx: ContextDependency
+) -> Sensitivity:
+    """Calculate the four specified one-at-a-time counterfactuals."""
+    return Sensitivity.model_validate(
+        positions.sensitivity_detail(ctx, store_id, product_id)
     )

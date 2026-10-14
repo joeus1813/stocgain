@@ -8,7 +8,7 @@ The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
-**Stage 1 and the Stage 2 implementation are delivered.** PostgreSQL holds the deterministic retail dataset and 13 verified analytics runs. The backend provides forecasting, risk, replenishment recommendations, historical evaluation, all 16 required Phase 4 endpoints and stateless scenarios. The existing minimal six-KPI page verifies the database → model → API path; Stage 3 frontend work has not started. See [implementation status](IMPLEMENTATION_STATUS.md) for final acceptance evidence and performance limitations.
+**Stages 1–2 and the Stage 3 application are implemented.** PostgreSQL holds the deterministic retail dataset and verified analytics runs. The frontend provides Executive Overview, Inventory Risk Monitor, product detail, supplier performance, Scenario Lab and Methodology, backed by all 22 specified APIs. See [implementation status](IMPLEMENTATION_STATUS.md) for actual verification and the outstanding scenario latency target. No public deployment is included.
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ make api                         # terminal 1: http://localhost:8000/docs
 make web                         # terminal 2: http://localhost:3000
 ```
 
-The temporary page calls the real API using TanStack Query. With PostgreSQL available it displays `API: ok · Database: ok`; otherwise it reports the actual unavailable state. Health always returns HTTP 200 for a live process; inspect its `database` field. Analytics readiness stays false until later phases implement run detection.
+For this already-populated checkout, only `make db-up`, `make api` and `make web` are needed; do not reseed or rerun analytics just to launch the UI. Every business metric comes from the actual API. Cold projection/scenario requests may take several seconds to warm the model cache. Global filters persist in the URL; scenarios are stateless and never create purchase orders. The Overview service-health panel reports actual API/database readiness.
 
 `.env.example` contains local-only example credentials. `make setup` preserves an existing `.env`; the backend and Next config load it from the repository root. Adjust both connection URLs if changing the database port or credentials. Never commit `.env`. `DATABASE_URL_PSQL` is the libpq form for future SQL tools. Only localhost ports are published by Compose.
 
@@ -61,9 +61,9 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 
 ## Structure and next work
 
-- `backend/src/stocgain/`: settings, logging, FastAPI health/errors, SQLAlchemy engine, CLI namespaces.
+- `backend/src/stocgain/`: forecasting and risk engines, SQL-backed API services, scenarios, CLI and PostgreSQL integration.
 - `backend/migrations/`: four reversible Alembic revisions for the 26 specified physical tables.
-- `frontend/`: Next App Router health client, Tailwind v4 tokens, shadcn configuration, generated API types, Vitest/Playwright tests.
+- `frontend/`: Next App Router analytics application, shared design tokens and components, generated API types, Vitest/Playwright tests.
 - `sql/`: Phase 1 reconciliation, 18 quality checks, calibration SQL and schema dump; Phase 2 SQL and EXPLAIN wrappers are implemented.
 - `docs/00`–`docs/11`: authoritative product and engineering specifications.
 - `IMPLEMENTATION_CONTRACT.md`: compact compatibility contract and planned data interfaces.

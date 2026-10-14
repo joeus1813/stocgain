@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/forecasts/evaluation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Evaluation
+         * @description Read stored leakage-free backtest results.
+         */
+        get: operations["evaluation_api_v1_forecasts_evaluation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -264,6 +284,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/positions/{store_id}/{product_id}/sensitivity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sensitivity
+         * @description Calculate the four specified one-at-a-time counterfactuals.
+         */
+        get: operations["sensitivity_api_v1_positions__store_id___product_id__sensitivity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/recommendations": {
         parameters: {
             query?: never;
@@ -304,6 +344,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/risk/positions/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Positions
+         * @description Export the complete scoped result, with simulation and estimate labels.
+         */
+        get: operations["export_positions_api_v1_risk_positions_export_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/scenarios/evaluate": {
         parameters: {
             query?: never;
@@ -318,6 +378,66 @@ export interface paths {
          * @description Recalculate risk and policy under bounded, reproducible assumptions.
          */
         post: operations["evaluate_scenario_api_v1_scenarios_evaluate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suppliers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listing
+         * @description List scope-aware supplier delivery performance.
+         */
+        get: operations["listing_api_v1_suppliers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suppliers/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Summary
+         * @description Return weighted supplier delivery KPIs.
+         */
+        get: operations["summary_api_v1_suppliers_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suppliers/{supplier_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detail
+         * @description Inspect historical delivery evidence and current exposed positions.
+         */
+        get: operations["detail_api_v1_suppliers__supplier_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -729,6 +849,84 @@ export interface components {
              */
             label: string;
         };
+        /** Evaluation */
+        Evaluation: {
+            /**
+             * First Origin Date
+             * @description First origin date.
+             */
+            first_origin_date: string | null;
+            /**
+             * Last Origin Date
+             * @description Last origin date.
+             */
+            last_origin_date: string | null;
+            /**
+             * N Origins
+             * @description N origins.
+             */
+            n_origins: number;
+            /**
+             * Notes
+             * @description Notes.
+             */
+            notes: {
+                [key: string]: string;
+            };
+            /**
+             * Rows
+             * @description Rows.
+             */
+            rows: components["schemas"]["EvaluationRow"][];
+            /**
+             * Run Id
+             * @description Run id.
+             */
+            run_id: number;
+        };
+        /** EvaluationRow */
+        EvaluationRow: {
+            /**
+             * Bias Rate
+             * @description Sum forecast minus actual units divided by actual units.
+             */
+            bias_rate: number | null;
+            /**
+             * Evaluation Basis
+             * @description Observed in-stock sales or simulation-only hidden-demand evaluation basis.
+             */
+            evaluation_basis: string;
+            /**
+             * Mae
+             * @description Mean absolute error in units.
+             */
+            mae: number | null;
+            /**
+             * Model Name
+             * @description Model name.
+             */
+            model_name: string;
+            /**
+             * N Observations
+             * @description N observations.
+             */
+            n_observations: number;
+            /**
+             * Segment Type
+             * @description Segment type.
+             */
+            segment_type: string;
+            /**
+             * Segment Value
+             * @description Segment value.
+             */
+            segment_value: string;
+            /**
+             * Wape
+             * @description Sum absolute error divided by total actual units; null at zero denominator.
+             */
+            wape: number | null;
+        };
         /** Event */
         Event: {
             /**
@@ -746,6 +944,44 @@ export interface components {
              * @description Simulation event name.
              */
             name: string;
+        };
+        /** ExposedPosition */
+        ExposedPosition: {
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposure from persisted current-run positions.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Product Id
+             * @description Product id.
+             */
+            product_id: number;
+            /**
+             * Product Name
+             * @description Product name.
+             */
+            product_name: string;
+            /**
+             * Risk Tier
+             * @description Risk tier.
+             */
+            risk_tier: string;
+            /**
+             * Sku
+             * @description Sku.
+             */
+            sku: string;
+            /**
+             * Stockout Probability
+             * @description Estimated probability at the binding checkpoint.
+             */
+            stockout_probability: number;
+            /**
+             * Store Id
+             * @description Store id.
+             */
+            store_id: number;
         };
         /** ExposureInfo */
         ExposureInfo: {
@@ -1006,6 +1242,19 @@ export interface components {
              * @description Number of distinct open purchase orders.
              */
             open_po_count: number;
+        };
+        /** LeadBin */
+        LeadBin: {
+            /**
+             * Lead Time Days
+             * @description Lead time days.
+             */
+            lead_time_days: number;
+            /**
+             * Pos
+             * @description Pos.
+             */
+            pos: number;
         };
         /** Meta */
         Meta: {
@@ -2423,6 +2672,42 @@ export interface components {
              */
             supplier_ids?: number[] | null;
         };
+        /** Sensitivity */
+        Sensitivity: {
+            /**
+             * Baseline Probability
+             * @description Baseline estimated probability from the unchanged risk model.
+             */
+            baseline_probability: number;
+            /**
+             * Note
+             * @description Note.
+             */
+            note: string;
+            /**
+             * Scenarios
+             * @description Scenarios.
+             */
+            scenarios: components["schemas"]["SensitivityItem"][];
+        };
+        /** SensitivityItem */
+        SensitivityItem: {
+            /**
+             * Key
+             * @description Key.
+             */
+            key: string;
+            /**
+             * Label
+             * @description Label.
+             */
+            label: string;
+            /**
+             * Stockout Probability
+             * @description Estimated probability at the binding checkpoint.
+             */
+            stockout_probability: number;
+        };
         /** Store */
         Store: {
             /**
@@ -2548,6 +2833,66 @@ export interface components {
              */
             supplier_name: string;
         };
+        /** SupplierDetail */
+        SupplierDetail: {
+            /**
+             * Contract Lead Time Days Avg
+             * @description Contract lead time days avg.
+             */
+            contract_lead_time_days_avg: number | null;
+            /**
+             * Disclaimer
+             * @description Disclaimer.
+             */
+            disclaimer: string;
+            /**
+             * Exposed Positions
+             * @description Exposed positions.
+             */
+            exposed_positions: components["schemas"]["ExposedPosition"][];
+            /**
+             * Lanes
+             * @description Lanes.
+             */
+            lanes: components["schemas"]["SupplierLane"][];
+            /**
+             * Lead Time Histogram
+             * @description Lead time histogram.
+             */
+            lead_time_histogram: components["schemas"]["LeadBin"][];
+            /** @description Performance. */
+            performance: components["schemas"]["SupplierPerformance"];
+            /** @description Supplier. */
+            supplier: components["schemas"]["SupplierIdentity"];
+            /**
+             * Weekly On Time
+             * @description Weekly on time.
+             */
+            weekly_on_time: components["schemas"]["WeeklyOnTime"][];
+        };
+        /** SupplierIdentity */
+        SupplierIdentity: {
+            /**
+             * Category Name
+             * @description Category name.
+             */
+            category_name: string;
+            /**
+             * Supplier Code
+             * @description Supplier code.
+             */
+            supplier_code: string;
+            /**
+             * Supplier Id
+             * @description Supplier id.
+             */
+            supplier_id: number;
+            /**
+             * Supplier Name
+             * @description Supplier name.
+             */
+            supplier_name: string;
+        };
         /** SupplierInfo */
         SupplierInfo: {
             /**
@@ -2575,6 +2920,196 @@ export interface components {
              * @description Fictional supplier display name.
              */
             supplier_name: string;
+        };
+        /** SupplierItem */
+        SupplierItem: {
+            /**
+             * At Risk Positions
+             * @description At risk positions.
+             */
+            at_risk_positions: number;
+            /**
+             * Category Name
+             * @description Category name.
+             */
+            category_name: string;
+            /**
+             * In Full Rate
+             * @description Share of due POs fully received in one receipt per line without cancellations.
+             */
+            in_full_rate: number | null;
+            /**
+             * Lead Time Cv
+             * @description Lead time cv.
+             */
+            lead_time_cv: number | null;
+            /**
+             * Margin At Risk Usd
+             * @description Estimated gross margin exposure from persisted current-run positions.
+             */
+            margin_at_risk_usd: number;
+            /**
+             * Mean Lead Time Days
+             * @description PO-weighted mean received lead time over the trailing 180 days.
+             */
+            mean_lead_time_days: number | null;
+            /**
+             * On Time Rate
+             * @description POs first received by the promise divided by all POs due in the trailing 90 days.
+             */
+            on_time_rate: number | null;
+            /**
+             * Overdue Open Pos
+             * @description Overdue open pos.
+             */
+            overdue_open_pos: number;
+            /**
+             * P90 Lead Time Days
+             * @description P90 lead time days.
+             */
+            p90_lead_time_days: number | null;
+            /**
+             * Pos Due 90D
+             * @description Pos due 90d.
+             */
+            pos_due_90d: number;
+            /**
+             * Reliability Rank
+             * @description Rank by on-time rate ascending, null rates last.
+             */
+            reliability_rank: number;
+            /**
+             * Review Flag
+             * @description Low on-time rate or high lead-time CV associated with at least one at-risk position.
+             */
+            review_flag: boolean;
+            /**
+             * Std Lead Time Days
+             * @description Sample standard deviation of received lead time in days.
+             */
+            std_lead_time_days: number | null;
+            /**
+             * Supplier Code
+             * @description Supplier code.
+             */
+            supplier_code: string;
+            /**
+             * Supplier Id
+             * @description Supplier id.
+             */
+            supplier_id: number;
+            /**
+             * Supplier Name
+             * @description Supplier name.
+             */
+            supplier_name: string;
+        };
+        /** SupplierLane */
+        SupplierLane: {
+            /**
+             * Mean Lead Time Days
+             * @description PO-weighted mean received lead time over the trailing 180 days.
+             */
+            mean_lead_time_days: number | null;
+            /**
+             * On Time Rate
+             * @description POs first received by the promise divided by all POs due in the trailing 90 days.
+             */
+            on_time_rate: number | null;
+            /**
+             * Overdue Open Pos
+             * @description Overdue open pos.
+             */
+            overdue_open_pos: number;
+            /**
+             * Pos Received 180D
+             * @description Purchase orders first received in the trailing 180 days.
+             */
+            pos_received_180d: number;
+            /**
+             * Std Lead Time Days
+             * @description Sample standard deviation of received lead time in days.
+             */
+            std_lead_time_days: number | null;
+            /**
+             * Store Code
+             * @description Store code.
+             */
+            store_code: string;
+            /**
+             * Store Id
+             * @description Store id.
+             */
+            store_id: number;
+        };
+        /** SupplierList */
+        SupplierList: {
+            /**
+             * Disclaimer
+             * @description Disclaimer.
+             */
+            disclaimer: string;
+            /**
+             * Items
+             * @description Items.
+             */
+            items: components["schemas"]["SupplierItem"][];
+        };
+        /** SupplierPerformance */
+        SupplierPerformance: {
+            /**
+             * In Full Rate
+             * @description Share of due POs fully received in one receipt per line without cancellations.
+             */
+            in_full_rate: number | null;
+            /**
+             * Mean Lead Time Days
+             * @description PO-weighted mean received lead time over the trailing 180 days.
+             */
+            mean_lead_time_days: number | null;
+            /**
+             * On Time Rate
+             * @description POs first received by the promise divided by all POs due in the trailing 90 days.
+             */
+            on_time_rate: number | null;
+            /**
+             * Review Flag
+             * @description Low on-time rate or high lead-time CV associated with at least one at-risk position.
+             */
+            review_flag: boolean;
+            /**
+             * Std Lead Time Days
+             * @description Sample standard deviation of received lead time in days.
+             */
+            std_lead_time_days: number | null;
+        };
+        /** SupplierSummary */
+        SupplierSummary: {
+            /**
+             * Flagged Suppliers
+             * @description Flagged suppliers.
+             */
+            flagged_suppliers: number;
+            /**
+             * Mean Lead Time Days
+             * @description PO-weighted mean received lead time over the trailing 180 days.
+             */
+            mean_lead_time_days: number | null;
+            /**
+             * On Time Rate 90D
+             * @description PO-weighted on-time proportion across suppliers in scope.
+             */
+            on_time_rate_90d: number | null;
+            /**
+             * Overdue Open Pos
+             * @description Overdue open pos.
+             */
+            overdue_open_pos: number;
+            /**
+             * Suppliers
+             * @description Suppliers.
+             */
+            suppliers: number;
         };
         /** SupplyInfo */
         SupplyInfo: {
@@ -2749,6 +3284,25 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /** WeeklyOnTime */
+        WeeklyOnTime: {
+            /**
+             * On Time Rate
+             * @description POs first received by the promise divided by all POs due in the trailing 90 days.
+             */
+            on_time_rate: number | null;
+            /**
+             * Pos Due
+             * @description Pos due.
+             */
+            pos_due: number;
+            /**
+             * Week Start Date
+             * Format: date
+             * @description Week start date.
+             */
+            week_start_date: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2774,6 +3328,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FiltersResponse"];
+                };
+            };
+        };
+    };
+    evaluation_api_v1_forecasts_evaluation_get: {
+        parameters: {
+            query?: {
+                segment_type?: "overall" | "horizon_bucket" | "velocity_class" | "demand_pattern";
+                evaluation_basis?: ("observed_in_stock" | "simulated_latent") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Evaluation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3173,6 +3759,40 @@ export interface operations {
             };
         };
     };
+    sensitivity_api_v1_positions__store_id___product_id__sensitivity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Positive database identifier. */
+                store_id: number;
+                /** @description Positive database identifier. */
+                product_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Sensitivity"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     recommendations_api_v1_recommendations_get: {
         parameters: {
             query?: {
@@ -3261,6 +3881,46 @@ export interface operations {
             };
         };
     };
+    export_positions_api_v1_risk_positions_export_csv_get: {
+        parameters: {
+            query?: {
+                risk_tier?: ("critical" | "high" | "moderate" | "low")[] | null;
+                action_type?: ("expedite_po" | "reorder" | "monitor" | "no_action")[] | null;
+                below_reorder_point?: boolean | null;
+                q?: string | null;
+                sort_by?: "priority" | "product_name" | "store_code" | "category_name" | "on_hand_units" | "avg_daily_demand_units" | "days_of_cover" | "next_receipt_date" | "stockout_probability" | "risk_tier" | "margin_at_risk_usd";
+                sort_dir?: ("asc" | "desc") | null;
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Scoped simulated-data export with estimated column labels. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     evaluate_scenario_api_v1_scenarios_evaluate_post: {
         parameters: {
             query?: never;
@@ -3281,6 +3941,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScenarioResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listing_api_v1_suppliers_get: {
+        parameters: {
+            query?: {
+                flagged_only?: boolean;
+                sort_by?: "reliability_rank" | "on_time_rate" | "lead_time_cv" | "margin_at_risk_usd" | "at_risk_positions";
+                sort_dir?: "asc" | "desc";
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summary_api_v1_suppliers_summary_get: {
+        parameters: {
+            query?: {
+                region_id?: number[] | null;
+                store_id?: number[] | null;
+                category_id?: number[] | null;
+                supplier_id?: number[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detail_api_v1_suppliers__supplier_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                supplier_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SupplierDetail"];
                 };
             };
             /** @description Validation Error */

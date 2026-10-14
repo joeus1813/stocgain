@@ -17,7 +17,13 @@ def test_response_models_have_documented_numeric_units():
     schema = app.openapi()
     for route in app.routes:
         if getattr(route, "path", "").startswith("/api/v1"):
-            assert route.response_model is not None
+            if route.path.endswith("/export.csv"):
+                assert (
+                    "text/csv"
+                    in schema["paths"][route.path]["get"]["responses"]["200"]["content"]
+                )
+            else:
+                assert route.response_model is not None
     for name, model in schema["components"]["schemas"].items():
         if name in ("HTTPValidationError", "ValidationError"):
             continue

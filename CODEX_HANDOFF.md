@@ -1,4 +1,4 @@
-> Current checkpoint update — 2026-10-13: Stage 2 (Phases 3–4) implemented; consult IMPLEMENTATION_STATUS.md and docs/PHASE4_VERIFICATION.md for final acceptance and limitations. Preserve all data, migrations and changes. No Stage 3 frontend work, deployment or remote Git actions authorized.
+> Current checkpoint update — 2026-10-13: Stage 3 application implemented on top of verified Stage 2 `646e2e2`. Read IMPLEMENTATION_STATUS.md and docs/STAGE3_VERIFICATION.md for actual verification, remaining scenario latency and resume instructions. Preserve all data, migrations, volumes and formulas. Stage 4, deployment and remote Git actions remain unauthorized.
 
 
 # CODEX_HANDOFF — stocgain Implementation Contract

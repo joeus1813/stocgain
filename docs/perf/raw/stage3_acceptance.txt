@@ -1,0 +1,76 @@
+uv run --project backend --locked ruff check backend
+All checks passed!
+uv run --project backend --locked ruff format --check backend
+102 files already formatted
+cd frontend && npm run lint
+
+> stocgain-web@1.0.0 lint
+> eslint
+
+cd backend && uv run --locked mypy src/stocgain
+Success: no issues found in 67 source files
+cd frontend && npm run typecheck
+
+> stocgain-web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+uv run --project backend --locked pytest backend/tests
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/yuminsong/Desktop/StockSense/backend
+configfile: pyproject.toml
+plugins: anyio-4.11.0, cov-7.1.0
+collected 262 items / 2 deselected / 260 selected
+
+backend/tests/api/test_contracts.py F..                                  [  1%]
+backend/tests/api/test_health.py .                                       [  1%]
+backend/tests/api/test_meta_scenarios.py ..........                      [  5%]
+backend/tests/api/test_overview.py .........                             [  8%]
+backend/tests/api/test_phase6.py ...                                     [ 10%]
+backend/tests/api/test_positions.py ........                             [ 13%]
+backend/tests/api/test_risk_positions.py ......................          [ 21%]
+backend/tests/db/test_constraints.py ........................            [ 30%]
+backend/tests/db/test_data_quality.py .................                  [ 37%]
+backend/tests/db/test_kpi_sql.py ...                                     [ 38%]
+backend/tests/db/test_loader.py ....                                     [ 40%]
+backend/tests/db/test_pipeline_outputs.py ....                           [ 41%]
+backend/tests/db/test_point_in_time.py ......                            [ 43%]
+backend/tests/db/test_reference_schema.py ...                            [ 45%]
+backend/tests/db/test_sql_analyses.py .................................  [ 57%]
+backend/tests/db/test_views.py ......                                    [ 60%]
+backend/tests/unit/test_backtest.py .......                              [ 62%]
+backend/tests/unit/test_forecasting.py ...................               [ 70%]
+backend/tests/unit/test_formatting.py ....................               [ 77%]
+backend/tests/unit/test_generator_rng.py .                               [ 78%]
+backend/tests/unit/test_generator_simulation.py .........                [ 81%]
+backend/tests/unit/test_golden_cases.py ..........                       [ 85%]
+backend/tests/unit/test_inventory_math.py .......................        [ 94%]
+backend/tests/unit/test_scenario.py ....                                 [ 95%]
+backend/tests/unit/test_smoke.py ...........                             [100%]
+
+=================================== FAILURES ===================================
+______________ test_response_models_have_documented_numeric_units ______________
+
+    def test_response_models_have_documented_numeric_units():
+        app = create_app()
+        schema = app.openapi()
+        for route in app.routes:
+            if getattr(route, "path", "").startswith("/api/v1"):
+                assert route.response_model is not None
+        for name, model in schema["components"]["schemas"].items():
+            if name in ("HTTPValidationError", "ValidationError"):
+                continue
+            for field, spec in model.get("properties", {}).items():
+>               assert spec.get("description"), (name, field)
+E               AssertionError: ('Evaluation', 'run_id')
+E               assert None
+E                +  where None = <built-in method get of dict object at 0x121e48400>('description')
+E                +    where <built-in method get of dict object at 0x121e48400> = {'type': 'integer', 'title': 'Run Id', 'x-unit': 'count'}.get
+
+backend/tests/api/test_contracts.py:25: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/api/test_contracts.py::test_response_models_have_documented_numeric_units
+================= 1 failed, 259 passed, 2 deselected in 47.20s =================
+make: *** [test-backend] Error 1

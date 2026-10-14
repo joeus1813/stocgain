@@ -1,6 +1,6 @@
 # stocgain implementation interface
 
-Updated 2026-10-13. **Implemented scope: Phases 0–4; Stage 2 final acceptance recorded in IMPLEMENTATION_STATUS.md.** Phase 3 model engines and Phase 4 required API endpoints are implemented. Stage 3 frontend work is not authorized.
+Updated 2026-10-13. **Implemented scope: Phases 0–7, with the Stage 3 scenario performance gate still open.** The owner authorized the six-page frontend and its supporting P1 endpoints. Stage 4, deployment and remote Git actions are not authorized.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 
@@ -92,6 +92,12 @@ Every analytical request resolves one successful current run and uses one read-o
 
 Scenario calculations replay full-precision operational as-of inputs using persisted run config, then reuse the Phase 3 functions. A bounded, synchronized cache is keyed by database identity and run ID; a new run cannot reuse the prior baseline. Final position serialization matches Numeric storage precision, and neutral comparisons include every risk field. Forecasting inputs never access simulation truth.
 
-Phase 4 scope contains 16 P0 endpoints. P1 CSV export, sensitivity, supplier and forecast-evaluation endpoints remain absent (404), permitted by the approved roadmap. Their underlying model outputs remain available in PostgreSQL. Minimal six-KPI frontend is only the roadmap's Phase 4 vertical-slice check; Phase 5+ development has not begun.
+Phase 4 delivered 16 P0 endpoints. Stage 3 adds the six specified P1 endpoints: CSV export, position sensitivity, supplier summary/list/detail, and stored forecast evaluation. All 22 paths are implemented; no new database, migrations, model assumptions or persisted scenarios. Supplier SQL preserves as-of receipt isolation. CSV estimates are labeled and Content-Disposition is exposed to the local browser.
 
 Performance: standard full-scope scenario warm p95 1.794 seconds, above 1.5-second target; first cache warmup observed through projection 6.432 seconds. These are recorded gaps, not met-target claims. See docs/PHASE4_VERIFICATION.md and raw measurements.
+
+## Stage 3 frontend contract
+
+Routes: `/`, `/risk`, `/positions/[storeId]/[productId]`, `/suppliers`, `/suppliers/[supplierId]`, `/scenarios`, `/methodology`. All metrics use generated OpenAPI types and real API responses. Global scope uses URL `region/store/category`, scenario controls use `lt/dem/sl/buf/store/category/supplier`; scenarios encode percentage controls in percentage points in the URL and convert to API ratios only at the request boundary. Query caches include the run ID. Search debounces 300 ms; scenario updates debounce 400 ms, abort stale requests and retain prior results while computing. Numeric validation uses `/meta` limits. Older stored explanation percentages are normalized for display only; database prose and formulas remain intact. Browser screenshots and actual verification are in `docs/STAGE3_VERIFICATION.md`. The 1.5-second Scenario Lab update target is not claimed met.
+
+Stage 3 measured production-browser performance: 20 full-scope updates, p50 2.242 s, p95 2.426 s including the 400 ms debounce. docs/07 §10.4 AC5 remains unmet; Phase 7 acceptance remains open. See `docs/perf/raw/stage3_scenario.json`.

@@ -1,9 +1,11 @@
 """Position endpoint assembly from persisted model evidence, docs/08 §3.13–16."""
 
+import re
 from datetime import timedelta
 from typing import Any
 
 from stocgain.analytics.explanations import describe_driver
+from stocgain.analytics.formatting import format_number
 from stocgain.analytics.leadtime import expected_arrival
 from stocgain.analytics.risk import prepare_pos, project_inventory
 from stocgain.api.dependencies import Context
@@ -53,6 +55,18 @@ def detail(ctx: Context, store_id: int, product_id: int) -> dict[str, Any]:
             for code in risk["risk_drivers"]
         ],
     }
+    # Older persisted explanations predate the shared UI formatting boundary.
+    # Normalize only this display token; preserve stored prose and all model values.
+    risk_info["explanation"] = re.sub(
+        r"(Estimated stockout probability before replenishment: )[^ ]+",
+        lambda match: (
+            match[1]
+            + format_number(
+                "probability", round(float(risk["stockout_probability"]), 4)
+            )
+        ),
+        str(risk["explanation"]),
+    )
     receipt = None
     if risk["next_receipt_date"] is not None:
         receipt = {
@@ -234,3 +248,57 @@ def purchase_orders(
             received.append(_fields(schema.ReceivedOrder, row))
     opened.sort(key=lambda r: (r["expected_arrival_date"], r["purchase_order_id"]))
     return {"open": opened, "recent_received": received[:recent_received_limit]}
+
+
+def sensitivity_detail(ctx: Context, store_id: int, product_id: int) -> dict[str, Any]:
+    """Replay the existing pure sensitivity function without changing model assumptions."""
+    from stocgain.analytics.risk import sensitivity
+
+    require_position(ctx, store_id, product_id)
+    inputs, outputs = get_baseline(ctx)
+
+    def matches(record: dict[str, Any]) -> bool:
+        return (record["store_id"], record["product_id"]) == (store_id, product_id)
+
+    position = next(p for p in inputs.positions if matches(p))
+    forecast = next(p for p in outputs.forecasts if matches(p))
+    lane = next(
+        p
+        for p in outputs.lanes
+        if p["store_id"] == store_id and p["supplier_id"] == position["supplier_id"]
+    )
+    daily = sorted(
+        (p for p in outputs.daily if matches(p)), key=lambda p: p["horizon_day"]
+    )
+    probabilities = sensitivity(
+        position,
+        forecast,
+        [float(p["forecast_units"]) for p in daily],
+        lane,
+        [p for p in inputs.open_pos if matches(p)],
+        inputs.as_of,
+        inputs.config,
+        [float(p["promo_multiplier"]) for p in daily],
+    )
+    labels = [
+        ("reliable_lead_times", "reliable_lead_times", "Perfectly reliable lead times"),
+        (
+            "pos_on_promised_date",
+            "promised_arrival",
+            "Open POs arrive on promised date",
+        ),
+        (
+            "poisson_variability",
+            "poisson_variability",
+            "Demand variability at Poisson floor",
+        ),
+        ("no_promotion", "no_promotion", "No planned promotion"),
+    ]
+    return dict(
+        baseline_probability=probabilities["baseline"],
+        scenarios=[
+            dict(key=key, label=label, stockout_probability=probabilities[source])
+            for key, source, label in labels
+        ],
+        note="One-at-a-time sensitivities; effects are not additive. Lower uncertainty can increase probability when expected demand exceeds supply.",
+    )

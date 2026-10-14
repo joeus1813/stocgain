@@ -1,0 +1,23 @@
+
+> stocgain-web@1.0.0 e2e
+> playwright test --workers=1
+
+
+Running 11 tests using 1 worker
+
+(node:26300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/e2e/foundation.spec.ts:2:1 › shell persists scope, is responsive, and shows actual provenance (581ms)
+  ✓   2 tests/e2e/foundation.spec.ts:25:1 › analytics not ready is explicit and recoverable (1.5s)
+  ✓   3 tests/e2e/health.spec.ts:3:1 › health page reaches the real API and PostgreSQL (534ms)
+  ✓   4 tests/e2e/overview.spec.ts:9:1 › overview renders six real API metrics (721ms)
+  ✓   5 tests/e2e/responsive.spec.ts:2:1 › all pages remain usable at desktop and mobile widths (17.9s)
+  ✓   6 tests/e2e/risk.spec.ts:2:1 › risk filters, server sorting, pagination, drilldown and back preserve state (968ms)
+  ✓   7 tests/e2e/risk.spec.ts:37:1 › heatmap drills into exactly the at-risk cell count (568ms)
+Scenario disruption end-to-end update: 3379 ms; server 1573.4313330613077 ms
+  ✓   8 tests/e2e/scenario_lab.spec.ts:3:1 › neutral, disruption, policy tradeoff, reset and invalid inputs (9.1s)
+  ✓   9 tests/e2e/states.spec.ts:2:1 › widget failure is isolated and retry recovers real data (1.6s)
+  ✓  10 tests/e2e/states.spec.ts:31:1 › all navigation destinations and unknown route are reachable (466ms)
+  ✓  11 tests/e2e/suppliers.spec.ts:2:1 › supplier views drill into real delivery evidence and export matches scope (792ms)
+
+  11 passed (35.3s)
