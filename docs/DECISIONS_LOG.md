@@ -162,3 +162,5 @@ Owner explicitly authorized Phases 5–7 and all six pages including Methodology
 
 ### 2026-10-13 · Display boundary and CSV contract
 Persisted Stage 2 prose uses one-decimal percentages, while binding UI rules require `<0.1%` / `>99.9%` for nonzero tails. Normalize only the probability token at the detail API serialization boundary using the shared Python formatter and API precision; leave database prose and every formula/output unchanged. This makes the explanation match the detail panel without rerunning the model. CSV has a documented text/csv response rather than a JSON Pydantic model; the OpenAPI contract test now verifies that explicit media contract and retains description/unit checks for every JSON field. Recharts entry animations disabled to respect the minimal-motion design and make visual verification deterministic.
+
+2026-10-13 · Owner requested local frontend port 3050 because 3000 is occupied. Updated npm launch scripts, browser tooling, backend CORS and Compose host mapping; container-internal port stays 3000. Existing datasets and other port-3000 processes are preserved.

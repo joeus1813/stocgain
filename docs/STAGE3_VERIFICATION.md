@@ -68,5 +68,5 @@ export UV_CACHE_DIR=/private/tmp/stocksense-uv-cache
 ```
 
 With Docker Desktop running, terminal 1: `make db-up` then `make api`.
-Terminal 2: `make web`. Open http://localhost:3000; API docs http://localhost:8000/docs.
-No seed, migration or analytics rerun is needed for this existing verified dataset. For the production frontend used in tests, run `npm --prefix frontend run build` then `npm --prefix frontend run start` instead of `make web`. Use only one frontend process on port 3000.
+Terminal 2: `make web`. Open http://localhost:3050; API docs http://localhost:8000/docs.
+No seed, migration or analytics rerun is needed for this existing verified dataset. For the production frontend used in tests, run `npm --prefix frontend run build` then `npm --prefix frontend run start` instead of `make web`. Use only one frontend process on port 3050.

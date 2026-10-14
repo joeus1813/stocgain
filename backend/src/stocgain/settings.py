@@ -26,7 +26,7 @@ class Settings(BaseSettings):
         default="local", validation_alias=AliasChoices("STOCGAIN_ENV", "STOCKSENSE_ENV")
     )
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    api_cors_origins: str = "http://localhost:3000"
+    api_cors_origins: str = "http://localhost:3050"
     analytics_config_path: Path = REPOSITORY_ROOT / "backend/config/analytics.toml"
     generator_config_path: Path = REPOSITORY_ROOT / "backend/config/generator.toml"
 

@@ -60,7 +60,7 @@ Use current stable, mutually compatible versions at implementation time and pin 
 
 ```mermaid
 flowchart TB
-    subgraph Browser["Browser — Next.js app (port 3000)"]
+    subgraph Browser["Browser — Next.js app (port 3050)"]
         Pages["Pages: Overview · Risk Monitor · Product Detail · Suppliers · Scenario Lab · Methodology"]
         RQ["TanStack Query hooks<br/>(typed from openapi.json)"]
         Pages --> RQ
@@ -378,7 +378,7 @@ Rules (enforced by code review and a simple import-lint test in `tests/unit/test
 | `TEST_DATABASE_URL` | `postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense_test` | tests |
 | `STOCGAIN_ENV` | `local` | backend (`local`, `test`, `docker`) |
 | `LOG_LEVEL` | `INFO` | backend |
-| `API_CORS_ORIGINS` | `http://localhost:3000` | backend |
+| `API_CORS_ORIGINS` | `http://localhost:3050` | backend |
 | `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000/api/v1` | frontend |
 | `ANALYTICS_CONFIG_PATH` | `backend/config/analytics.toml` | backend |
 | `GENERATOR_CONFIG_PATH` | `backend/config/generator.toml` | backend |
@@ -420,7 +420,7 @@ services:
     build: {context: ./frontend}
     environment: {NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1}
     depends_on: [api]
-    ports: ["3000:3000"]
+    ports: ["3050:3000"]
     profiles: ["full"]
 volumes: {pgdata: {}}
 ```
@@ -471,7 +471,7 @@ make setup
 make db-up
 make pipeline                    # migrate + generate standard dataset + load + validate + analytics
 make api                         # terminal 1 → http://localhost:8000/docs
-make web                         # terminal 2 → http://localhost:3000
+make web                         # terminal 2 → http://localhost:3050
 ```
 
 ---

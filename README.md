@@ -27,7 +27,7 @@ make migrate                     # four revisions, then delivered views
 make seed PRESET=standard SEED=42 # deterministic data, safe load and validation
 make analytics                   # historical backfills + current model/evaluation
 make api                         # terminal 1: http://localhost:8000/docs
-make web                         # terminal 2: http://localhost:3000
+make web                         # terminal 2: http://localhost:3050
 ```
 
 For this already-populated checkout, only `make db-up`, `make api` and `make web` are needed; do not reseed or rerun analytics just to launch the UI. Every business metric comes from the actual API. Cold projection/scenario requests may take several seconds to warm the model cache. Global filters persist in the URL; scenarios are stateless and never create purchase orders. The Overview service-health panel reports actual API/database readiness.

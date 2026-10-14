@@ -11,7 +11,7 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 900 },
   });
-  await page.goto("http://localhost:3000/scenarios");
+  await page.goto("http://localhost:3050/scenarios");
   await expect(
     page.getByRole("heading", { name: "Scenario comparison", exact: true }),
   ).toBeVisible({ timeout: 30000 });

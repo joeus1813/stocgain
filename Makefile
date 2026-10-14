@@ -9,7 +9,7 @@ BACKEND = $(UV) run --project backend --locked
 .PHONY: help setup db-up db-down db-reset migrate seed analytics pipeline api web dev demo-docker test test-backend test-frontend e2e lint typecheck openapi check-openapi explain schema-dump verify
 
 help:
-	@echo 'Setup: make setup; make db-up; make api and make web in separate terminals'
+	@echo 'Setup: make setup; make db-up; make api and make web in separate terminals (frontend http://localhost:3050)'
 	@echo 'Verify: make lint typecheck test; make e2e requires running API, web and PostgreSQL'
 	@echo 'Types: make openapi; make check-openapi'
 	@echo 'Phase 1: make migrate; make seed PRESET=standard SEED=42; stocgain data validate/profile'
