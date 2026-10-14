@@ -2,9 +2,9 @@
 
 from alembic import context
 
-from stocksense.db.engine import create_db_engine
-from stocksense.db.models import Base
-from stocksense.settings import get_settings
+from stocgain.db.engine import create_db_engine
+from stocgain.db.models import Base
+from stocgain.settings import get_settings
 
 
 def run_migrations_offline() -> None:

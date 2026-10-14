@@ -1,3 +1,4 @@
+name: stocksense # Preserve the existing Docker project and PostgreSQL volume during the rebrand.
 services:
   db:
     image: postgres:17
@@ -23,7 +24,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-stocksense}:${POSTGRES_PASSWORD:-stocksense}@db:5432/${POSTGRES_DB:-stocksense}
-      STOCKSENSE_ENV: docker
+      STOCGAIN_ENV: docker
     depends_on:
       db:
         condition: service_healthy

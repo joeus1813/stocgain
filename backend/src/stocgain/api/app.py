@@ -9,12 +9,12 @@ from uuid import uuid4
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from stocksense import __version__
-from stocksense.api.errors import error_response, register_error_handlers
-from stocksense.api.routers.health import router
-from stocksense.db.engine import create_db_engine
-from stocksense.logging_config import configure_logging
-from stocksense.settings import Settings, get_settings
+from stocgain import __version__
+from stocgain.api.errors import error_response, register_error_handlers
+from stocgain.api.routers.health import router
+from stocgain.db.engine import create_db_engine
+from stocgain.logging_config import configure_logging
+from stocgain.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             application.state.engine.dispose()
 
-    application = FastAPI(title="StockSense", version=__version__, lifespan=lifespan)
+    application = FastAPI(title="stocgain.", version=__version__, lifespan=lifespan)
     register_error_handlers(application)
     application.include_router(router, prefix="/api/v1")
 
@@ -65,7 +65,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_origins=settings.cors_origins,
         allow_methods=["GET", "POST"],
         allow_headers=["Content-Type", "X-Request-ID"],
-        expose_headers=["X-Request-ID", "X-StockSense-Run-Id", "X-StockSense-As-Of"],
+        expose_headers=["X-Request-ID", "X-Stocgain-Run-Id", "X-Stocgain-As-Of"],
     )
     return application
 

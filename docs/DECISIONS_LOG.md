@@ -63,3 +63,15 @@ Reason: an unrelated pre-existing application listens on ::1:3000, while this se
 Impact: browser smoke tests select this stack's IPv4 address while preserving localhost origin/CORS.
 
 Deferred review minor: environment-provided analytics_config_path and generator_config_path remain relative; normalize against REPOSITORY_ROOT before Phase 1 consumes them. Both configs are unused in Phase 0.
+
+## 2026-10-09 · Owner-directed rebrand and database preservation
+Decision: rename the product to `stocgain.` (Predictive Retail Inventory Intelligence Platform; “Predict stockouts. Replenish smarter.”), Python package/CLI to `stocgain`, and npm package to `stocgain-web`. Update design references and OpenAPI metadata. Keep the active root checkout path unchanged.
+Reason: explicit owner request; root path is controlled by the active Codex workspace.
+Alternatives: global blind text replacement or root directory rename; rejected because they would alter business language or disrupt the checkout.
+Impact: existing Docker project/volume, PostgreSQL database/user/password `stocksense`, and `stocksense_test` remain as compatibility identifiers. Compose explicitly pins `name: stocksense` so future checkout naming cannot silently create a second volume/database. `STOCKSENSE_ENV` remains an accepted legacy environment alias; `STOCGAIN_ENV` is preferred. No database or volume was deleted or renamed.
+
+## 2026-10-09 · Docker access and Phase 0 gate
+Decision: use `/Applications/Docker.app/Contents/Resources/bin/docker` on PATH and approved local socket/TCP access. Keep the same PostgreSQL 17 service and host port 5433.
+Reason: the Docker executable was installed but absent from the shell PATH; default sandbox blocked the socket and localhost until local permission was granted. No Docker reinstall was needed.
+Alternatives: a second database or changing ports; rejected.
+Impact: Phase 0 acceptance was re-run against PostgreSQL 17.11 in the existing Compose project; results recorded in PROGRESS.md.

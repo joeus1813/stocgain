@@ -6,10 +6,10 @@
 
 ## 1. Architectural style
 
-StockSense is a **modular monolith** made of three runtime units:
+stocgain is a **modular monolith** made of three runtime units:
 
 1. **PostgreSQL 17** — system of record for operational data, SQL views, and versioned analytics outputs.
-2. **Backend** — one Python package (`stocksense`) that provides a CLI (data generation, loading, validation, analytics pipeline) and a FastAPI web application. Both share the same analytics modules.
+2. **Backend** — one Python package (`stocgain`) that provides a CLI (data generation, loading, validation, analytics pipeline) and a FastAPI web application. Both share the same analytics modules.
 3. **Frontend** — one Next.js (App Router, TypeScript) application.
 
 There are no message queues, caches outside process memory, schedulers, or microservices. Analytics are computed in batch by an explicit command, stored in PostgreSQL, and read by the API.
@@ -32,7 +32,7 @@ Use current stable, mutually compatible versions at implementation time and pin 
 | Migrations | Alembic | 1.13+ | Versioned schema migrations |
 | DB driver | psycopg | 3.2+ (`psycopg[binary]`) | Connections, fast `COPY` |
 | Analytics | pandas 2.x, NumPy 2.x, SciPy 1.13+ | | Forecasting, distributions |
-| CLI | Typer | latest stable | `stocksense` command |
+| CLI | Typer | latest stable | `stocgain` command |
 | ASGI server | Uvicorn | latest stable | Serving FastAPI |
 | Backend testing | pytest, pytest-cov, httpx | | Unit, DB, API tests |
 | Backend quality | Ruff (lint + format), mypy (strict on `analytics/`) | | Static checks |
@@ -66,17 +66,17 @@ flowchart TB
         Pages --> RQ
     end
 
-    subgraph API["FastAPI app (port 8000) — stocksense.api"]
+    subgraph API["FastAPI app (port 8000) — stocgain.api"]
         R["Routers /api/v1/*<br/>request validation, response models"]
         S["Services<br/>use-case orchestration, formatting of business objects"]
         Repo["Repositories<br/>execute named SQL files from sql/api/"]
-        Scen["Scenario service<br/>calls stocksense.analytics.*"]
+        Scen["Scenario service<br/>calls stocgain.analytics.*"]
         Cache["In-process cache<br/>keyed by current run_id"]
         R --> S --> Repo
         S --> Scen --> Cache
     end
 
-    subgraph CLI["stocksense CLI — batch pipeline"]
+    subgraph CLI["stocgain CLI — batch pipeline"]
         Gen["generator/<br/>deterministic simulation"]
         Load["loader/<br/>COPY into ops + sim_truth"]
         DQ["quality/<br/>sql/quality/*.sql checks"]
@@ -107,11 +107,11 @@ flowchart TB
 | # | Layer | Responsibilities | Must NOT |
 |---|-------|------------------|----------|
 | 1 | Frontend presentation (`frontend/`) | Rendering, formatting numbers/dates, URL filter state, chart interactions, loading/empty/error states | Calculate business metrics; hold mock data; talk to the DB |
-| 2 | REST API (`stocksense/api/`) | HTTP routing, request validation, pagination params, response schemas, error mapping, OpenAPI | Contain SQL strings or formulas |
-| 3 | Business logic / recommendation (`stocksense/services/`, `stocksense/analytics/replenishment.py`, `explanations.py`) | Compose repository results into business objects; select current run; scenario orchestration; recommendation rules | Execute raw HTTP concerns |
-| 4 | Forecasting & analytics (`stocksense/analytics/`) | Pure functions over NumPy/pandas: forecasting, distributions, lead time, risk, backtest, scenario math | Import FastAPI; open DB connections (except `pipeline.py` orchestrator) |
-| 5 | Data layer (PostgreSQL + `stocksense/db/` + `sql/`) | Storage, integrity constraints, SQL views, analytical SQL, migrations | Contain Python-only logic |
-| 6 | Synthetic data pipeline (`stocksense/generator/`, `loader/`, `quality/`) | Deterministic simulation, CSV output, COPY loading, data-quality checks | Read from analytics tables |
+| 2 | REST API (`stocgain/api/`) | HTTP routing, request validation, pagination params, response schemas, error mapping, OpenAPI | Contain SQL strings or formulas |
+| 3 | Business logic / recommendation (`stocgain/services/`, `stocgain/analytics/replenishment.py`, `explanations.py`) | Compose repository results into business objects; select current run; scenario orchestration; recommendation rules | Execute raw HTTP concerns |
+| 4 | Forecasting & analytics (`stocgain/analytics/`) | Pure functions over NumPy/pandas: forecasting, distributions, lead time, risk, backtest, scenario math | Import FastAPI; open DB connections (except `pipeline.py` orchestrator) |
+| 5 | Data layer (PostgreSQL + `stocgain/db/` + `sql/`) | Storage, integrity constraints, SQL views, analytical SQL, migrations | Contain Python-only logic |
+| 6 | Synthetic data pipeline (`stocgain/generator/`, `loader/`, `quality/`) | Deterministic simulation, CSV output, COPY loading, data-quality checks | Read from analytics tables |
 
 ---
 
@@ -157,7 +157,7 @@ StockSense/
 ├── THIRD_PARTY_NOTICES.md          # dependency license summary (Phase 9)
 ├── Makefile                        # all developer commands
 ├── docker-compose.yml
-├── docker/initdb/01_create_test_db.sql   # creates stocksense_test on first start
+├── docker/initdb/01_create_test_db.sql   # creates stocgain_test on first start
 ├── scripts/verify_fresh_setup.sh   # Phase 9 clean-clone verification
 ├── .env.example
 ├── .gitignore                      # includes data/generated/, .env, node_modules, .venv
@@ -201,7 +201,7 @@ StockSense/
 │   │   ├── env.py
 │   │   └── versions/               # 0001_… 0004_…
 │   ├── scripts/bench_api.py        # API latency benchmark (Phase 4/8)
-│   ├── src/stocksense/
+│   ├── src/stocgain/
 │   │   ├── __init__.py             # __version__
 │   │   ├── settings.py             # pydantic-settings
 │   │   ├── logging_config.py
@@ -324,9 +324,9 @@ quality ──▶ db
 
 Rules (enforced by code review and a simple import-lint test in `tests/unit/test_import_boundaries.py`):
 
-1. `stocksense.analytics.*` (except `pipeline.py`) must not import `sqlalchemy`, `psycopg`, `fastapi`, or `stocksense.db`.
-2. `stocksense.api.*` must not import `stocksense.analytics.*` directly; it calls services.
-3. Nothing outside `stocksense.analytics.backtest` and `stocksense.analytics.pipeline` (evaluation step) may reference the `sim_truth` schema. A unit test greps `src/` and `sql/` (excluding `sql/pipeline/extract_latent_demand.sql` and `sql/quality/`) for `sim_truth` and fails on matches.
+1. `stocgain.analytics.*` (except `pipeline.py`) must not import `sqlalchemy`, `psycopg`, `fastapi`, or `stocgain.db`.
+2. `stocgain.api.*` must not import `stocgain.analytics.*` directly; it calls services.
+3. Nothing outside `stocgain.analytics.backtest` and `stocgain.analytics.pipeline` (evaluation step) may reference the `sim_truth` schema. A unit test greps `src/` and `sql/` (excluding `sql/pipeline/extract_latent_demand.sql` and `sql/quality/`) for `sim_truth` and fails on matches.
 4. SQL strings longer than one line live in `.sql` files, not Python.
 5. The frontend imports API types only from `src/lib/api/schema.ts`.
 
@@ -338,14 +338,14 @@ Rules (enforced by code review and a simple import-lint test in `tests/unit/test
 
 | Stage | Command | Input | Output | Failure behavior |
 |-------|---------|-------|--------|------------------|
-| 1 Generate | `stocksense data generate --preset standard --seed 42` | `generator.toml` | `data/generated/standard/*.csv`, `manifest.json` | Abort; no partial files (write to temp dir, then rename) |
-| 2 Load | `stocksense data load --path data/generated/standard` | CSVs | `ops.*`, `sim_truth.*` populated (truncate-then-COPY in one transaction) | Rollback transaction |
-| 3 Validate | `stocksense data validate` | `ops.*` | DQ report printed + exit code | Exit 1 if any `error` severity check returns rows |
-| 4 Views | `stocksense db apply-views` / `stocksense db refresh` | `sql/views/*.sql` | Views created; materialized views refreshed | Abort |
-| 5 Analytics | `stocksense analytics backfill --weeks 12` then `stocksense analytics run --evaluate` | `ops`, `analytics` views | `analytics.analytics_runs` + outputs | Run row marked `failed` with error message; previous successful run remains current |
-| 6 Serve | `uvicorn stocksense.api.app:app` | `analytics.*` | JSON | 503 `ANALYTICS_NOT_READY` if no successful run |
+| 1 Generate | `stocgain data generate --preset standard --seed 42` | `generator.toml` | `data/generated/standard/*.csv`, `manifest.json` | Abort; no partial files (write to temp dir, then rename) |
+| 2 Load | `stocgain data load --path data/generated/standard` | CSVs | `ops.*`, `sim_truth.*` populated (truncate-then-COPY in one transaction) | Rollback transaction |
+| 3 Validate | `stocgain data validate` | `ops.*` | DQ report printed + exit code | Exit 1 if any `error` severity check returns rows |
+| 4 Views | `stocgain db apply-views` / `stocgain db refresh` | `sql/views/*.sql` | Views created; materialized views refreshed | Abort |
+| 5 Analytics | `stocgain analytics backfill --weeks 12` then `stocgain analytics run --evaluate` | `ops`, `analytics` views | `analytics.analytics_runs` + outputs | Run row marked `failed` with error message; previous successful run remains current |
+| 6 Serve | `uvicorn stocgain.api.app:app` | `analytics.*` | JSON | 503 `ANALYTICS_NOT_READY` if no successful run |
 
-`stocksense pipeline all --preset standard --seed 42` executes stages 1–5 in order.
+`stocgain pipeline all --preset standard --seed 42` executes stages 1–5 in order.
 
 ### 7.2 Request flow (API)
 
@@ -353,7 +353,7 @@ Rules (enforced by code review and a simple import-lint test in `tests/unit/test
 2. Dependency `get_current_run()` executes `SELECT run_id, as_of_date FROM analytics.v_current_run` (≤ 1 ms). Raises 503 if none.
 3. Service calls repository function, which executes a named SQL file with bound parameters (`:run_id`, `:store_ids`, …) via SQLAlchemy Core `text()`.
 4. Service maps rows → Pydantic response models (units and definitions documented in schema `Field(description=...)`).
-5. Response returned with `X-StockSense-Run-Id` and `X-StockSense-As-Of` headers.
+5. Response returned with `X-stocgain-Run-Id` and `X-stocgain-As-Of` headers.
 
 ### 7.3 Scenario flow
 
@@ -370,13 +370,13 @@ Rules (enforced by code review and a simple import-lint test in `tests/unit/test
 
 | Variable | Default (local) | Used by |
 |----------|-----------------|---------|
-| `POSTGRES_USER` | `stocksense` | compose |
-| `POSTGRES_PASSWORD` | `stocksense` | compose |
-| `POSTGRES_DB` | `stocksense` | compose |
+| `POSTGRES_USER` | `stocgain` | compose |
+| `POSTGRES_PASSWORD` | `stocgain` | compose |
+| `POSTGRES_DB` | `stocgain` | compose |
 | `POSTGRES_HOST_PORT` | `5433` | compose |
 | `DATABASE_URL` | `postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense` | backend |
 | `TEST_DATABASE_URL` | `postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense_test` | tests |
-| `STOCKSENSE_ENV` | `local` | backend (`local`, `test`, `docker`) |
+| `STOCGAIN_ENV` | `local` | backend (`local`, `test`, `docker`) |
 | `LOG_LEVEL` | `INFO` | backend |
 | `API_CORS_ORIGINS` | `http://localhost:3000` | backend |
 | `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000/api/v1` | frontend |
@@ -404,13 +404,13 @@ services:
     image: postgres:17
     environment: [POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB from .env]
     ports: ["${POSTGRES_HOST_PORT:-5433}:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data, ./docker/initdb:/docker-entrypoint-initdb.d:ro]  # initdb creates stocksense_test
-    healthcheck: pg_isready -U stocksense, interval 5s, retries 20
+    volumes: [pgdata:/var/lib/postgresql/data, ./docker/initdb:/docker-entrypoint-initdb.d:ro]  # initdb creates stocgain_test
+    healthcheck: pg_isready -U stocgain, interval 5s, retries 20
     command: ["postgres", "-c", "shared_buffers=512MB", "-c", "work_mem=32MB", "-c", "maintenance_work_mem=256MB"]
   api:
     build: {context: ., dockerfile: backend/Dockerfile}
     env_file: .env
-    environment: {DATABASE_URL: postgresql+psycopg://stocksense:stocksense@db:5432/stocksense, STOCKSENSE_ENV: docker}
+    environment: {DATABASE_URL: postgresql+psycopg://stocksense:stocksense@db:5432/stocksense, STOCGAIN_ENV: docker}
     depends_on: {db: {condition: service_healthy}}
     ports: ["8000:8000"]
     profiles: ["full"]
@@ -435,12 +435,12 @@ Two supported modes:
 | `make setup` | `uv sync` in `backend/`; `npm ci` in `frontend/`; copy `.env.example` → `.env` if missing |
 | `make db-up` | `docker compose up -d db` and wait for health |
 | `make db-down` | `docker compose down` |
-| `make db-reset` | Drop and recreate `stocksense` and `stocksense_test` databases, then `make migrate` |
-| `make migrate` | `alembic upgrade head` then `stocksense db apply-views` |
+| `make db-reset` | Drop and recreate `stocgain` and `stocgain_test` databases, then `make migrate` |
+| `make migrate` | `alembic upgrade head` then `stocgain db apply-views` |
 | `make seed PRESET=standard SEED=42` | generate → load → validate → refresh views |
-| `make analytics` | `stocksense analytics backfill --weeks 12` then `stocksense analytics run --evaluate` |
+| `make analytics` | `stocgain analytics backfill --weeks 12` then `stocgain analytics run --evaluate` |
 | `make pipeline` | `make migrate seed analytics` |
-| `make api` | `uvicorn stocksense.api.app:app --reload --port 8000` |
+| `make api` | `uvicorn stocgain.api.app:app --reload --port 8000` |
 | `make web` | `npm run dev` in `frontend/` |
 | `make dev` | `make db-up pipeline` then prints instructions to run `make api` and `make web` in two terminals |
 | `make demo-docker` | Full compose profile + pipeline inside the api container |
@@ -449,7 +449,7 @@ Two supported modes:
 | `make test-frontend` | `npm run test` (Vitest) |
 | `make e2e` | Playwright against running API + web |
 | `make lint` | `ruff check`, `ruff format --check`, `npm run lint` |
-| `make typecheck` | `mypy src/stocksense/analytics`, `npm run typecheck` |
+| `make typecheck` | `mypy src/stocgain/analytics`, `npm run typecheck` |
 | `make openapi` | Export OpenAPI JSON from the app (no server) to `frontend/openapi.json`, then `npm run gen:api` |
 | `make check-openapi` | Fails if regenerated `schema.ts` differs from committed version |
 | `make explain` | Run `sql/explain/*.sql` and write output to `docs/perf/raw/` |
@@ -471,7 +471,7 @@ interfaces in §9.2 remain binding as their phases are implemented.
 
 ```bash
 brew install uv node@22          # once; Docker Desktop must be installed and running
-git clone <repo> && cd StockSense
+git clone <repo> && cd stocgain
 make setup
 make db-up
 make pipeline                    # migrate + generate standard dataset + load + validate + analytics
@@ -507,7 +507,7 @@ make web                         # terminal 2 → http://localhost:3000
 ## 11. Logging
 
 - Python standard `logging`, configured once in `logging_config.py`.
-- Format (local): `2026-10-09T15:20:01Z INFO stocksense.analytics.pipeline run_id=14 step=forecast positions=4800 elapsed_ms=2310`.
+- Format (local): `2026-10-09T15:20:01Z INFO stocgain.analytics.pipeline run_id=14 step=forecast positions=4800 elapsed_ms=2310`.
 - Key-value style messages; JSON formatting is not required.
 - API middleware assigns `X-Request-ID` (uuid4 if absent), logs method, path, status, duration.
 - Pipeline logs one line per stage with row counts and elapsed time; these lines are also persisted in `analytics_runs.step_timings` (JSON) for performance reporting.
@@ -517,13 +517,13 @@ make web                         # terminal 2 → http://localhost:3000
 
 ## 12. Database migrations
 
-- **Alembic** manages all tables, constraints, indexes, enums, and schemas. Migration source: `stocksense/db/models.py` (SQLAlchemy 2.0 declarative). Autogenerate is allowed **only as a starting point**; every migration is reviewed to include CHECK constraints, partial unique indexes, and BRIN indexes that autogenerate misses.
+- **Alembic** manages all tables, constraints, indexes, enums, and schemas. Migration source: `stocgain/db/models.py` (SQLAlchemy 2.0 declarative). Autogenerate is allowed **only as a starting point**; every migration is reviewed to include CHECK constraints, partial unique indexes, and BRIN indexes that autogenerate misses.
 - Planned revisions:
   1. `0001_schemas_and_reference` — schemas `ops`, `analytics`, `sim_truth`; enums; reference tables.
   2. `0002_operational_facts` — sales, snapshots, POs, lines, receipts, adjustments, promotions.
   3. `0003_analytics_outputs` — runs, forecasts, evaluations, lane estimates, risk snapshots, recommendations.
   4. `0004_sim_truth` — latent demand.
-- **Views are repeatable migrations** (ADR-011): `sql/views/NNN_name.sql` files, each beginning with `DROP VIEW/MATERIALIZED VIEW IF EXISTS … CASCADE;` followed by `CREATE …`. `stocksense db apply-views` executes them in filename order inside one transaction. `make migrate` always runs Alembic first, then views.
+- **Views are repeatable migrations** (ADR-011): `sql/views/NNN_name.sql` files, each beginning with `DROP VIEW/MATERIALIZED VIEW IF EXISTS … CASCADE;` followed by `CREATE …`. `stocgain db apply-views` executes them in filename order inside one transaction. `make migrate` always runs Alembic first, then views.
 - Downgrades are implemented for every Alembic revision.
 
 ---
@@ -533,7 +533,7 @@ make web                         # terminal 2 → http://localhost:3000
 | What | Where | Key | Invalidation |
 |------|-------|-----|--------------|
 | Analytics results | PostgreSQL tables (precomputed by pipeline) | `run_id` | New successful run |
-| `mv_daily_position` | Materialized view | — | `stocksense db refresh` after load |
+| `mv_daily_position` | Materialized view | — | `stocgain db refresh` after load |
 | Current run lookup | Not cached (cheap query) | — | — |
 | `/meta`, `/filters` responses | `functools.lru_cache` in service | `run_id` | Key change |
 | Scenario baseline inputs | Module-level dict in `services/scenarios.py` | `run_id` | Key change; max 2 entries |

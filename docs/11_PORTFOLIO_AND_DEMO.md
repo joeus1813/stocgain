@@ -6,7 +6,7 @@
 
 ## 1. Positioning
 
-**One-sentence pitch:** *StockSense is an inventory intelligence app I built that uses SQL and statistics to predict which store-SKU positions will run out before the next delivery, explains why, estimates the margin at risk, and lets managers test what-if scenarios.*
+**One-sentence pitch:** *stocgain is an inventory intelligence app I built that uses SQL and statistics to predict which store-SKU positions will run out before the next delivery, explains why, estimates the margin at risk, and lets managers test what-if scenarios.*
 
 **What it demonstrates:**
 
@@ -36,7 +36,7 @@ Order and content:
 1. **Title + tagline + badges** (tests passing — only if CI exists; otherwise omit badges) and a one-line disclaimer: "Portfolio project · simulated data · not affiliated with any retailer."
 2. **Hero screenshot** (Overview, 1440 × 900).
 3. **The problem** (4 sentences): availability matters; static reports describe the past; stockouts hide demand; managers need prioritized, explained actions.
-4. **What StockSense does** — the five questions (01 §2.3) with a screenshot thumbnail each (Overview, Risk Monitor, Detail, Scenario Lab, Methodology).
+4. **What stocgain does** — the five questions (01 §2.3) with a screenshot thumbnail each (Overview, Risk Monitor, Detail, Scenario Lab, Methodology).
 5. **How it works** — architecture diagram (Mermaid from 02 §3, simplified) and the data path in five steps.
 6. **SQL highlights** — 3 short excerpts with one-line explanations: availability status CASE in `mv_daily_position`; gaps-and-islands stockout episodes; point-in-time open-PO extraction. Link to `sql/analyses/`.
 7. **The model in plain English** — forecasting (censoring), stockout probability (checkpoints), safety stock, exposure; link to `docs/05`.
@@ -98,7 +98,7 @@ The dataset's demo events (06 §8) are expected to put Southeast storm-prep item
 
 | Time | Screen / action | Narration (plain English) |
 |------|-----------------|---------------------------|
-| **0:00–0:30** | Overview, no filters | "Retailers lose sales every day to empty shelves. A typical stock report tells you what's on hand right now — it doesn't tell you whether that will last until the next truck, and when an item has been out of stock, its sales look like low demand, so the next order is too small. StockSense predicts which store-SKU positions will run out before replenishment arrives and tells you what to do. This is a simulated 12-store home-improvement network — all the data is synthetic." |
+| **0:00–0:30** | Overview, no filters | "Retailers lose sales every day to empty shelves. A typical stock report tells you what's on hand right now — it doesn't tell you whether that will last until the next truck, and when an item has been out of stock, its sales look like low demand, so the next order is too small. stocgain predicts which store-SKU positions will run out before replenishment arrives and tells you what to do. This is a simulated 12-store home-improvement network — all the data is synthetic." |
 | **0:30–1:15** | Point at KPI row → at-risk positions and estimated margin at risk → heatmap (Southeast Electrical hot) → Priority actions | "Out of 4,800 store-SKU positions, [N] are high or critical risk, with about [$X] of gross margin at risk before their next replenishment — that's a model estimate, labeled as such. The heatmap shows risk concentrated in Southeast Electrical — storm-prep demand is spiking there. The priority list is ranked by risk level first, then dollars at risk, so a manager knows what to do first." |
 | **1:15–2:00** | Click #1 priority → Product Detail; read the explanation; point at projection chart and PO table | "Why is this one flagged? The explanation is generated from the numbers: on-hand covers about [D] days, the next delivery isn't expected until [date], and that PO is already overdue because this supplier has been late. The chart shows expected inventory hitting zero before the delivery marker. The breakdown shows every input — demand rate, variability, lead time, safety stock, reorder point — so nothing is a black box. The recommendation is to expedite that PO, and it also suggests a reorder quantity rounded to case packs." |
 | **2:00–2:45** | Scenario Lab → Suppliers: SUP-015 → lead time +4 days → demand +20% → then service level 98% → Reset | "What if this supplier's delays get worse? I scope to that supplier and add four days of lead time and 20% more demand. The same model reruns: at-risk positions go from [a] to [b], margin at risk roughly [multiplies]. Now if I raise the service level to 98%, near-term risk doesn't change — the stock on the shelf is what it is — but the policy changes: more safety stock, more capital tied up, and lower expected shortfall per year. That's the tradeoff managers actually face. Reset brings it back to baseline." |
@@ -158,7 +158,7 @@ The dataset's demo events (06 §8) are expected to put Southeast storm-prep item
 | 14 | How do you prevent data leakage? | All pipeline SQL is parameterized by an as-of date and filters every table to that date; a test deletes all future rows and checks nothing changes. Latent demand lives in a separate schema the forecasting code can't read. |
 | 15 | What SQL are you proudest of? | The availability-status materialized view, gaps-and-islands stockout episodes, and point-in-time open-PO extraction that also handles partial receipts and cancellations. |
 | 16 | How would it scale to 2,000 stores × 35,000 SKUs? | 70M positions × days is a data-warehouse problem: partition facts by date, move feature SQL to a warehouse (BigQuery/Snowflake/Redshift), run forecasting in batch jobs per region, keep the API reading precomputed outputs. The architecture's separation of SQL features, batch modeling, and read API stays the same. |
-| 17 | What would you need to deploy at a real retailer? | Real feeds (POS, perpetual inventory, PO/ASN), DC modeling, supplier capacity, shelf capacity, calibration of lost-sale rates, forecast accuracy monitoring, user access controls, and integration with ordering systems — StockSense deliberately doesn't place orders. |
+| 17 | What would you need to deploy at a real retailer? | Real feeds (POS, perpetual inventory, PO/ASN), DC modeling, supplier capacity, shelf capacity, calibration of lost-sale rates, forecast accuracy monitoring, user access controls, and integration with ordering systems — stocgain deliberately doesn't place orders. |
 | 18 | What are the biggest limitations? | Censored days assumed similar to clean days; no annual seasonality; normal/count approximations; max-of-checkpoints is a lower bound; assumed lost-sale rates; direct-to-store network. |
 | 19 | What would you improve next? | Store-to-store transfers, a challenger ML model evaluated against the baseline, P10/P90 exposure ranges, alerting. |
 | 20 | How did you use AI tools? | I used AI assistants to help write the design specification and to implement code from it. I made and documented the design decisions, verified outputs against hand calculations and tests, and can explain every formula and query. (Adjust to reflect what actually happened.) |
@@ -188,7 +188,7 @@ Optional variant, only if the backtest supports it: "…forecast reduced WAPE by
 
 ### 8.3 Short project description (for LinkedIn / portfolio site)
 
-> **StockSense — Retail inventory intelligence (portfolio project, simulated data).** Predicts which store-SKU positions will stock out before replenishment, explains the drivers, estimates gross margin at risk, and models what-if scenarios. PostgreSQL + SQL analytics, Python statistical models, FastAPI, Next.js.
+> **stocgain — Retail inventory intelligence (portfolio project, simulated data).** Predicts which store-SKU positions will stock out before replenishment, explains the drivers, estimates gross margin at risk, and models what-if scenarios. PostgreSQL + SQL analytics, Python statistical models, FastAPI, Next.js.
 
 ---
 
@@ -204,7 +204,7 @@ Optional variant, only if the backtest supports it: "…forecast reduced WAPE by
 | Backend tests passing | | `pytest` summary | |
 | Frontend unit tests passing | | Vitest summary | |
 | E2E specs passing | | Playwright summary | |
-| Backtest WAPE (StockSense vs naive, observed basis, all horizons) | | `forecast_evaluations` | |
+| Backtest WAPE (stocgain vs naive, observed basis, all horizons) | | `forecast_evaluations` | |
 | Scenario evaluation time (full scope) | | `computation_ms` p95 over 20 calls | |
 
 ---

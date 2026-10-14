@@ -45,15 +45,15 @@ And `docs/DECISIONS_LOG.md` for implementation-level decisions (format: date, de
 
 **Objective:** A runnable skeleton where PostgreSQL, FastAPI, and Next.js start with documented commands and the browser shows a page that fetched `/api/v1/health` from the real API.
 
-**Files/modules:** `Makefile`, `docker-compose.yml`, `docker/initdb/01_create_test_db.sql`, `.env.example`, `.gitignore`, `LICENSE` (MIT, copyright holder placeholder `<Project Owner>` for the owner to fill), `backend/pyproject.toml`, `backend/src/stocksense/{__init__,settings,logging_config,cli}.py`, `backend/src/stocksense/api/{app,deps,errors}.py`, `backend/src/stocksense/api/routers/health.py`, `backend/tests/unit/test_smoke.py`, `frontend/` (create-next-app with TypeScript, Tailwind, ESLint, App Router, `src/`), `frontend/src/app/page.tsx` (temporary health page), `docs/PROGRESS.md`, `docs/DECISIONS_LOG.md`.
+**Files/modules:** `Makefile`, `docker-compose.yml`, `docker/initdb/01_create_test_db.sql`, `.env.example`, `.gitignore`, `LICENSE` (MIT, copyright holder placeholder `<Project Owner>` for the owner to fill), `backend/pyproject.toml`, `backend/src/stocgain/{__init__,settings,logging_config,cli}.py`, `backend/src/stocgain/api/{app,deps,errors}.py`, `backend/src/stocgain/api/routers/health.py`, `backend/tests/unit/test_smoke.py`, `frontend/` (create-next-app with TypeScript, Tailwind, ESLint, App Router, `src/`), `frontend/src/app/page.tsx` (temporary health page), `docs/PROGRESS.md`, `docs/DECISIONS_LOG.md`.
 
 **Tasks:**
 1. Initialize git repository (if not already) and the directory structure from 02 §5.
 2. Backend: `uv init`, add dependencies (02 §2), configure Ruff, mypy, pytest (markers `unit`, `db`, `api`).
 3. `settings.py` with pydantic-settings reading `.env` (02 §8.1).
 4. `create_app()` with CORS, request-ID middleware, error envelope handlers, `/api/v1/health` (returns DB status via `SELECT 1`).
-5. `stocksense` Typer CLI with command groups `data`, `db`, `analytics`, `pipeline` (stubs that print "not implemented" and exit 2 are allowed only in this phase).
-6. Docker Compose `db` service (Postgres 17, host port 5433, healthcheck, initdb script creating `stocksense_test`); `api`/`web` services under profile `full`.
+5. `stocgain` Typer CLI with command groups `data`, `db`, `analytics`, `pipeline` (stubs that print "not implemented" and exit 2 are allowed only in this phase).
+6. Docker Compose `db` service (Postgres 17, host port 5433, healthcheck, initdb script creating `stocgain_test`); `api`/`web` services under profile `full`.
 7. Frontend: create Next.js app; install Tailwind v4, shadcn/ui init, TanStack Query, lucide-react, Recharts, TanStack Table; ESLint + Prettier; Vitest + RTL; Playwright (install browsers).
 8. Temporary `page.tsx` calls `GET /api/v1/health` via TanStack Query and displays `status` and `database` (real request; this page is replaced in Phase 5).
 9. Makefile targets from 02 §9.2 (those not yet functional print a clear message and exit non-zero).
@@ -85,16 +85,16 @@ make lint && make typecheck && make test
 
 **Objective:** Full schema migrated; deterministic generator produces the small and standard presets; loader populates the database; all data-quality checks pass.
 
-**Files/modules:** `backend/src/stocksense/db/{engine,models,sql_loader}.py`, `backend/migrations/versions/0001…0004`, `backend/config/generator.toml`, `backend/src/stocksense/generator/*`, `backend/src/stocksense/loader/copy_loader.py`, `backend/src/stocksense/quality/checks.py`, `sql/quality/DQ01…DQ18*.sql`, `sql/views/100_v_inventory_reconciliation.sql` (needed by DQ01), tests in `backend/tests/unit/test_generator_*.py`, `backend/tests/db/test_constraints.py`, `backend/tests/db/test_data_quality.py`.
+**Files/modules:** `backend/src/stocgain/db/{engine,models,sql_loader}.py`, `backend/migrations/versions/0001…0004`, `backend/config/generator.toml`, `backend/src/stocgain/generator/*`, `backend/src/stocgain/loader/copy_loader.py`, `backend/src/stocgain/quality/checks.py`, `sql/quality/DQ01…DQ18*.sql`, `sql/views/100_v_inventory_reconciliation.sql` (needed by DQ01), tests in `backend/tests/unit/test_generator_*.py`, `backend/tests/db/test_constraints.py`, `backend/tests/db/test_data_quality.py`.
 
 **Tasks:**
 1. SQLAlchemy models for all 26 tables exactly as 03 §4–7 (types, nullability, CHECKs, FKs, unique and partial indexes, BRIN). Enums per 03 §2.
 2. Alembic revisions 0001–0004 with working downgrades; verify `alembic upgrade head` and `alembic downgrade base` on an empty DB.
-3. `stocksense db apply-views` (reads `sql/views/*.sql` in order; one transaction) and `stocksense db refresh` (refresh MVs).
+3. `stocgain db apply-views` (reads `sql/views/*.sql` in order; one transaction) and `stocgain db refresh` (refresh MVs).
 4. Generator per 06: catalog, RNG streams, demand, promotions, simulation loop, fulfillment, events, writer with manifest and checksums. Vectorize the daily loop over positions with NumPy.
 5. Loader: truncate + COPY in dependency order (03 §12) in one transaction; write manifest row; `ANALYZE`.
 6. Quality runner: execute every `sql/quality/*.sql`, print a table (check, severity, violations), exit 1 on any error-severity violation.
-7. `stocksense data profile` prints calibration statistics (06 §10).
+7. `stocgain data profile` prints calibration statistics (06 §10).
 8. `make seed PRESET=… SEED=…` wired: generate → load → apply views → validate → refresh.
 
 **Acceptance criteria:**
@@ -109,8 +109,8 @@ make lint && make typecheck && make test
 make db-reset
 make seed PRESET=small SEED=42
 make seed PRESET=standard SEED=42
-uv run stocksense data validate
-uv run stocksense data profile
+uv run stocgain data validate
+uv run stocgain data profile
 uv run pytest -m "unit or db" -k "generator or constraints or data_quality" -q
 psql "postgresql://stocksense:stocksense@localhost:5433/stocksense" -c "SELECT COUNT(*) FROM ops.daily_sales;"
 ```
@@ -135,7 +135,7 @@ psql "postgresql://stocksense:stocksense@localhost:5433/stocksense" -c "SELECT C
 3. Implement analyses 01–15 per 04 §5 with header comments.
 4. Implement `sql/api/overview_summary.sql` (04 §6.1) — it can be tested once Phase 3 writes a run; write the test now with `pytest.mark.requires_run` and enable it in Phase 3.
 5. Write `sql/explain/` wrappers (executed in Phase 8).
-6. A `stocksense db run-analysis 06` convenience command printing the result (useful for demos).
+6. A `stocgain db run-analysis 06` convenience command printing the result (useful for demos).
 
 **Acceptance criteria:**
 - Every view and analysis executes on small and standard presets.
@@ -165,7 +165,7 @@ uv run pytest -m db -k "views or analyses or point_in_time" -q
 
 **Objective:** `make analytics` produces 12 backfill runs + 1 current run with evaluation; all outputs satisfy constraints and golden tests.
 
-**Files/modules:** `backend/config/analytics.toml`, `backend/src/stocksense/analytics/{config,types,distributions,forecasting,demand_patterns,leadtime,risk,policy,exposure,explanations,replenishment,backtest,scenario,pipeline}.py`, `backend/tests/unit/test_{distributions,forecasting,leadtime,risk,policy,exposure,explanations,replenishment,backtest,properties,golden_cases}.py`, `backend/tests/fixtures/golden_cases.json`, `backend/tests/db/test_pipeline_outputs.py`.
+**Files/modules:** `backend/config/analytics.toml`, `backend/src/stocgain/analytics/{config,types,distributions,forecasting,demand_patterns,leadtime,risk,policy,exposure,explanations,replenishment,backtest,scenario,pipeline}.py`, `backend/tests/unit/test_{distributions,forecasting,leadtime,risk,policy,exposure,explanations,replenishment,backtest,properties,golden_cases}.py`, `backend/tests/fixtures/golden_cases.json`, `backend/tests/db/test_pipeline_outputs.py`.
 
 **Tasks:**
 1. `AnalyticsConfig` from `analytics.toml` (00 §4.2); frozen dataclass; JSON-serializable.
@@ -179,7 +179,7 @@ uv run pytest -m db -k "views or analyses or point_in_time" -q
 9. `backtest.py`: rolling origins, three models, two bases, segments, metrics (05 §3.12).
 10. `scenario.py`: assumption transform + aggregation (05 §10) — implemented now because it shares functions; exposed via API in Phase 7.
 11. `pipeline.py`: create run row → extract (SQL) → forecast → lane estimates → risk → recommendations → (backtest if `--evaluate`) → bulk insert outputs (COPY or `executemany`) → mark succeeded; on exception mark failed. Delete older runs with same `(run_type, as_of_date)` after success.
-12. CLI: `stocksense analytics run [--as-of DATE] [--evaluate]`, `stocksense analytics backfill --weeks N`; `make analytics`.
+12. CLI: `stocgain analytics run [--as-of DATE] [--evaluate]`, `stocgain analytics backfill --weeks N`; `make analytics`.
 
 **Acceptance criteria:**
 - Golden cases G1–G12 pass with tolerances from 05 §13.
@@ -194,7 +194,7 @@ uv run pytest -m db -k "views or analyses or point_in_time" -q
 
 **Verification commands:**
 ```bash
-uv run pytest -m unit -q --cov=stocksense.analytics --cov-report=term-missing
+uv run pytest -m unit -q --cov=stocgain.analytics --cov-report=term-missing
 make analytics
 uv run pytest -m db -k pipeline -q
 psql "$DATABASE_URL_PSQL" -c "SELECT run_type, COUNT(*) FROM analytics.analytics_runs WHERE status='succeeded' GROUP BY 1;"

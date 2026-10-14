@@ -1,4 +1,4 @@
-# AGENTS.md — Instructions for Coding Agents Working on StockSense
+# AGENTS.md — Instructions for Coding Agents Working on stocgain
 
 These instructions apply to every coding agent (OpenAI Codex or otherwise) working in this repository. They override habits and defaults. When in doubt, choose correctness, honesty, and simplicity.
 

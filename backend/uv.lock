@@ -710,7 +710,7 @@ wheels = [
 ]
 
 [[package]]
-name = "stocksense"
+name = "stocgain"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [

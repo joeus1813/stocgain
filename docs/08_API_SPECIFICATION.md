@@ -21,8 +21,8 @@ All example payloads are **illustrative** (they reuse the worked examples from 0
 | Header | Value |
 |--------|-------|
 | `X-Request-ID` | Echoed from request or generated UUID4 |
-| `X-StockSense-Run-Id` | Current run ID (analytics endpoints) |
-| `X-StockSense-As-Of` | As-of date of that run |
+| `X-stocgain-Run-Id` | Current run ID (analytics endpoints) |
+| `X-stocgain-As-Of` | As-of date of that run |
 
 ### 1.3 Field naming and units
 
@@ -91,7 +91,7 @@ FastAPI's default 422 body is replaced by the envelope via a custom `RequestVali
 
 ### 1.9 Type generation for the frontend
 
-1. `make openapi` runs `uv run python -m stocksense.api.export_openapi frontend/openapi.json` (imports `create_app()`, calls `app.openapi()`, writes JSON with sorted keys — no server needed).
+1. `make openapi` runs `uv run python -m stocgain.api.export_openapi frontend/openapi.json` (imports `create_app()`, calls `app.openapi()`, writes JSON with sorted keys — no server needed).
 2. Then `npm run gen:api` → `openapi-typescript openapi.json -o src/lib/api/schema.ts`.
 3. Frontend code imports `components["schemas"]["OverviewSummary"]` etc. via aliases in `src/lib/api/types.ts`.
 4. `make check-openapi` regenerates into a temp file and fails if it differs from the committed `schema.ts` (prevents drift).
@@ -161,7 +161,7 @@ Dataset provenance, current run, and model parameters (used by the shell, Method
   },
   "run": {
     "run_id": 14, "run_type": "current", "as_of_date": "2026-09-30",
-    "model_version": "stocksense-baseline-1.0",
+    "model_version": "stocgain-baseline-1.0",
     "completed_at": "2026-10-09T19:05:21Z",
     "backfill_runs_available": 12
   },
@@ -370,7 +370,7 @@ Response:
 
 ### 3.12 `GET /risk/positions/export.csv` (P1)
 
-Same query params as 3.11 except pagination. Returns `text/csv; charset=utf-8` with `Content-Disposition: attachment; filename="stocksense_risk_positions_2026-09-30_run14.csv"`. First line: `# StockSense simulated dataset · run 14 · as of 2026-09-30 · values marked est_ are model estimates`. Header uses API field names; estimated columns prefixed `est_` (e.g., `est_stockout_probability`). > 10,000 rows → 400 `EXPORT_TOO_LARGE`.
+Same query params as 3.11 except pagination. Returns `text/csv; charset=utf-8` with `Content-Disposition: attachment; filename="stocgain_risk_positions_2026-09-30_run14.csv"`. First line: `# stocgain simulated dataset · run 14 · as of 2026-09-30 · values marked est_ are model estimates`. Header uses API field names; estimated columns prefixed `est_` (e.g., `est_stockout_probability`). > 10,000 rows → 400 `EXPORT_TOO_LARGE`.
 
 ### 3.13 `GET /positions/{store_id}/{product_id}`
 
@@ -378,7 +378,7 @@ Path IDs integers. 404 `STORE_NOT_FOUND` / `PRODUCT_NOT_FOUND` / `POSITION_NOT_F
 
 ```json
 {
-  "run": { "run_id": 14, "as_of_date": "2026-09-30", "model_version": "stocksense-baseline-1.0" },
+  "run": { "run_id": 14, "as_of_date": "2026-09-30", "model_version": "stocgain-baseline-1.0" },
   "store": { "store_id": 3, "store_code": "S03", "store_name": "Tampa Westshore", "region_name": "Southeast" },
   "product": { "product_id": 187, "sku": "PL-10187", "product_name": "Aquaveld 1/2 in. PEX-B Crimp Fitting Kit (25-Pack)",
                "category_name": "Plumbing", "brand_name": "Aquaveld", "unit_of_measure": "pack",
@@ -568,7 +568,7 @@ Query: `segment_type` (`overall` | `horizon_bucket` | `velocity_class` | `demand
 {
   "run_id": 14, "first_origin_date": "2026-07-15", "last_origin_date": "2026-09-02", "n_origins": 8,
   "rows": [
-    { "model_name": "stocksense_v1", "evaluation_basis": "observed_in_stock", "segment_type": "horizon_bucket", "segment_value": "1-7",
+    { "model_name": "stocgain_v1", "evaluation_basis": "observed_in_stock", "segment_type": "horizon_bucket", "segment_value": "1-7",
       "n_observations": 251004, "mae": null, "wape": null, "bias_rate": null }
   ],
   "notes": {

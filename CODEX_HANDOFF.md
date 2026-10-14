@@ -1,6 +1,6 @@
-# CODEX_HANDOFF — StockSense Implementation Contract
+# CODEX_HANDOFF — stocgain Implementation Contract
 
-> **You are implementing StockSense from scratch.** This document is the binding contract. It is self-contained for planning and day-to-day decisions; the numbered documents in `docs/` contain the exhaustive detail (exact SQL, every formula, every component) and are equally binding. If this file and a numbered doc disagree, `docs/00_DESIGN_SUMMARY.md` §4 (Canonical Constants) wins, then the numbered doc, then this file — and you must record the conflict in `docs/DECISIONS_LOG.md`.
+> **You are implementing stocgain from scratch.** This document is the binding contract. It is self-contained for planning and day-to-day decisions; the numbered documents in `docs/` contain the exhaustive detail (exact SQL, every formula, every component) and are equally binding. If this file and a numbered doc disagree, `docs/00_DESIGN_SUMMARY.md` §4 (Canonical Constants) wins, then the numbered doc, then this file — and you must record the conflict in `docs/DECISIONS_LOG.md`.
 >
 > Read `AGENTS.md` before writing any code.
 
@@ -8,7 +8,7 @@
 
 ## 1. Product mission
 
-StockSense is a portfolio-grade retail **inventory intelligence and decision-support** web application for a **fictional, simulated** 12-store home-improvement retailer. Tagline: *Know what will run out, before it does.*
+stocgain is a portfolio-grade retail **inventory intelligence and decision-support** web application for a **fictional, simulated** 12-store home-improvement retailer. Tagline: *Predict stockouts. Replenish smarter.*
 
 It must answer, with traceable numbers:
 
@@ -50,7 +50,7 @@ Placing/modifying purchase orders · real data · multi-user auth · microservic
 |-------|--------|
 | DB | PostgreSQL 17 (Docker image `postgres:17`), host port **5433** |
 | Backend | Python 3.12, **uv**, FastAPI, Pydantic v2, pydantic-settings, SQLAlchemy 2.0 (Core `text()` for analytics SQL, ORM models for migrations), Alembic, psycopg 3, pandas, NumPy, SciPy, Typer, Uvicorn |
-| Backend quality | pytest (+pytest-cov, httpx), Ruff, mypy (strict on `stocksense.analytics`) |
+| Backend quality | pytest (+pytest-cov, httpx), Ruff, mypy (strict on `stocgain.analytics`) |
 | Frontend | Next.js (App Router, current stable major), React 19, TypeScript strict, Tailwind CSS v4, shadcn/ui, TanStack Query v5, TanStack Table v8, Recharts, lucide-react, openapi-typescript |
 | Frontend quality | ESLint, Prettier, Vitest + React Testing Library, Playwright (+ axe in Phase 8) |
 | Infra | Docker Compose v2, Makefile, Node 22 LTS |
@@ -62,7 +62,7 @@ Do not add other runtime dependencies without recording the reason in `docs/DECI
 
 ## 4. Architecture summary
 
-Modular monolith: **PostgreSQL** + one Python package **`stocksense`** (CLI + FastAPI) + one **Next.js** app.
+Modular monolith: **PostgreSQL** + one Python package **`stocgain`** (CLI + FastAPI) + one **Next.js** app.
 
 ```
 Generator (seeded) → CSV → COPY loader → ops.* + sim_truth.*
@@ -75,8 +75,8 @@ Generator (seeded) → CSV → COPY loader → ops.* + sim_truth.*
 ```
 
 Layer rules:
-- `stocksense.analytics.*` are **pure functions** (no DB/FastAPI imports) except `analytics/pipeline.py`.
-- `stocksense.api.*` → `services` → repositories (`db/sql_loader` running `sql/api/*.sql`) and analytics functions.
+- `stocgain.analytics.*` are **pure functions** (no DB/FastAPI imports) except `analytics/pipeline.py`.
+- `stocgain.api.*` → `services` → repositories (`db/sql_loader` running `sql/api/*.sql`) and analytics functions.
 - Multi-line SQL lives in `.sql` files under `sql/`, never inline in Python.
 - Only `analytics/backtest.py` (via `sql/pipeline/extract_latent_demand.sql`) and DQ15 may reference `sim_truth`.
 - Analytics are refreshed by an explicit command (`make analytics`), never per request. The API serves the latest succeeded `current` run.
@@ -107,14 +107,14 @@ StockSense/
 │   ├── config/analytics.toml  config/generator.toml
 │   ├── migrations/versions/0001…0004
 │   ├── scripts/bench_api.py
-│   ├── src/stocksense/{settings,logging_config,cli}.py
-│   ├── src/stocksense/db/{engine,models,sql_loader,views}.py
-│   ├── src/stocksense/generator/{config,rng,catalog,demand,promotions,simulation,writer}.py
-│   ├── src/stocksense/loader/copy_loader.py
-│   ├── src/stocksense/quality/checks.py
-│   ├── src/stocksense/analytics/{config,types,distributions,forecasting,demand_patterns,leadtime,risk,policy,exposure,explanations,replenishment,backtest,scenario,pipeline}.py
-│   ├── src/stocksense/services/{runs,overview,risk_monitor,positions,suppliers,forecasts,scenarios,meta}.py
-│   ├── src/stocksense/api/{app,deps,errors,pagination,export_openapi}.py + routers/ + schemas/
+│   ├── src/stocgain/{settings,logging_config,cli}.py
+│   ├── src/stocgain/db/{engine,models,sql_loader,views}.py
+│   ├── src/stocgain/generator/{config,rng,catalog,demand,promotions,simulation,writer}.py
+│   ├── src/stocgain/loader/copy_loader.py
+│   ├── src/stocgain/quality/checks.py
+│   ├── src/stocgain/analytics/{config,types,distributions,forecasting,demand_patterns,leadtime,risk,policy,exposure,explanations,replenishment,backtest,scenario,pipeline}.py
+│   ├── src/stocgain/services/{runs,overview,risk_monitor,positions,suppliers,forecasts,scenarios,meta}.py
+│   ├── src/stocgain/api/{app,deps,errors,pagination,export_openapi}.py + routers/ + schemas/
 │   └── tests/{unit,db,api,fixtures}/
 └── frontend/
     ├── package.json  next.config.ts  tsconfig.json  eslint.config.mjs  components.json
@@ -182,7 +182,7 @@ Views (`sql/views/`, repeatable): `v_current_run`, **`mv_daily_position`** (mate
 
 ### 6.5 Migrations
 
-Alembic revisions `0001_schemas_and_reference`, `0002_operational_facts`, `0003_analytics_outputs`, `0004_sim_truth`, each with a working downgrade. Views are applied after migrations by `stocksense db apply-views`. Never edit an applied revision; add a new one.
+Alembic revisions `0001_schemas_and_reference`, `0002_operational_facts`, `0003_analytics_outputs`, `0004_sim_truth`, each with a working downgrade. Views are applied after migrations by `stocgain db apply-views`. Never edit an applied revision; add a new one.
 
 ---
 
@@ -219,7 +219,7 @@ Notation: as-of `T` (end of day); future day `t` is `T+t`. A receipt arriving on
 
 **Scenario:** Δ lead time (−7…+14 d) applied to L̄ (floor 1) and all ETAs (floor T+1); demand change k (−0.5…+1.0) scales f and σ_d; service level 0.80–0.995; SS buffer b (−0.5…+1.0). Recompute with the same functions. Tradeoff: SS value × 0.25 carrying; `E[(D_{L+R} − S)⁺] × λ × margin × 365/7` annual expected shortfall. **Neutral inputs must reproduce stored outputs within 1e−6.**
 
-**Backtest:** 8 weekly origins (T−77…T−28), 28-day horizons, recompute everything as of each origin; models `stocksense_v1`, `naive_28d_mean`, `seasonal_naive_7d`; bases `observed_in_stock` and `simulated_latent` (labeled simulation-only); MAE, WAPE, bias (no MAPE).
+**Backtest:** 8 weekly origins (T−77…T−28), 28-day horizons, recompute everything as of each origin; models `stocgain_v1`, `naive_28d_mean`, `seasonal_naive_7d`; bases `observed_in_stock` and `simulated_latent` (labeled simulation-only); MAE, WAPE, bias (no MAPE).
 
 **Backfill:** 12 weekly runs at T−84…T−7 (`run_type = backfill`, no daily forecasts stored, no backtest) + current run with backtest.
 
@@ -229,7 +229,7 @@ Notation: as-of `T` (end of day); future day `t` is `T+t`. A receipt arriving on
 
 ## 8. API specifications (full spec `docs/08`)
 
-Base `/api/v1`. JSON; errors use `{ "error": { "code", "message", "details" } }`. Repeated query params for ID filters. Pagination `page`/`page_size` (≤ 200). Headers `X-Request-ID`, `X-StockSense-Run-Id`, `X-StockSense-As-Of`. Units encoded in field suffixes (`_usd`, `_units`, `_days`, `_rate`, `_probability`) and `x-unit` schema extension. Ratios 0–1 only.
+Base `/api/v1`. JSON; errors use `{ "error": { "code", "message", "details" } }`. Repeated query params for ID filters. Pagination `page`/`page_size` (≤ 200). Headers `X-Request-ID`, `X-stocgain-Run-Id`, `X-stocgain-As-Of`. Units encoded in field suffixes (`_usd`, `_units`, `_days`, `_rate`, `_probability`) and `x-unit` schema extension. Ratios 0–1 only.
 
 | Method | Path | Priority |
 |--------|------|----------|
@@ -294,7 +294,7 @@ Global: light enterprise design with tokens in `docs/07` §3 (canvas `#F6F7F9`, 
 - **API:** every endpoint success + failure; pagination; filter combinations; sorting; consistency across endpoints; error envelopes; OpenAPI determinism.
 - **Frontend unit:** formatter (shared fixtures with backend), key components.
 - **E2E:** overview, navigation, risk monitor, product detail, scenario lab, states, responsive, a11y (Phase 8).
-- Coverage: `stocksense.analytics` ≥ 85%.
+- Coverage: `stocgain.analytics` ≥ 85%.
 - `make verify` must pass before any phase is marked done.
 
 ---
@@ -304,7 +304,7 @@ Global: light enterprise design with tokens in `docs/07` §3 (canvas `#F6F7F9`, 
 ```bash
 # prerequisites: Docker Desktop running, uv, Node 22
 make setup                       # uv sync; npm ci; copy .env.example → .env
-make db-up                       # Postgres 17 on localhost:5433 (+ stocksense_test)
+make db-up                       # Postgres 17 on localhost:5433 (+ stocgain_test)
 make pipeline                    # migrate → generate standard (seed 42) → load → validate → views → analytics
 make api                         # http://localhost:8000/api/v1 (docs at /docs)
 make web                         # http://localhost:3000
@@ -314,7 +314,7 @@ make e2e                         # Playwright against running stack
 
 Makefile targets (binding names): `setup, db-up, db-down, db-reset, migrate, seed, analytics, pipeline, api, web, dev, demo-docker, test, test-backend, test-frontend, e2e, lint, typecheck, openapi, check-openapi, explain, schema-dump, verify`.
 
-CLI (`stocksense`): `data generate|load|validate|profile`, `db apply-views|refresh|run-analysis`, `analytics run [--as-of] [--evaluate]|backfill --weeks N`, `pipeline all --preset --seed`.
+CLI (`stocgain`): `data generate|load|validate|profile`, `db apply-views|refresh|run-analysis`, `analytics run [--as-of] [--evaluate]|backfill --weeks N`, `pipeline all --preset --seed`.
 
 Environment variables: `docs/02` §8.1. Postgres settings: `shared_buffers=512MB`, `work_mem=32MB`, `maintenance_work_mem=256MB`.
 

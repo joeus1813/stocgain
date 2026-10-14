@@ -35,7 +35,7 @@
 
 ### 1.4 Fixtures
 
-- **Session fixture `loaded_small_db`:** migrates `stocksense_test` to head, applies views, generates the **small** preset with seed 42 into a temp directory, loads it, validates. Runs once per session (~20 s target).
+- **Session fixture `loaded_small_db`:** migrates `stocgain_test` to head, applies views, generates the **small** preset with seed 42 into a temp directory, loads it, validates. Runs once per session (~20 s target).
 - **Session fixture `analytics_small`:** runs `analytics backfill --weeks 4` + `run --evaluate` on the small DB.
 - **Function fixture `db_tx`:** a connection inside a transaction rolled back after each test (for mutation tests like constraint violations and point-in-time deletion).
 - **Golden fixtures:** `backend/tests/fixtures/golden_cases.json` (05 §15), `format_cases.json` (shared formatter cases, also copied to `frontend/tests/fixtures/`).
@@ -43,8 +43,8 @@
 
 ### 1.5 Coverage targets
 
-- `stocksense.analytics`: ≥ 85% line coverage (enforced with `--cov-fail-under=85` on that package).
-- `stocksense.generator`: ≥ 75%.
+- `stocgain.analytics`: ≥ 85% line coverage (enforced with `--cov-fail-under=85` on that package).
+- `stocgain.generator`: ≥ 75%.
 - Others: no hard target; every endpoint has at least one success and one failure test.
 
 ---
@@ -88,7 +88,7 @@ Each test attempts an invalid write inside `db_tx` and asserts the specific Post
 
 - **Clean data:** every `error`-severity check DQ01–DQ18 (03 §10) returns 0 rows on the loaded small preset.
 - **Detection:** for each of DQ01, DQ02, DQ03, DQ05, DQ06, DQ07, DQ09, DQ10, DQ11, DQ12, DQ15, corrupt one row inside `db_tx` (e.g., `UPDATE inventory_snapshots SET closing_on_hand = closing_on_hand + 1 WHERE …`) and assert the check returns exactly the corrupted row(s). This proves the checks work, not just that clean data passes.
-- **Runner:** `stocksense data validate` exits 1 when any error check fails (CLI test with corrupted DB).
+- **Runner:** `stocgain data validate` exits 1 when any error check fails (CLI test with corrupted DB).
 
 ### 3.2 Generator tests
 
@@ -321,8 +321,8 @@ Record: total time, `make pipeline` time, test counts, any failures — in `docs
 
 | Benchmark | Method | Target (to be verified) | Assumptions |
 |-----------|--------|-------------------------|-------------|
-| Generate standard | `time stocksense data generate` | < 60 s | Apple Silicon, Python 3.12 |
-| Load + validate + refresh standard | `time stocksense data load && validate && db refresh` | < 90 s | Docker Postgres with ≥ 4 GB |
+| Generate standard | `time stocgain data generate` | < 60 s | Apple Silicon, Python 3.12 |
+| Load + validate + refresh standard | `time stocgain data load && validate && db refresh` | < 90 s | Docker Postgres with ≥ 4 GB |
 | `make analytics` (13 runs + backtest) | `step_timings` | < 3 min | vectorized NumPy |
 | API endpoints | `backend/scripts/bench_api.py` (20 sequential requests, p50/p95) | 08 §1.8 | warm DB |
 | Key SQL queries | `make explain` | 04 §9.3 | warm cache |
@@ -349,6 +349,6 @@ Rules: report measured numbers only; include machine description; if a target is
 
 ## 12. Quality gates
 
-`make verify` = `ruff check` + `ruff format --check` + `mypy src/stocksense/analytics` + `pytest -m "unit or db or api"` with coverage gate + `npm run lint` + `npm run typecheck` + `npm run test` + `make check-openapi`.
+`make verify` = `ruff check` + `ruff format --check` + `mypy src/stocgain/analytics` + `pytest -m "unit or db or api"` with coverage gate + `npm run lint` + `npm run typecheck` + `npm run test` + `make check-openapi`.
 
 A phase cannot be marked done in `docs/PROGRESS.md` unless `make verify` passes (and `make e2e` from Phase 6 onward).

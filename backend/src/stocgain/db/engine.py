@@ -3,7 +3,7 @@
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from stocksense.settings import Settings
+from stocgain.settings import Settings
 
 
 def create_db_engine(settings: Settings) -> Engine:

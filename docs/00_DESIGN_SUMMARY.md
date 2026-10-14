@@ -1,8 +1,10 @@
-# StockSense — Design Summary and Decision Register
+# stocgain. — Design Summary and Decision Register
 
-> **Know what will run out, before it does.**
+> **Predict stockouts. Replenish smarter.**
 >
-> StockSense is an independent portfolio project. It is not affiliated with, endorsed by, or built from data belonging to The Home Depot, Lowe's, Walmart, Target, or any other company. All data is synthetic and labeled as such.
+> **Predictive Retail Inventory Intelligence Platform.** The name combines “Stock Again” and “Stock + Gain”.
+>
+> stocgain is an independent portfolio project. It is not affiliated with, endorsed by, or built from data belonging to The Home Depot, Lowe's, Walmart, Target, or any other company. All data is synthetic and labeled as such.
 
 This document is the entry point to the design package. It summarizes the product, records every major decision in one place, defines the **canonical constants** that all other documents must agree with, and records the results of the final design self-review.
 
@@ -35,7 +37,7 @@ Reading order for Codex: `AGENTS.md` → `CODEX_HANDOFF.md` → this file → th
 
 ## 2. Product in one paragraph
 
-StockSense is a lightweight internal analytics web application for a fictional 12-store home-improvement retailer. It loads 180 days of simulated store-SKU-day operations (sales, inventory balances, purchase orders, receipts, adjustments, promotions) into PostgreSQL; uses SQL views and analytical queries to build operational features (sales velocity, availability, supplier lead-time performance, stockout history); uses Python to estimate stockout-censored demand, lead-time demand distributions, safety stock, reorder points, and the probability of stocking out before replenishment arrives; converts those into prioritized, explained replenishment recommendations with model-based financial exposure; and serves everything through a FastAPI REST API to a polished Next.js dashboard with an interactive Scenario Lab.
+stocgain is a lightweight internal analytics web application for a fictional 12-store home-improvement retailer. It loads 180 days of simulated store-SKU-day operations (sales, inventory balances, purchase orders, receipts, adjustments, promotions) into PostgreSQL; uses SQL views and analytical queries to build operational features (sales velocity, availability, supplier lead-time performance, stockout history); uses Python to estimate stockout-censored demand, lead-time demand distributions, safety stock, reorder points, and the probability of stocking out before replenishment arrives; converts those into prioritized, explained replenishment recommendations with model-based financial exposure; and serves everything through a FastAPI REST API to a polished Next.js dashboard with an interactive Scenario Lab.
 
 ---
 
@@ -93,7 +95,7 @@ Every document, config file, and test must use these values. Values marked *conf
 
 | Parameter | Value | Meaning |
 |-----------|-------|---------|
-| `model_version` | `stocksense-baseline-1.0` | Stamped on every run |
+| `model_version` | `stocgain-baseline-1.0` | Stamped on every run |
 | `lookback_days` | 56 | Forecast history window |
 | `half_life_days` | 14 | EWMA weight half-life |
 | `min_clean_days_full` | 14 | Clean days needed for a pure store-SKU estimate |
@@ -139,7 +141,7 @@ Every document, config file, and test must use these values. Values marked *conf
 |------|-------|
 | PostgreSQL | 17, container port 5432, host port **5433** (avoids clashing with a Homebrew Postgres) |
 | Database / user / password | `stocksense` / `stocksense` / `stocksense` (local only) |
-| Test database | `stocksense_test` |
+| Test database | `stocgain_test` |
 | API | FastAPI on **8000**, prefix **`/api/v1`** |
 | Web | Next.js on **3000** |
 | Python | 3.12 (≥ 3.11 supported), managed by **uv** |
@@ -158,7 +160,7 @@ Every document, config file, and test must use these values. Values marked *conf
 
 ```mermaid
 flowchart LR
-    subgraph Pipeline["Batch pipeline (stocksense CLI)"]
+    subgraph Pipeline["Batch pipeline (stocgain CLI)"]
         G[Synthetic data generator<br/>seed 42] --> L[COPY loader]
         L --> Q[SQL data-quality checks]
         Q --> V[Refresh SQL views<br/>mv_daily_position]

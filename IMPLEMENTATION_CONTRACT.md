@@ -1,12 +1,12 @@
-# StockSense implementation interface
+# stocgain implementation interface
 
-Updated 2026-10-09. **Implemented scope: Phase 0 skeleton only; Phase 0 gate is blocked.** Schema/data/SQL contracts below are planned, not claims of existing database objects.
+Updated 2026-10-09. **Implemented scope: Phase 0 complete; Phase 1 in progress.** Schema/data/SQL contracts below are planned, not claims of existing database objects.
 
 Authority: `docs/00_DESIGN_SUMMARY.md` §4 → relevant numbered document → `CODEX_HANDOFF.md`. Product behavior changes require owner approval; log technical decisions in `docs/DECISIONS_LOG.md`.
 
 ## Structure and versions
 
-One backend package (`backend/src/stocksense`), one Next App Router app (`frontend`), root SQL directories (`sql/views`, `pipeline`, `api`, `analyses`, `quality`, `explain`, `schema`). Alembic lives in `backend/migrations`; root `.env` is shared configuration. Model/generator TOML contents are introduced in their implementation phases under `backend/config`.
+One backend package (`backend/src/stocgain`), one Next App Router app (`frontend`), root SQL directories (`sql/views`, `pipeline`, `api`, `analyses`, `quality`, `explain`, `schema`). Alembic lives in `backend/migrations`; root `.env` is shared configuration. Model/generator TOML contents are introduced in their implementation phases under `backend/config`.
 
 Python 3.12 (tested 3.12.7); uv 0.13.0; PostgreSQL Docker image `postgres:17`; Node 22 (tested 22.23.3). Exact Python and npm dependency graphs are committed in `backend/uv.lock` and `frontend/package-lock.json`. Selected releases include FastAPI 0.143.0, Pydantic 2.14.0, SQLAlchemy 2.0.54, Alembic 1.20.0, psycopg 3.3.6, pandas 2.3.3, NumPy 2.5.3, SciPy 1.18.1, Next 16.4.0, React 19.3.0. Compatibility constraints for Starlette/AnyIO preserve the specified httpx test transport; see decisions log.
 
@@ -60,16 +60,20 @@ All pipeline extraction uses `:as_of`; operational facts after cutoff are exclud
 
 ## Commands and cross-stage gates
 
-Implemented now: `make setup`, `db-up`, `db-down`, `api`, `web`, `lint`, `typecheck`, `test`, `test-frontend`, `openapi`, `check-openapi`, `verify`, `e2e`. Database-dependent commands/tests still require Docker. `make setup` installs locked dependencies and preserves existing .env. PostgreSQL binds localhost:5433; initdb creates stocksense_test on first volume initialization. API/web use 8000/3000.
+Implemented now: `make setup`, `db-up`, `db-down`, `api`, `web`, `lint`, `typecheck`, `test`, `test-frontend`, `openapi`, `check-openapi`, `verify`, `e2e`. Database-dependent commands/tests require Docker. `make setup` installs locked dependencies and preserves existing .env. PostgreSQL binds localhost:5433; initdb creates stocksense_test on first volume initialization. API/web use 8000/3000.
 
 Configured Alembic shell only: `uv run --project backend alembic -c backend/alembic.ini ...`. No revisions exist; empty migration success is not schema verification.
 
 Required future interfaces (currently explicit nonzero failures):
 - `make migrate`: revisions 0001_schemas_and_reference, 0002_operational_facts, 0003_analytics_outputs, 0004_sim_truth, then views.
 - `make seed PRESET=small SEED=42` (or standard): generate → transactional COPY load → validate → materialized-view refresh.
-- `stocksense db apply-views`, `stocksense db refresh`, `stocksense db run-analysis 06`.
-- `stocksense data generate --preset standard --seed 42`, `load --path data/generated/standard`, `validate`, `profile`.
+- `stocgain db apply-views`, `stocgain db refresh`, `stocgain db run-analysis 06`.
+- `stocgain data generate --preset standard --seed 42`, `load --path data/generated/standard`, `validate`, `profile`.
 - `make schema-dump`: actual migrated PostgreSQL schema only; never fabricate a reference dump.
-- Stage 2 / original Phase 3: `make analytics` = backfill 12 weeks + current run with evaluation; `stocksense analytics run --as-of YYYY-MM-DD --evaluate`. Not implemented or authorized this session.
+- Stage 2 / original Phase 3: `make analytics` = backfill 12 weeks + current run with evaluation; `stocgain analytics run --as-of YYYY-MM-DD --evaluate`. Not implemented or authorized this session.
 
 Do not bypass Phase 0 to start schema/data work. Before Stage 2, prove migrations up/down/up, small+standard load, checksums, DQ/integrity, SQL execution, historical isolation and measured EXPLAIN plans; record real results in PROGRESS. Preserve table/API/config boundaries so forecasting can be added without redesign. New schema changes require new reversible migrations and documented compatibility changes.
+
+## Rebrand compatibility addendum (2026-10-09)
+
+Official product name is `stocgain.`; full description is “Predictive Retail Inventory Intelligence Platform”; tagline is “Predict stockouts. Replenish smarter.” Name origin: “Stock Again” + “Stock + Gain”. Python package and CLI are `stocgain`; npm package is `stocgain-web`. Keep the active checkout path unchanged. The PostgreSQL database/user/password `stocksense`, `stocksense_test`, and Compose project/volume `stocksense` are retained intentionally to avoid a second database or destructive migration. `STOCGAIN_ENV` supersedes `STOCKSENSE_ENV`, which remains an accepted compatibility alias. Documentation references to SQL database identifiers must retain their actual names.

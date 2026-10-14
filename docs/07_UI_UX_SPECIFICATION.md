@@ -29,7 +29,7 @@ A light, restrained enterprise analytics product. Reference qualities (not to be
 | Thin, direct-labeled charts with clear axes | 3D, donut charts, chart junk, gratuitous animation |
 | Purposeful empty states with a next step | Blank areas or generic "No data" |
 
-Product mark: a simple wordmark "StockSense" in Inter Semibold with a small teal glyph (a stylized shelf with a downward-trending notch) drawn as an inline SVG. No resemblance to any retailer's branding (no orange, no aprons, no bullseye, no stars).
+Product mark: a simple wordmark "stocgain" in Inter Semibold with a small teal glyph (a stylized shelf with a downward-trending notch) drawn as an inline SVG. No resemblance to any retailer's branding (no orange, no aprons, no bullseye, no stars).
 
 ---
 
@@ -227,7 +227,7 @@ The backend's explanation text applies the identical rules (Python `explanations
 
 ```
 ┌──────────────┬────────────────────────────────────────────────────────────────────────────┐
-│ ▣ StockSense │ Executive Overview                        [⚗ Simulated Retail Dataset]   │
+│ ▣ stocgain │ Executive Overview                        [⚗ Simulated Retail Dataset]   │
 │              │ As of Wed, Sep 30, 2026 · Analytics run #14                                 │
 │ ◉ Overview   ├────────────────────────────────────────────────────────────────────────────┤
 │ ○ Risk       │ [Region ▾] [Store ▾] [Category ▾]                         [Reset filters]   │
@@ -253,7 +253,7 @@ The backend's explanation text applies the identical rules (Python `explanations
 
 Product Detail (`/positions/[storeId]/[productId]`) and Supplier Detail (`/suppliers/[supplierId]`) are reached by drill-down and show breadcrumbs.
 
-**Global filter bar** (Overview, Risk Monitor, Suppliers): Region (single-select), Store (multi-select, options filtered by region), Category (multi-select). State lives in URL params `region`, `store`, `category` (comma-separated IDs). Sidebar links carry the current global params, so filters persist across pages. "Reset filters" clears them. The last-used global filters are also mirrored to `localStorage` (key `stocksense.filters.v1`, wrapped in try/catch) and restored only when a page is opened with no params.
+**Global filter bar** (Overview, Risk Monitor, Suppliers): Region (single-select), Store (multi-select, options filtered by region), Category (multi-select). State lives in URL params `region`, `store`, `category` (comma-separated IDs). Sidebar links carry the current global params, so filters persist across pages. "Reset filters" clears them. The last-used global filters are also mirrored to `localStorage` (key `stocgain.filters.v1`, wrapped in try/catch) and restored only when a page is opened with no params.
 
 Top bar shows the as-of date and run ID from `/meta` (so a viewer always knows what point in time the numbers describe).
 
@@ -370,7 +370,7 @@ Default sort: `priority` (= `priority_rank` ascending, `no_action` last, then `r
 - Filters: multi-select popovers with checkboxes and counts not required (avoid extra queries).
 - Tier chips toggle; default from URL; if no `tier` param, all tiers shown.
 - Row click or Enter on focused row → Product Detail; Back returns with identical URL (state preserved).
-- Export CSV (P1): downloads `stocksense_risk_positions_{as_of}_{run_id}.csv` via `/risk/positions/export.csv` with the current filters; button disabled with tooltip when > 10,000 rows (cannot happen at standard scale).
+- Export CSV (P1): downloads `stocgain_risk_positions_{as_of}_{run_id}.csv` via `/risk/positions/export.csv` with the current filters; button disabled with tooltip when > 10,000 rows (cannot happen at standard scale).
 - Summary line updates from the response's `summary` object (counts by tier and Σ margin for the filtered set).
 
 ### 7.4 States and acceptance criteria
@@ -381,7 +381,7 @@ Default sort: `priority` (= `priority_rank` ascending, `no_action` last, then `r
 - AC1: Sorting by each sortable column produces the same order as the API (server-side).
 - AC2: Filter combinations (store × category × tier × action × search) return consistent totals (API tests cover combinations).
 - AC3: Pagination totals match `total_items`.
-- AC4: CSV export rows equal the filtered table rows (all pages), with headers and a first-line comment `# StockSense simulated dataset · run {id} · as of {date}`.
+- AC4: CSV export rows equal the filtered table rows (all pages), with headers and a first-line comment `# stocgain simulated dataset · run {id} · as of {date}`.
 - AC5: Back navigation from detail restores filters, sort, and page.
 
 ---

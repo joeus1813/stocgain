@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from stocksense.api.app import create_app
-from stocksense.settings import Settings
+from stocgain.api.app import create_app
+from stocgain.settings import Settings
 
 pytestmark = pytest.mark.api
 

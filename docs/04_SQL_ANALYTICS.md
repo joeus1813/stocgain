@@ -2,7 +2,7 @@
 
 **Related:** `03_DATABASE_DESIGN.md` (tables), `05_ANALYTICS_MODELS.md` (Python models), `08_API_SPECIFICATION.md` (endpoints)
 
-SQL is the analytical backbone of StockSense. This document specifies:
+SQL is the analytical backbone of stocgain. This document specifies:
 
 1. The SQL files and where they live (§1)
 2. Responsibility split between SQL and Python (§2)
@@ -30,11 +30,11 @@ The SQL below is **normative in logic** and close to final syntax. Codex may adj
 
 | Directory | Purpose | Executed by |
 |-----------|---------|-------------|
-| `sql/views/` | Repeatable view definitions (`DROP … CASCADE; CREATE …`), applied in filename order | `stocksense db apply-views` |
+| `sql/views/` | Repeatable view definitions (`DROP … CASCADE; CREATE …`), applied in filename order | `stocgain db apply-views` |
 | `sql/pipeline/` | As-of-parameterized feature extraction for the analytics pipeline (`:as_of`) | `analytics/pipeline.py` |
 | `sql/api/` | Named queries used by API repositories (`:run_id`, filters) | `services/*` via `db/sql_loader.py` |
 | `sql/analyses/` | Fifteen standalone portfolio analyses, runnable with `psql -f` | Humans, tests (`tests/db/test_sql_analyses.py`) |
-| `sql/quality/` | Data-quality checks returning violating rows | `stocksense data validate` |
+| `sql/quality/` | Data-quality checks returning violating rows | `stocgain data validate` |
 | `sql/explain/` | `EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)` wrappers for the 8 key queries | `make explain` |
 
 **Required advanced constructs and where they appear (traceability for reviewers):**

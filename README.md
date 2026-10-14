@@ -1,4 +1,10 @@
-# StockSense
+# stocgain.
+
+**Predictive Retail Inventory Intelligence Platform**
+
+*Predict stockouts. Replenish smarter.*
+
+The name combines “Stock Again” and “Stock + Gain”.
 
 Inventory intelligence for a fictional home-improvement retailer. **Simulated Retail Dataset**: no real retailer data or affiliation.
 
@@ -25,7 +31,7 @@ The temporary page calls the real API using TanStack Query. With PostgreSQL avai
 
 `.env.example` contains local-only example credentials. `make setup` preserves an existing `.env`; the backend and Next config load it from the repository root. Adjust both connection URLs if changing the database port or credentials. Never commit `.env`. `DATABASE_URL_PSQL` is the libpq form for future SQL tools. Only localhost ports are published by Compose.
 
-Optional container configuration: `docker compose --profile full up --build`. This configuration is **not verified** on the current machine because Docker is absent. Browser API URL is baked into the frontend image via the build argument; rebuild the image after changing it.
+Optional container configuration: `docker compose --profile full up --build`. The full profile has not been verified. Browser API URL is baked into the frontend image via the build argument; rebuild the image after changing it.
 
 ## Verification
 
@@ -52,7 +58,7 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 
 ## Structure and next work
 
-- `backend/src/stocksense/`: settings, logging, FastAPI health/errors, SQLAlchemy engine, CLI namespaces.
+- `backend/src/stocgain/`: settings, logging, FastAPI health/errors, SQLAlchemy engine, CLI namespaces.
 - `backend/migrations/`: configured Alembic environment; no table revisions yet.
 - `frontend/`: Next App Router health client, Tailwind v4 tokens, shadcn configuration, generated API types, Vitest/Playwright tests.
 - `sql/`: reserved directories for Phase 1 quality checks and Phase 2 SQL.
@@ -63,7 +69,7 @@ Do not substitute these unit checks for the phase's PostgreSQL acceptance gate.
 
 ## Known limitations
 
-Docker is not installed on the implementation machine: no PostgreSQL startup, Compose build, migrations, data loading, reconciliation, SQL execution, or query timings were verified. The DB integration test and full-stack browser acceptance test remain expected failures until PostgreSQL starts.
+Docker Desktop and PostgreSQL 17.11 are working locally. Phase 0's real database test and full-stack browser test passed. Compose image builds, migrations, data loading, reconciliation, analytical SQL, and query timings have not yet been verified.
 
 npm reports five high-severity development-only advisory entries rooted in `braces` through the Next ESLint plugin; latest available braces 3.0.3 is affected. ESLint 9 is deprecated upstream but currently required by the selected React/import lint plugins. No forced incompatible downgrade or hidden warning suppression was applied. Track these in `docs/DECISIONS_LOG.md`.
 

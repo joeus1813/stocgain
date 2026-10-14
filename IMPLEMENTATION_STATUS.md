@@ -1,8 +1,10 @@
-# StockSense implementation status
+# stocgain implementation status
 
 Updated 2026-10-09 (America/New_York).
 
-**Overall: Stage 1 incomplete; original Phase 0 partially implemented and blocked on Docker/PostgreSQL.** Phases 1 and 2 have not started because AGENTS.md and docs/09 require the preceding phase's verified DoD. Stage 2 / original Phase 3 forecasting has not started.
+Official product: **stocgain.** — Predictive Retail Inventory Intelligence Platform. Tagline: *Predict stockouts. Replenish smarter.* The name combines “Stock Again” and “Stock + Gain”.
+
+**Overall: Stage 1 incomplete; Phase 0 is complete and Phase 1 is beginning.** The former Docker blocker was resolved after local socket permission was approved. Stage 2 / original Phase 3 forecasting has not started.
 
 ## Completed foundation work
 
@@ -37,7 +39,7 @@ Machine: macOS 15.6.1, arm64; Python 3.12.7; Node 22.23.3; uv 0.13.0. Project-lo
 | `npm run format:check --prefix frontend` | PASS |
 | `npm run build --prefix frontend` | PASS after root-env regression fix: compiled in 379 ms, TypeScript 1.267 s, 3 static pages generated in 252 ms |
 | `make api` + `curl -sS http://localhost:8000/api/v1/health` | HTTP 200: status ok, database unavailable, analytics_ready false, current_run_id null |
-| `make web` + `make e2e` | Browser displays StockSense badge and `API: ok · Database: unavailable`; 1 test fails at required Database: ok assertion (5.3 s) |
+| `make web` + `make e2e` (before Docker access) | Browser displayed the former product badge and `API: ok · Database: unavailable`; 1 test failed at required Database: ok assertion (5.3 s) |
 | `make verify` | FAIL at real DB test: 11 passed, 1 failed in 0.59 s; lint/typecheck passed first |
 | `git diff --check` | PASS before final checkpoint |
 
@@ -68,3 +70,9 @@ Normal clones use globally installed uv/Node 22 and `npx playwright install chro
 ## Git checkpoint
 
 Original design baseline: `e1e45fe`. Final foundation checkpoint is tagged `stage-1-incomplete-phase-0`; it explicitly records incompleteness. No remote/push/merge or destructive Git operation.
+
+## 2026-10-09 continuation
+
+Docker Server 29.8.2 and Compose 5.5.1 verified through the installed CLI path with approved local socket access; no reinstall. Existing `stocksense` PostgreSQL 17.11 container is healthy on localhost:5433. SQLAlchemy connected and returned the server version. Owner-directed rebrand updated visible name, tagline, product descriptions, Python distribution/module/CLI, npm package, metadata and design references. Existing `stocksense` PostgreSQL database/user/test database/Compose volume remain deliberately unchanged; no second database was introduced.
+
+Phase 0 gate: `make test` passed 12 backend and 4 frontend tests; `make e2e` passed its one browser test (1.6 s); `make lint`, `make typecheck`, `make check-openapi` passed. Real HTTP health reported database ok. Earlier failure table above is historical from before Docker was available. Phase 1 is now permitted to start. Stage 1 remains incomplete until Phases 1–2 pass their own gates.

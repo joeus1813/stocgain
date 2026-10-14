@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import Engine
 
-from stocksense import __version__
-from stocksense.api.deps import get_engine
-from stocksense.db.engine import check_database
+from stocgain import __version__
+from stocgain.api.deps import get_engine
+from stocgain.db.engine import check_database
 
 router = APIRouter()
 

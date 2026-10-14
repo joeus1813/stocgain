@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 
-from stocksense.api.app import create_app
+from stocgain.api.app import create_app
 
 
 def export_openapi(path: Path) -> None:

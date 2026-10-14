@@ -1,7 +1,7 @@
 # 01 — Product Requirements Document (PRD)
 
-**Product:** StockSense — Retail Inventory Intelligence and Decision Support
-**Tagline:** Know what will run out, before it does.
+**Product:** stocgain — Retail Inventory Intelligence and Decision Support
+**Tagline:** Predict stockouts. Replenish smarter.
 **Status:** Approved for implementation (design phase complete)
 **Related:** `00_DESIGN_SUMMARY.md` (canonical constants), `05_ANALYTICS_MODELS.md` (formulas), `07_UI_UX_SPECIFICATION.md` (screens)
 
@@ -11,18 +11,18 @@
 
 Large home-improvement retailers lose sales every day to empty shelves, yet most store and supply-chain teams still work from static stock reports that describe **what already happened**. A report that says "on hand: 14" does not say whether 14 units will last until the next truck.
 
-StockSense converts raw operational data into a short, prioritized list of **inventory positions that are likely to run out before replenishment arrives**, explains **why**, estimates **how much margin is at risk**, and suggests **what to do**, with the tradeoffs made explicit.
+stocgain converts raw operational data into a short, prioritized list of **inventory positions that are likely to run out before replenishment arrives**, explains **why**, estimates **how much margin is at risk**, and suggests **what to do**, with the tradeoffs made explicit.
 
-**Vision statement:** *Every morning, an inventory analyst or store manager opens StockSense and, in under five minutes, knows the ten store-SKU positions that most need attention, why each is at risk, and what action to take.*
+**Vision statement:** *Every morning, an inventory analyst or store manager opens stocgain and, in under five minutes, knows the ten store-SKU positions that most need attention, why each is at risk, and what action to take.*
 
-### 1.1 What StockSense is
+### 1.1 What stocgain is
 
 - A decision-support analytics application over a relational inventory database.
 - Predictive: it forecasts demand and estimates the probability of future stockouts.
 - Explainable: every number on screen can be traced to a formula and source data.
 - Honest: built on a clearly labeled simulated dataset, with model estimates labeled as estimates.
 
-### 1.2 What StockSense is not
+### 1.2 What stocgain is not
 
 - Not an ordering system. It never places purchase orders.
 - Not an ERP, WMS, or POS replacement.
@@ -51,7 +51,7 @@ For a multi-store retailer, a stockout on a high-demand item has three costs:
 | Supplier on-time % | Which store-SKU positions are actually exposed to that supplier |
 | Days of supply | The uncertainty in demand and lead time |
 
-### 2.3 The five questions StockSense answers
+### 2.3 The five questions stocgain answers
 
 | # | Question | Where answered |
 |---|----------|----------------|
@@ -158,7 +158,7 @@ Format: *As a [persona], I want [capability] so that [outcome].* Each story has 
 |----|-------|----------|---------------------|
 | US-50 | As an interviewer, I want to know where the data comes from and how calculations work. | P0 (basic) / P1 (polished) | Methodology page with data provenance, forecast method, risk formula, recommendation rules, assumptions, limitations; live parameter values from `GET /api/v1/meta`. |
 | US-51 | As any user, I want to always know the data is simulated. | P0 | "Simulated Retail Dataset" badge visible in the top bar on every page; links to Methodology §Data. |
-| US-52 | As Priya, I want to see forecast accuracy against baselines. | P1 | Forecast evaluation table: StockSense vs naive 28-day mean vs seasonal naive; MAE, WAPE, bias; by horizon bucket and velocity class; evaluation basis labeled. |
+| US-52 | As Priya, I want to see forecast accuracy against baselines. | P1 | Forecast evaluation table: stocgain vs naive 28-day mean vs seasonal naive; MAE, WAPE, bias; by horizon bucket and velocity class; evaluation basis labeled. |
 
 ---
 
@@ -170,7 +170,7 @@ Format: *As a [persona], I want [capability] so that [outcome].* Each story has 
 journey
     title Morning triage at S03 Tampa
     section Orient
-      Open StockSense: 5: Marcus
+      Open stocgain: 5: Marcus
       Select store S03 in filter bar: 4: Marcus
       Read KPI row and Priority actions: 5: Marcus
     section Investigate
@@ -248,7 +248,7 @@ journey
 
 | ID | Feature | Precondition |
 |----|---------|--------------|
-| F-50 | ML forecast (e.g., gradient boosting) | Must beat StockSense baseline on the same backtest; shown side-by-side |
+| F-50 | ML forecast (e.g., gradient boosting) | Must beat stocgain baseline on the same backtest; shown side-by-side |
 | F-51 | Store-to-store transfer recommendations | Rule in 05 §9.6 |
 | F-52 | Alternative supplier recommendation | Uses secondary `product_suppliers` rows |
 | F-53 | Demand anomaly detection | |

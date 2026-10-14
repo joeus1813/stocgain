@@ -2,7 +2,7 @@
 
 **Related:** `00_DESIGN_SUMMARY.md` §4.2 (parameters), `04_SQL_ANALYTICS.md` (feature SQL), `03_DATABASE_DESIGN.md` §6 (output tables), `10_TEST_AND_QA_PLAN.md` (tests)
 
-This document is the **binding specification** for every calculation in StockSense: demand forecasting with censored sales, lead-time estimation, stockout probability, safety stock, reorder point, order quantity, financial exposure, risk tiers, explanations, recommendations, scenarios, and backtesting. All formulas are implemented as pure functions in `backend/src/stocksense/analytics/`.
+This document is the **binding specification** for every calculation in stocgain: demand forecasting with censored sales, lead-time estimation, stockout probability, safety stock, reorder point, order quantity, financial exposure, risk tiers, explanations, recommendations, scenarios, and backtesting. All formulas are implemented as pure functions in `backend/src/stocgain/analytics/`.
 
 Design goals, in order: **correct**, **explainable in an interview**, **reproducible**, **testable with hand-computed examples**.
 
@@ -203,7 +203,7 @@ At each origin, the **entire forecasting function** is re-run using only data `�
 
 | `model_name` | Definition |
 |--------------|-----------|
-| `stocksense_v1` | §3.3–3.8 |
+| `stocgain_v1` | §3.3–3.8 |
 | `naive_28d_mean` | Mean of **all** observed sales `y` over `[o−27, o]` (stockout zeros and promo days included), flat for all horizons — what a static report implies |
 | `seasonal_naive_7d` | Repeat the last observed week: `f_h = y_{o − 7 + ((h−1) mod 7) + 1}` |
 
@@ -228,7 +228,7 @@ MAPE is **not** used (undefined on zero-demand days, which are common). WAPE han
 
 **Segments:** `overall/all`; `horizon_bucket` ∈ {`1-7`, `8-14`, `15-28`}; `velocity_class` ∈ {`A`,`B`,`C`} (ABC by trailing 56-day revenue as of each origin); `demand_pattern` (pattern as of each origin).
 
-**Reporting rule:** The UI and README report whatever the backtest produces. No accuracy claim is made in documentation before the backtest has run. If `stocksense_v1` does not beat a baseline on some segment, that is shown, not hidden.
+**Reporting rule:** The UI and README report whatever the backtest produces. No accuracy claim is made in documentation before the backtest has run. If `stocgain_v1` does not beat a baseline on some segment, that is shown, not hidden.
 
 ### 3.13 Forecasting limitations (shown on Methodology page)
 
@@ -347,7 +347,7 @@ w_end = L̄     (with s = σ_L)
 
 ### 5.5 Checkpoints and stockout probability (`risk.score_positions`)
 
-A stockout before replenishment happens if, at some moment before supply arrives, cumulative demand exceeds cumulative supply. StockSense checks supply against demand at the moments when it is most likely to fail: **just before each scheduled delivery inside the protection window, and at the end of the window.**
+A stockout before replenishment happens if, at some moment before supply arrives, cumulative demand exceeds cumulative supply. stocgain checks supply against demand at the moments when it is most likely to fail: **just before each scheduled delivery inside the protection window, and at the end of the window.**
 
 ```
 Receipt checkpoints: for each distinct ETA_k with w_k < w_end (sorted ascending):
@@ -422,7 +422,7 @@ high_t = max(0, OH + Σ_{τ≤t} R_τ − (F(t) − 1.2816·σ_d·√t))      P9
 
 ## 6. Replenishment policy: safety stock, reorder point, order-up-to, order quantity
 
-StockSense models a **periodic-review policy with a reorder trigger**: lanes are reviewed weekly (`R = 7`), and StockSense also evaluates every position on the as-of date.
+stocgain models a **periodic-review policy with a reorder trigger**: lanes are reviewed weekly (`R = 7`), and stocgain also evaluates every position on the as-of date.
 
 ### 6.1 Lead-time demand, safety stock, reorder point (`policy.compute_policy`)
 
@@ -583,7 +583,7 @@ Displayed as "Stockout probability would be X% instead of Y%". Contributions are
 
 ## 9. Recommendation engine (`replenishment.recommend`)
 
-Recommendations are **decision support**. StockSense never creates purchase orders.
+Recommendations are **decision support**. stocgain never creates purchase orders.
 
 ### 9.1 Primary action rules (first match wins)
 
@@ -731,7 +731,7 @@ Plus: `delta` (scenario − baseline, absolute; and relative where baseline ≠ 
 
 ## 12. Backfill runs (risk trend)
 
-`stocksense analytics backfill --weeks 12` executes the full pipeline (forecast → lead time → risk → recommendations; no backtest) for `as_of ∈ {T−84, T−77, …, T−7}` with `run_type = 'backfill'`, then `stocksense analytics run --evaluate` executes the current run at `T`. Every extraction is point-in-time (04 §4), so each backfill run sees exactly what was knowable on its date. Backfill runs do not store `demand_forecast_daily` (storage control). Result: 13 weekly points for the risk trend chart and a 7-day-ago comparison for KPI deltas.
+`stocgain analytics backfill --weeks 12` executes the full pipeline (forecast → lead time → risk → recommendations; no backtest) for `as_of ∈ {T−84, T−77, …, T−7}` with `run_type = 'backfill'`, then `stocgain analytics run --evaluate` executes the current run at `T`. Every extraction is point-in-time (04 §4), so each backfill run sees exactly what was knowable on its date. Backfill runs do not store `demand_forecast_daily` (storage control). Result: 13 weekly points for the risk trend chart and a 7-day-ago comparison for KPI deltas.
 
 ---
 

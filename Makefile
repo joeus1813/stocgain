@@ -27,7 +27,7 @@ db-down:
 	docker compose down
 
 api:
-	$(BACKEND) uvicorn stocksense.api.app:app --reload --port 8000
+	$(BACKEND) uvicorn stocgain.api.app:app --reload --port 8000
 
 web:
 	cd frontend && $(NPM) run dev
@@ -38,7 +38,7 @@ lint:
 	cd frontend && $(NPM) run lint
 
 typecheck:
-	cd backend && $(UV) run --locked mypy src/stocksense
+	cd backend && $(UV) run --locked mypy src/stocgain
 	cd frontend && $(NPM) run typecheck
 
 test: test-backend test-frontend
@@ -53,12 +53,12 @@ e2e:
 	cd frontend && $(NPM) run e2e
 
 openapi:
-	$(BACKEND) python -m stocksense.api.export_openapi frontend/openapi.json
+	$(BACKEND) python -m stocgain.api.export_openapi frontend/openapi.json
 	cd frontend && $(NPM) run gen:api
 
 check-openapi:
 	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
-	$(BACKEND) python -m stocksense.api.export_openapi "$$tmp/openapi.json" && \
+	$(BACKEND) python -m stocgain.api.export_openapi "$$tmp/openapi.json" && \
 	cd frontend && ./node_modules/.bin/openapi-typescript "$$tmp/openapi.json" -o "$$tmp/schema.ts" && \
 	diff -u openapi.json "$$tmp/openapi.json" && diff -u src/lib/api/schema.ts "$$tmp/schema.ts"
 

@@ -6,9 +6,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
 from typer.testing import CliRunner
 
-from stocksense.api.app import create_app
-from stocksense.cli import app as cli
-from stocksense.settings import Settings
+from stocgain.api.app import create_app
+from stocgain.cli import app as cli
+from stocgain.settings import Settings
 
 pytestmark = pytest.mark.unit
 
@@ -21,7 +21,7 @@ def client() -> Iterator[TestClient]:
 
 
 def test_health_unavailable_database_is_explicit(client: TestClient) -> None:
-    with patch("stocksense.api.routers.health.check_database", return_value=False):
+    with patch("stocgain.api.routers.health.check_database", return_value=False):
         response = client.get("/api/v1/health")
     assert response.status_code == 200
     assert response.json() == {
@@ -55,7 +55,7 @@ def test_cors_preflight(client: TestClient) -> None:
 
 
 def test_database_connection_failure_is_not_reported_as_healthy() -> None:
-    from stocksense.db.engine import check_database, create_db_engine
+    from stocgain.db.engine import check_database, create_db_engine
 
     engine = create_db_engine(Settings(_env_file=None))
     with patch.object(

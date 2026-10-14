@@ -10,4 +10,4 @@ COPY backend/config ./backend/config
 COPY sql ./sql
 RUN uv sync --project backend --locked --no-dev
 EXPOSE 8000
-CMD ["backend/.venv/bin/uvicorn", "stocksense.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["backend/.venv/bin/uvicorn", "stocgain.api.app:app", "--host", "0.0.0.0", "--port", "8000"]

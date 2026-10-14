@@ -4,9 +4,9 @@ import { Providers } from "./providers";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "StockSense — Service health",
+  title: "stocgain. — Service health",
   description:
-    "Development service connectivity for StockSense's simulated retail dataset.",
+    "Predictive Retail Inventory Intelligence Platform. Predict stockouts. Replenish smarter.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

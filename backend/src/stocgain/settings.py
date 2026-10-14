@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
@@ -21,7 +22,9 @@ class Settings(BaseSettings):
     test_database_url: str = (
         "postgresql+psycopg://stocksense:stocksense@localhost:5433/stocksense_test"
     )
-    stocksense_env: Literal["local", "test", "docker"] = "local"
+    stocgain_env: Literal["local", "test", "docker"] = Field(
+        default="local", validation_alias=AliasChoices("STOCGAIN_ENV", "STOCKSENSE_ENV")
+    )
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     api_cors_origins: str = "http://localhost:3000"
     analytics_config_path: Path = REPOSITORY_ROOT / "backend/config/analytics.toml"

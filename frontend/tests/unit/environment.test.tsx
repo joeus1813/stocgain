@@ -11,7 +11,7 @@ import path from "node:path";
 import { expect, it } from "vitest";
 
 it("loads the root environment after Next has cached the frontend environment", () => {
-  const directory = mkdtempSync(path.join(os.tmpdir(), "stocksense-env-"));
+  const directory = mkdtempSync(path.join(os.tmpdir(), "stocgain-env-"));
   const frontend = path.join(directory, "frontend");
   mkdirSync(frontend);
   symlinkSync(

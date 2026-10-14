@@ -2,7 +2,7 @@
 
 import typer
 
-app = typer.Typer(no_args_is_help=True, help="StockSense batch and database commands.")
+app = typer.Typer(no_args_is_help=True, help="stocgain batch and database commands.")
 
 
 def not_implemented() -> None:
