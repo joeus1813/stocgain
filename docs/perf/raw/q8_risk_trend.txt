@@ -1,29 +1,47 @@
-Incremental Sort  (cost=9.64..9.69 rows=2 width=90) (actual time=0.005..0.005 rows=0 loops=1)
-  Sort Key: analytics_runs.as_of_date, r.store_id, p.category_id, r.risk_tier
-  Presorted Key: analytics_runs.as_of_date
-  Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 25kB  Peak Memory: 25kB
-  ->  GroupAggregate  (cost=9.53..9.63 rows=1 width=90) (actual time=0.003..0.004 rows=0 loops=1)
-        Group Key: analytics_runs.as_of_date, analytics_runs.run_id, r.store_id, st.region_id, p.category_id, r.risk_tier
-        ->  Incremental Sort  (cost=9.53..9.57 rows=2 width=54) (actual time=0.003..0.004 rows=0 loops=1)
-              Sort Key: analytics_runs.as_of_date, analytics_runs.run_id, r.store_id, st.region_id, p.category_id, r.risk_tier
-              Presorted Key: analytics_runs.as_of_date
-              Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 25kB  Peak Memory: 25kB
-              ->  Nested Loop  (cost=0.16..9.52 rows=1 width=54) (actual time=0.002..0.003 rows=0 loops=1)
-                    Join Filter: (r.store_id = st.store_id)
-                    ->  Nested Loop  (cost=0.16..8.25 rows=1 width=52) (actual time=0.002..0.002 rows=0 loops=1)
-                          ->  Nested Loop  (cost=0.01..0.04 rows=1 width=54) (actual time=0.002..0.002 rows=0 loops=1)
-                                Join Filter: (r.run_id = analytics_runs.run_id)
-                                ->  Unique  (cost=0.01..0.02 rows=1 width=25) (actual time=0.002..0.002 rows=0 loops=1)
-                                      ->  Sort  (cost=0.01..0.02 rows=1 width=25) (actual time=0.002..0.002 rows=0 loops=1)
-                                            Sort Key: analytics_runs.as_of_date, ((analytics_runs.run_type = 'current'::analytics.run_type)) DESC, analytics_runs.completed_at DESC
-                                            Sort Method: quicksort  Memory: 25kB
-                                            ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=25) (actual time=0.001..0.001 rows=0 loops=1)
-                                                  Filter: (status = 'succeeded'::analytics.run_status)
-                                ->  Seq Scan on inventory_risk_snapshots r  (cost=0.00..0.00 rows=1 width=50) (never executed)
-                          ->  Index Scan using products_pkey on products p  (cost=0.15..8.17 rows=1 width=6) (never executed)
-                                Index Cond: (product_id = r.product_id)
-                    ->  Seq Scan on stores st  (cost=0.00..1.12 rows=12 width=4) (never executed)
+Sort  (cost=11635.92..11682.00 rows=18432 width=90) (actual time=47.880..48.034 rows=4828 loops=1)
+  Sort Key: lr.as_of_date, r.store_id, p.category_id, r.risk_tier
+  Sort Method: quicksort  Memory: 494kB
+  Buffers: shared hit=6910
+  ->  HashAggregate  (cost=10007.46..10330.02 rows=18432 width=90) (actual time=45.040..46.454 rows=4828 loops=1)
+        Group Key: lr.as_of_date, lr.run_id, r.store_id, st.region_id, p.category_id, r.risk_tier
+        Batches: 1  Memory Usage: 4881kB
+        Buffers: shared hit=6910
+        ->  Hash Join  (cost=26.05..8711.46 rows=57600 width=31) (actual time=0.085..33.837 rows=62400 loops=1)
+              Hash Cond: (r.store_id = st.store_id)
+              Buffers: shared hit=6910
+              ->  Hash Join  (cost=24.78..8505.59 rows=57600 width=29) (actual time=0.077..27.845 rows=62400 loops=1)
+                    Hash Cond: (r.product_id = p.product_id)
+                    Buffers: shared hit=6909
+                    ->  Hash Join  (cost=9.78..8337.78 rows=57600 width=31) (actual time=0.022..21.612 rows=62400 loops=1)
+                          Hash Cond: (r.run_id = lr.run_id)
+                          Buffers: shared hit=6903
+                          ->  Seq Scan on inventory_risk_snapshots r  (cost=0.00..7518.00 rows=62400 width=27) (actual time=0.001..4.394 rows=62400 loops=1)
+                                Buffers: shared hit=6894
+                          ->  Hash  (cost=9.63..9.63 rows=12 width=12) (actual time=0.018..0.019 rows=13 loops=1)
+                                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                Buffers: shared hit=9
+                                ->  Subquery Scan on lr  (cost=9.45..9.63 rows=12 width=12) (actual time=0.014..0.018 rows=13 loops=1)
+                                      Buffers: shared hit=9
+                                      ->  Unique  (cost=9.45..9.51 rows=12 width=25) (actual time=0.014..0.016 rows=13 loops=1)
+                                            Buffers: shared hit=9
+                                            ->  Sort  (cost=9.45..9.48 rows=13 width=25) (actual time=0.013..0.014 rows=13 loops=1)
+                                                  Sort Key: analytics_runs.as_of_date, ((analytics_runs.run_type = 'current'::analytics.run_type)) DESC, analytics_runs.completed_at DESC
+                                                  Sort Method: quicksort  Memory: 25kB
+                                                  Buffers: shared hit=9
+                                                  ->  Seq Scan on analytics_runs  (cost=0.00..9.21 rows=13 width=25) (actual time=0.005..0.009 rows=13 loops=1)
+                                                        Filter: (status = 'succeeded'::analytics.run_status)
+                                                        Buffers: shared hit=9
+                    ->  Hash  (cost=10.00..10.00 rows=400 width=6) (actual time=0.054..0.055 rows=400 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 24kB
+                          Buffers: shared hit=6
+                          ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=6) (actual time=0.002..0.028 rows=400 loops=1)
+                                Buffers: shared hit=6
+              ->  Hash  (cost=1.12..1.12 rows=12 width=4) (actual time=0.007..0.007 rows=12 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=1
+                    ->  Seq Scan on stores st  (cost=0.00..1.12 rows=12 width=4) (actual time=0.004..0.005 rows=12 loops=1)
+                          Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=17
-Planning Time: 0.173 ms
-Execution Time: 0.020 ms
+  Buffers: shared hit=18
+Planning Time: 0.294 ms
+Execution Time: 48.235 ms

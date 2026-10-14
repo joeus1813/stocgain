@@ -1,142 +1,149 @@
-Result  (cost=8694.74..8694.75 rows=1 width=216) (actual time=238.206..238.222 rows=1 loops=1)
-  Buffers: shared hit=272684
+Result  (cost=8884.47..8884.48 rows=1 width=216) (actual time=242.345..242.361 rows=1 loops=1)
+  Buffers: shared hit=291959
   CTE f
     ->  Result  (cost=0.00..0.01 rows=1 width=96) (actual time=0.000..0.001 rows=1 loops=1)
   CTE pos
-    ->  Nested Loop  (cost=0.18..9.46 rows=1 width=423) (actual time=0.007..0.010 rows=0 loops=1)
-          Join Filter: ((f.category_ids IS NULL) OR (p.category_id = ANY (f.category_ids)))
+    ->  Nested Loop  (cost=8.58..147.01 rows=1 width=513) (actual time=0.020..6.061 rows=4800 loops=1)
+          Join Filter: ((f.store_ids IS NULL) OR (r.store_id = ANY (f.store_ids)))
+          Buffers: shared hit=19275
           InitPlan 2
-            ->  Subquery Scan on v_current_run  (cost=0.01..0.03 rows=1 width=8) (never executed)
-                  ->  Limit  (cost=0.01..0.02 rows=1 width=118) (never executed)
-                        ->  Sort  (cost=0.01..0.02 rows=1 width=118) (never executed)
-                              Sort Key: analytics_runs.as_of_date DESC, analytics_runs.completed_at DESC
-                              ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=118) (never executed)
-                                    Filter: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
-          ->  Nested Loop  (cost=0.01..1.24 rows=1 width=455) (actual time=0.006..0.008 rows=0 loops=1)
-                Join Filter: (((f.store_ids IS NULL) OR (r.store_id = ANY (f.store_ids))) AND ((f.region_ids IS NULL) OR (s.region_id = ANY (f.region_ids))))
-                ->  Hash Join  (cost=0.01..1.19 rows=1 width=425) (actual time=0.006..0.007 rows=0 loops=1)
-                      Hash Cond: (s.store_id = r.store_id)
-                      ->  Seq Scan on stores s  (cost=0.00..1.12 rows=12 width=4) (never executed)
-                      ->  Hash  (cost=0.00..0.00 rows=1 width=423) (actual time=0.004..0.004 rows=0 loops=1)
-                            Buckets: 1024  Batches: 1  Memory Usage: 8kB
-                            ->  Seq Scan on inventory_risk_snapshots r  (cost=0.00..0.00 rows=1 width=423) (actual time=0.003..0.003 rows=0 loops=1)
-                                  Filter: (run_id = (InitPlan 2).col1)
-                ->  CTE Scan on f  (cost=0.00..0.02 rows=1 width=96) (never executed)
-          ->  Index Scan using products_pkey on products p  (cost=0.15..8.17 rows=1 width=6) (never executed)
-                Index Cond: (product_id = r.product_id)
-                Filter: is_active
+            ->  Subquery Scan on v_current_run  (cost=0.14..8.16 rows=1 width=8) (actual time=0.005..0.006 rows=1 loops=1)
+                  Buffers: shared hit=2
+                  ->  Limit  (cost=0.14..8.15 rows=1 width=118) (actual time=0.005..0.005 rows=1 loops=1)
+                        Buffers: shared hit=2
+                        ->  Index Scan using ix_runs_status_type_asof on analytics_runs  (cost=0.14..8.15 rows=1 width=118) (actual time=0.004..0.004 rows=1 loops=1)
+                              Index Cond: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+                              Buffers: shared hit=2
+          ->  Nested Loop  (cost=0.00..20.41 rows=14 width=38) (actual time=0.008..0.773 rows=4800 loops=1)
+                Join Filter: ((f.category_ids IS NULL) OR (p.category_id = ANY (f.category_ids)))
+                Buffers: shared hit=73
+                ->  Nested Loop  (cost=0.00..1.41 rows=1 width=66) (actual time=0.006..0.010 rows=12 loops=1)
+                      Join Filter: ((f.region_ids IS NULL) OR (s.region_id = ANY (f.region_ids)))
+                      Buffers: shared hit=1
+                      ->  CTE Scan on f  (cost=0.00..0.02 rows=1 width=96) (actual time=0.001..0.002 rows=1 loops=1)
+                      ->  Seq Scan on stores s  (cost=0.00..1.12 rows=12 width=4) (actual time=0.003..0.005 rows=12 loops=1)
+                            Buffers: shared hit=1
+                ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=6) (actual time=0.001..0.034 rows=400 loops=12)
+                      Filter: is_active
+                      Buffers: shared hit=72
+          ->  Index Scan using inventory_risk_snapshots_pkey on inventory_risk_snapshots r  (cost=0.41..8.44 rows=1 width=513) (actual time=0.001..0.001 rows=1 loops=4800)
+                Index Cond: ((run_id = (InitPlan 2).col1) AND (store_id = s.store_id) AND (product_id = p.product_id))
+                Buffers: shared hit=19200
   CTE po
-    ->  Aggregate  (cost=5645.72..5645.73 rows=1 width=16) (actual time=40.876..40.881 rows=1 loops=1)
+    ->  Aggregate  (cost=5645.72..5645.73 rows=1 width=16) (actual time=38.602..38.608 rows=1 loops=1)
           Buffers: shared hit=839
-          ->  Hash Join  (cost=5111.65..5645.71 rows=1 width=8) (actual time=38.249..40.563 rows=7161 loops=1)
+          ->  Hash Join  (cost=5111.65..5645.71 rows=1 width=8) (actual time=35.932..38.294 rows=7161 loops=1)
                 Hash Cond: (po.supplier_id = su.supplier_id)
                 Join Filter: (((f_1.store_ids IS NULL) OR (po.store_id = ANY (f_1.store_ids))) AND ((f_1.region_ids IS NULL) OR (s_1.region_id = ANY (f_1.region_ids))))
                 Buffers: shared hit=839
-                ->  Hash Join  (cost=5109.03..5637.12 rows=1397 width=14) (actual time=38.228..39.779 rows=7161 loops=1)
+                ->  Hash Join  (cost=5109.03..5637.12 rows=1397 width=14) (actual time=35.914..37.508 rows=7161 loops=1)
                       Hash Cond: (po.store_id = s_1.store_id)
                       Buffers: shared hit=838
-                      ->  HashAggregate  (cost=5107.76..5340.60 rows=23284 width=92) (actual time=38.222..39.083 rows=7161 loops=1)
+                      ->  HashAggregate  (cost=5107.76..5340.60 rows=23284 width=92) (actual time=35.908..36.813 rows=7161 loops=1)
                             Group Key: pol.purchase_order_id, po.po_number, po.supplier_id, po.store_id, po.order_date, po.promised_delivery_date
                             Batches: 1  Memory Usage: 1809kB
                             Buffers: shared hit=837
-                            ->  Hash Right Join  (cost=3007.23..4467.45 rows=23284 width=110) (actual time=22.114..34.087 rows=22884 loops=1)
+                            ->  Hash Right Join  (cost=3007.23..4467.45 rows=23284 width=110) (actual time=20.148..31.805 rows=22884 loops=1)
                                   Hash Cond: (inventory_receipts.po_line_id = pol.po_line_id)
                                   Buffers: shared hit=837
-                                  ->  HashAggregate  (cost=1134.75..1657.16 rows=52241 width=20) (actual time=10.693..15.886 rows=53074 loops=1)
+                                  ->  HashAggregate  (cost=1134.75..1657.16 rows=52241 width=20) (actual time=9.671..14.755 rows=53074 loops=1)
                                         Group Key: inventory_receipts.po_line_id
                                         Batches: 1  Memory Usage: 7185kB
                                         Buffers: shared hit=301
-                                        ->  Seq Scan on inventory_receipts  (cost=0.00..856.83 rows=55583 width=8) (actual time=0.005..2.518 rows=55583 loops=1)
+                                        ->  Seq Scan on inventory_receipts  (cost=0.00..856.83 rows=55583 width=8) (actual time=0.002..2.324 rows=55583 loops=1)
                                               Buffers: shared hit=301
-                                  ->  Hash  (cost=1581.43..1581.43 rows=23284 width=30) (actual time=11.412..11.413 rows=22884 loops=1)
+                                  ->  Hash  (cost=1581.43..1581.43 rows=23284 width=30) (actual time=10.471..10.473 rows=22884 loops=1)
                                         Buckets: 32768  Batches: 1  Memory Usage: 1687kB
                                         Buffers: shared hit=536
-                                        ->  Hash Join  (cost=473.79..1581.43 rows=23284 width=30) (actual time=4.817..9.157 rows=22884 loops=1)
+                                        ->  Hash Join  (cost=473.79..1581.43 rows=23284 width=30) (actual time=4.278..8.424 rows=22884 loops=1)
                                               Hash Cond: (pol.purchase_order_id = po.purchase_order_id)
                                               Buffers: shared hit=536
-                                              ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=8) (actual time=0.005..2.466 rows=55415 loops=1)
+                                              ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=8) (actual time=0.002..2.317 rows=55415 loops=1)
                                                     Buffers: shared hit=408
-                                              ->  Hash  (cost=384.11..384.11 rows=7174 width=26) (actual time=1.613..1.613 rows=7161 loops=1)
+                                              ->  Hash  (cost=384.11..384.11 rows=7174 width=26) (actual time=1.449..1.450 rows=7161 loops=1)
                                                     Buckets: 8192  Batches: 1  Memory Usage: 484kB
                                                     Buffers: shared hit=128
-                                                    ->  Seq Scan on purchase_orders po  (cost=0.00..384.11 rows=7174 width=26) (actual time=0.322..0.953 rows=7161 loops=1)
+                                                    ->  Seq Scan on purchase_orders po  (cost=0.00..384.11 rows=7174 width=26) (actual time=0.288..0.874 rows=7161 loops=1)
                                                           Filter: ((promised_delivery_date >= '2026-07-03'::date) AND (promised_delivery_date <= '2026-09-30'::date))
                                                           Rows Removed by Filter: 9913
                                                           Buffers: shared hit=128
                       ->  Hash  (cost=1.12..1.12 rows=12 width=4) (actual time=0.004..0.004 rows=12 loops=1)
                             Buckets: 1024  Batches: 1  Memory Usage: 9kB
                             Buffers: shared hit=1
-                            ->  Seq Scan on stores s_1  (cost=0.00..1.12 rows=12 width=4) (actual time=0.001..0.002 rows=12 loops=1)
+                            ->  Seq Scan on stores s_1  (cost=0.00..1.12 rows=12 width=4) (actual time=0.002..0.002 rows=12 loops=1)
                                   Buffers: shared hit=1
-                ->  Hash  (cost=2.58..2.58 rows=3 width=66) (actual time=0.017..0.018 rows=48 loops=1)
+                ->  Hash  (cost=2.58..2.58 rows=3 width=66) (actual time=0.015..0.016 rows=48 loops=1)
                       Buckets: 1024  Batches: 1  Memory Usage: 10kB
                       Buffers: shared hit=1
-                      ->  Nested Loop  (cost=0.00..2.58 rows=3 width=66) (actual time=0.006..0.013 rows=48 loops=1)
+                      ->  Nested Loop  (cost=0.00..2.58 rows=3 width=66) (actual time=0.004..0.011 rows=48 loops=1)
                             Join Filter: ((f_1.category_ids IS NULL) OR (su.primary_category_id = ANY (f_1.category_ids)))
                             Buffers: shared hit=1
-                            ->  CTE Scan on f f_1  (cost=0.00..0.02 rows=1 width=96) (actual time=0.001..0.001 rows=1 loops=1)
-                            ->  Seq Scan on suppliers su  (cost=0.00..1.48 rows=48 width=4) (actual time=0.004..0.006 rows=48 loops=1)
+                            ->  CTE Scan on f f_1  (cost=0.00..0.02 rows=1 width=96) (actual time=0.000..0.000 rows=1 loops=1)
+                            ->  Seq Scan on suppliers su  (cost=0.00..1.48 rows=48 width=4) (actual time=0.003..0.005 rows=48 loops=1)
                                   Buffers: shared hit=1
   CTE instock
-    ->  Aggregate  (cost=3039.19..3039.20 rows=1 width=64) (actual time=197.302..197.303 rows=1 loops=1)
+    ->  Aggregate  (cost=3091.36..3091.37 rows=1 width=64) (actual time=188.004..188.005 rows=1 loops=1)
           Buffers: shared hit=271845
-          ->  Nested Loop  (cost=5.28..3038.34 rows=42 width=8) (actual time=0.041..178.913 rows=268800 loops=1)
+          ->  Nested Loop  (cost=5.29..3090.51 rows=42 width=8) (actual time=0.021..169.433 rows=268800 loops=1)
                 Join Filter: ((f_2.store_ids IS NULL) OR (m.store_id = ANY (f_2.store_ids)))
                 Buffers: shared hit=271845
-                ->  Nested Loop  (cost=0.00..20.41 rows=14 width=38) (actual time=0.020..1.026 rows=4800 loops=1)
+                ->  Nested Loop  (cost=0.00..20.41 rows=14 width=38) (actual time=0.006..0.902 rows=4800 loops=1)
                       Join Filter: ((f_2.category_ids IS NULL) OR (p_1.category_id = ANY (f_2.category_ids)))
                       Buffers: shared hit=73
-                      ->  Nested Loop  (cost=0.00..1.41 rows=1 width=66) (actual time=0.015..0.031 rows=12 loops=1)
+                      ->  Nested Loop  (cost=0.00..1.41 rows=1 width=66) (actual time=0.004..0.014 rows=12 loops=1)
                             Join Filter: ((f_2.region_ids IS NULL) OR (s_2.region_id = ANY (f_2.region_ids)))
                             Buffers: shared hit=1
-                            ->  CTE Scan on f f_2  (cost=0.00..0.02 rows=1 width=96) (actual time=0.001..0.002 rows=1 loops=1)
-                            ->  Seq Scan on stores s_2  (cost=0.00..1.12 rows=12 width=4) (actual time=0.012..0.020 rows=12 loops=1)
+                            ->  CTE Scan on f f_2  (cost=0.00..0.02 rows=1 width=96) (actual time=0.000..0.001 rows=1 loops=1)
+                            ->  Seq Scan on stores s_2  (cost=0.00..1.12 rows=12 width=4) (actual time=0.003..0.006 rows=12 loops=1)
                                   Buffers: shared hit=1
-                      ->  Seq Scan on products p_1  (cost=0.00..10.00 rows=400 width=6) (actual time=0.002..0.029 rows=400 loops=12)
+                      ->  Seq Scan on products p_1  (cost=0.00..10.00 rows=400 width=6) (actual time=0.001..0.027 rows=400 loops=12)
                             Buffers: shared hit=72
-                ->  Bitmap Heap Scan on mv_daily_position m  (cost=5.28..214.31 rows=56 width=14) (actual time=0.007..0.031 rows=56 loops=4800)
+                ->  Bitmap Heap Scan on mv_daily_position m  (cost=5.29..218.01 rows=57 width=14) (actual time=0.007..0.029 rows=56 loops=4800)
                       Recheck Cond: ((store_id = s_2.store_id) AND (product_id = p_1.product_id) AND (position_date >= '2026-08-06'::date) AND (position_date <= '2026-09-30'::date))
                       Heap Blocks: exact=256379
                       Buffers: shared hit=271772
-                      ->  Bitmap Index Scan on ux_mv_daily_position  (cost=0.00..5.26 rows=56 width=0) (actual time=0.004..0.004 rows=56 loops=4800)
+                      ->  Bitmap Index Scan on ux_mv_daily_position  (cost=0.00..5.28 rows=57 width=0) (actual time=0.004..0.004 rows=56 loops=4800)
                             Index Cond: ((store_id = s_2.store_id) AND (product_id = p_1.product_id) AND (position_date >= '2026-08-06'::date) AND (position_date <= '2026-09-30'::date))
                             Buffers: shared hit=15393
   InitPlan 6
-    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=0.008..0.009 rows=1 loops=1)
-          ->  CTE Scan on pos  (cost=0.00..0.02 rows=1 width=0) (actual time=0.007..0.007 rows=0 loops=1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=8) (actual time=9.591..9.591 rows=1 loops=1)
+          Buffers: shared hit=19275
+          ->  CTE Scan on pos  (cost=0.00..0.02 rows=1 width=0) (actual time=0.022..9.402 rows=4800 loops=1)
+                Buffers: shared hit=19275
   InitPlan 7
-    ->  Aggregate  (cost=0.04..0.05 rows=1 width=8) (actual time=0.003..0.004 rows=1 loops=1)
-          ->  Sort  (cost=0.03..0.04 rows=1 width=4) (actual time=0.003..0.003 rows=0 loops=1)
+    ->  Aggregate  (cost=0.04..0.05 rows=1 width=8) (actual time=0.953..0.954 rows=1 loops=1)
+          ->  Sort  (cost=0.03..0.04 rows=1 width=4) (actual time=0.592..0.760 rows=4800 loops=1)
                 Sort Key: pos_1.product_id
-                Sort Method: quicksort  Memory: 25kB
-                ->  CTE Scan on pos pos_1  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.001 rows=0 loops=1)
+                Sort Method: quicksort  Memory: 193kB
+                ->  CTE Scan on pos pos_1  (cost=0.00..0.02 rows=1 width=4) (actual time=0.001..0.313 rows=4800 loops=1)
   InitPlan 8
-    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=0.000..0.001 rows=1 loops=1)
-          ->  CTE Scan on pos pos_2  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.000 rows=0 loops=1)
+    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=1.029..1.030 rows=1 loops=1)
+          ->  CTE Scan on pos pos_2  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.257 rows=4800 loops=1)
   InitPlan 9
-    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=0.000..0.001 rows=1 loops=1)
-          ->  CTE Scan on pos pos_3  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.000 rows=0 loops=1)
+    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=0.970..0.970 rows=1 loops=1)
+          ->  CTE Scan on pos pos_3  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.243 rows=4800 loops=1)
   InitPlan 10
-    ->  Aggregate  (cost=0.02..0.03 rows=1 width=32) (actual time=0.001..0.002 rows=1 loops=1)
-          ->  CTE Scan on pos pos_4  (cost=0.00..0.02 rows=1 width=16) (actual time=0.000..0.000 rows=0 loops=1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=32) (actual time=0.972..0.972 rows=1 loops=1)
+          ->  CTE Scan on pos pos_4  (cost=0.00..0.02 rows=1 width=16) (actual time=0.000..0.242 rows=4800 loops=1)
   InitPlan 11
-    ->  Aggregate  (cost=0.02..0.03 rows=1 width=32) (actual time=0.000..0.001 rows=1 loops=1)
-          ->  CTE Scan on pos pos_5  (cost=0.00..0.02 rows=1 width=16) (actual time=0.000..0.000 rows=0 loops=1)
+    ->  Aggregate  (cost=0.02..0.03 rows=1 width=32) (actual time=0.966..0.967 rows=1 loops=1)
+          ->  CTE Scan on pos pos_5  (cost=0.00..0.02 rows=1 width=16) (actual time=0.000..0.244 rows=4800 loops=1)
   InitPlan 12
-    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=1)
-          ->  CTE Scan on pos pos_6  (cost=0.00..0.02 rows=1 width=14) (actual time=0.000..0.000 rows=0 loops=1)
+    ->  Aggregate  (cost=0.03..0.04 rows=1 width=8) (actual time=1.244..1.244 rows=1 loops=1)
+          ->  CTE Scan on pos pos_6  (cost=0.00..0.02 rows=1 width=14) (actual time=0.001..0.422 rows=4715 loops=1)
                 Filter: (days_of_cover IS NOT NULL)
+                Rows Removed by Filter: 85
   InitPlan 13
-    ->  CTE Scan on po po_1  (cost=0.00..0.02 rows=1 width=8) (actual time=40.878..40.878 rows=1 loops=1)
+    ->  CTE Scan on po po_1  (cost=0.00..0.02 rows=1 width=8) (actual time=38.603..38.604 rows=1 loops=1)
           Buffers: shared hit=839
   InitPlan 14
-    ->  CTE Scan on po po_2  (cost=0.00..0.03 rows=1 width=32) (actual time=0.003..0.003 rows=1 loops=1)
+    ->  CTE Scan on po po_2  (cost=0.00..0.03 rows=1 width=32) (actual time=0.002..0.002 rows=1 loops=1)
   InitPlan 15
-    ->  CTE Scan on instock  (cost=0.00..0.02 rows=1 width=32) (actual time=197.304..197.305 rows=1 loops=1)
+    ->  CTE Scan on instock  (cost=0.00..0.02 rows=1 width=32) (actual time=188.005..188.006 rows=1 loops=1)
           Buffers: shared hit=271845
   InitPlan 16
     ->  CTE Scan on instock instock_1  (cost=0.00..0.02 rows=1 width=32) (actual time=0.000..0.000 rows=1 loops=1)
 Planning:
-  Buffers: shared hit=32
-Planning Time: 0.828 ms
-Execution Time: 238.402 ms
+  Buffers: shared hit=33
+Planning Time: 0.729 ms
+Execution Time: 242.576 ms

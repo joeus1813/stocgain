@@ -79,7 +79,7 @@ export function OverviewDashboard() {
       ) : (
         <>
           <section aria-label="Inventory overview">
-            <dl className="kpi-grid">
+            <div className="kpi-grid">
               <Kpi
                 label="Active positions"
                 value={count(d.active_positions)}
@@ -117,7 +117,7 @@ export function OverviewDashboard() {
                 note={`${d.in_stock_window_days} days${d.in_stock_rate !== null && d.in_stock_rate_prior !== null ? ` · ${formatDelta(d.in_stock_rate - d.in_stock_rate_prior, "rate")} vs prior` : ""}`}
                 definition="stock"
               />
-            </dl>
+            </div>
           </section>
           <div className="grid-main">
             <Card
@@ -469,7 +469,7 @@ export function OverviewDashboard() {
                                                 ? "var(--high)"
                                                 : "var(--critical-fg)",
                                       color:
-                                        level >= 0.25
+                                        level >= 0.5
                                           ? "var(--color-surface)"
                                           : "var(--color-ink-900)",
                                     }}

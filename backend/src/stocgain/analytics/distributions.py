@@ -48,14 +48,20 @@ def prob_exceeds(
         return float(max(0.0, mean) > supply)
     if family == "normal":
         return float(special.ndtr((mean - supply) / std))
-    if family == "poisson":
-        cap = stats.poisson.ppf(1 - 1e-9, mean)
-        probability = stats.poisson.sf(supply, mean)
-    else:
-        n, p = mean**2 / (std**2 - mean), mean / std**2
-        cap = stats.nbinom.ppf(1 - 1e-9, n, p)
-        probability = stats.nbinom.sf(supply, n, p)
-    return 0.0 if supply > cap else float(probability)
+    tail = _count_tail(mean, std, supply)
+    # For integer S, S > ppf(q) iff CDF(S - 1) >= q. Keep the
+    # canonical 1e-9 tail cutoff without a repeated inverse-CDF search.
+    return 0.0 if _count_tail(mean, std, supply - 1) <= 1e-9 else tail
+
+
+def _count_tail(mean: float, std: float, supply: int, shifted: bool = False) -> float:
+    """P[X > supply] via public SciPy special functions for count families."""
+    if supply < 0:
+        return 1.0
+    if std**2 <= mean:
+        return float(special.gammainc(supply + 1, mean))
+    n, p = mean**2 / (std**2 - mean), mean / std**2
+    return float(special.betainc(supply + 1, n + int(shifted), 1 - p))
 
 
 def quantile(
@@ -83,19 +89,31 @@ def expected_shortage(
         z = (supply - mean) / std
         density = math.exp(-0.5 * z * z) / math.sqrt(2 * math.pi)
         return max(0.0, float(std * (density - z * special.ndtr(-z))))
-    # Keep the specified finite-sum calculation; avoid rebuilding frozen
-    # distribution objects (including their docstrings) for each position.
-    values = np.arange(supply, dtype=float)
-    if family == "poisson":
-        if supply > stats.poisson.ppf(1 - 1e-9, mean):
-            return 0.0
-        probabilities = stats.poisson.pmf(values, mean)
-    else:
+    if 0 < std**2 - mean < 1e-10 * mean:
+        # Preserve the reference finite-sum behavior at the numerically singular
+        # NB/Poisson boundary (huge NB shape). Do not change the family rule.
         n, p = mean**2 / (std**2 - mean), mean / std**2
         if supply > stats.nbinom.ppf(1 - 1e-9, n, p):
             return 0.0
-        probabilities = stats.nbinom.pmf(values, n, p)
-    return max(0.0, float(mean - supply + np.sum((supply - values) * probabilities)))
+        values = np.arange(supply, dtype=float)
+        return max(
+            0.0,
+            float(
+                mean
+                - supply
+                + np.sum((supply - values) * stats.nbinom.pmf(values, n, p))
+            ),
+        )
+    if _count_tail(mean, std, supply - 1) <= 1e-9:
+        return 0.0
+    # Exact truncated first-moment identity for the specified finite sum:
+    # E[(X-S)+] = mu * P[X' > S-1] - S * P[X > S]. For NB,
+    # X' has shape n+1 and the same p; Poisson keeps the same mean.
+    return max(
+        0.0,
+        mean * _count_tail(mean, std, supply - 1, shifted=True)
+        - supply * _count_tail(mean, std, supply),
+    )
 
 
 def evaluate_batch(

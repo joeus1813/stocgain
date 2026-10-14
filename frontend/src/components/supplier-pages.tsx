@@ -53,7 +53,7 @@ export function Suppliers() {
         path={`/suppliers/summary?${apiFilters(new URLSearchParams(globalQuery(new URLSearchParams(params.toString()))))}`}
       >
         {(s) => (
-          <dl className="kpi-grid supplier-kpis">
+          <div className="kpi-grid supplier-kpis">
             <Kpi
               label="Suppliers flagged"
               value={`${count(s.flagged_suppliers)} / ${count(s.suppliers)}`}
@@ -74,7 +74,7 @@ export function Suppliers() {
               value={count(s.overdue_open_pos)}
               definition="supplier"
             />
-          </dl>
+          </div>
         )}
       </QueryPanel>
       {q.isPending ? (

@@ -18,7 +18,7 @@ test("all pages remain usable at desktop and mobile widths", async ({
   ];
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  for (const width of [1440, 1280, 390]) {
+  for (const width of [1440, 1280, 1024, 768, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     for (const [name, path] of routes) {
       await page.goto(path);
@@ -47,9 +47,9 @@ test("all pages remain usable at desktop and mobile widths", async ({
           ),
         )
         .toBe(true);
-      if (width !== 1280)
+      if (width === 1440 || width === 390)
         await page.screenshot({
-          path: `../docs/screenshots/wip/${name}-${width}.png`,
+          path: `../docs/screenshots/${name}-${width}.png`,
           fullPage: true,
         });
     }

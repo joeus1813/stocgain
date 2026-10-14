@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-14T01:11:55.146Z",
+  "first_load_ms": 7014.114417000001,
+  "environment": {
+    "os": "darwin",
+    "release": "24.6.0",
+    "arch": "arm64",
+    "node": "v22.23.3",
+    "frontend": "Next.js production build",
+    "browser": "Playwright Chromium"
+  },
+  "method": "20 distinct full-scope automatic changes; includes input, 400 ms debounce, HTTP and rendered results; warm model cache; nearest-rank p95",
+  "samples": [
+    {
+      "demand_change_rate": -0.5,
+      "end_to_end_ms": 1426.8914999999997,
+      "server_computation_ms": 909.9182919599116,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.45,
+      "end_to_end_ms": 1382.796042,
+      "server_computation_ms": 933.2821669522673,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.4,
+      "end_to_end_ms": 1366.0903339999986,
+      "server_computation_ms": 923.6618340946734,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.35,
+      "end_to_end_ms": 1329.765542000001,
+      "server_computation_ms": 882.3010409250855,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.3,
+      "end_to_end_ms": 1365.976290999999,
+      "server_computation_ms": 918.0483329109848,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.25,
+      "end_to_end_ms": 1350.5374580000007,
+      "server_computation_ms": 904.6540418639779,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.2,
+      "end_to_end_ms": 1319.1743749999987,
+      "server_computation_ms": 873.256541788578,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.15,
+      "end_to_end_ms": 1367.3596249999973,
+      "server_computation_ms": 918.2320421095937,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.1,
+      "end_to_end_ms": 1360.684083,
+      "server_computation_ms": 905.9284578543156,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": -0.05,
+      "end_to_end_ms": 1308.6082079999978,
+      "server_computation_ms": 860.7460418716073,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.05,
+      "end_to_end_ms": 1333.206542,
+      "server_computation_ms": 884.0216670650989,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.1,
+      "end_to_end_ms": 1354.6865829999988,
+      "server_computation_ms": 903.9922910742462,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.15,
+      "end_to_end_ms": 1304.7459170000002,
+      "server_computation_ms": 853.124791989103,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.2,
+      "end_to_end_ms": 1344.213499999998,
+      "server_computation_ms": 890.6566251534969,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.25,
+      "end_to_end_ms": 1294.077624999998,
+      "server_computation_ms": 847.6090000476688,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.3,
+      "end_to_end_ms": 1328.1060830000024,
+      "server_computation_ms": 880.2814581431448,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.35,
+      "end_to_end_ms": 1330.5879999999997,
+      "server_computation_ms": 879.6910420060158,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.4,
+      "end_to_end_ms": 1276.7692080000015,
+      "server_computation_ms": 829.0071249939501,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.45,
+      "end_to_end_ms": 1311.442332999999,
+      "server_computation_ms": 864.3500001635402,
+      "positions_in_scope": 4800
+    },
+    {
+      "demand_change_rate": 0.5,
+      "end_to_end_ms": 1324.545791000004,
+      "server_computation_ms": 877.3992089554667,
+      "positions_in_scope": 4800
+    }
+  ],
+  "p50_ms": 1330.5879999999997,
+  "p95_ms": 1382.796042,
+  "target_ms": 1500
+}

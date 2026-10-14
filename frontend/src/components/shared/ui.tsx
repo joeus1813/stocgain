@@ -134,20 +134,18 @@ export function Kpi({
   definition: keyof typeof definitions;
   href?: string;
 }) {
-  const content = (
-    <>
-      <dt>
-        <span tabIndex={0} title={definitions[definition]}>
-          {label} <span className="info">ⓘ</span>
-        </span>
-      </dt>
-      <dd>{value}</dd>
-      {note && <p>{note}</p>}
-    </>
+  const title = (
+    <span tabIndex={0} title={definitions[definition]}>
+      {label} <span className="info">ⓘ</span>
+    </span>
   );
   return (
     <div className="kpi">
-      {href ? <Link href={href}>{content}</Link> : content}
+      <dl>
+        <dt>{href ? <Link href={href}>{title}</Link> : title}</dt>
+        <dd>{value}</dd>
+      </dl>
+      {note && <p>{note}</p>}
     </div>
   );
 }

@@ -143,7 +143,7 @@ Every document, config file, and test must use these values. Values marked *conf
 | Database / user / password | `stocksense` / `stocksense` / `stocksense` (local only) |
 | Test database | `stocksense_test` |
 | API | FastAPI on **8000**, prefix **`/api/v1`** |
-| Web | Next.js on **3000** |
+| Web | Next.js on **3050** (owner-requested local port) |
 | Python | 3.12 (≥ 3.11 supported), managed by **uv** |
 | Node | 22 LTS |
 

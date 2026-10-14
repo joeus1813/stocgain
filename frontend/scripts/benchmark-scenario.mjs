@@ -11,10 +11,12 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 900 },
   });
+  const coldStarted = performance.now();
   await page.goto("http://localhost:3050/scenarios");
   await expect(
     page.getByRole("heading", { name: "Scenario comparison", exact: true }),
   ).toBeVisible({ timeout: 30000 });
+  const firstLoadMs = performance.now() - coldStarted;
   const samples = [];
   for (let i = 0; i < 20; i++) {
     const demand = -50 + i * 5 + (i >= 10 ? 5 : 0);
@@ -49,7 +51,8 @@ try {
   }
   const sorted = samples.map((s) => s.end_to_end_ms).sort((a, b) => a - b);
   const result = {
-    date: "2026-10-13",
+    date: new Date().toISOString(),
+    first_load_ms: firstLoadMs,
     environment: {
       os: os.platform(),
       release: os.release(),
@@ -66,7 +69,10 @@ try {
     target_ms: 1500,
   };
   writeFileSync(
-    new URL("../../docs/perf/raw/stage3_scenario.json", import.meta.url),
+    new URL(
+      process.env.BENCH_OUTPUT ?? "../../docs/perf/raw/stage3_scenario.json",
+      import.meta.url,
+    ),
     JSON.stringify(result, null, 2) + "\n",
   );
   console.log(

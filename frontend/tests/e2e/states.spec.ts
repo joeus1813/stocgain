@@ -54,3 +54,50 @@ test("all navigation destinations and unknown route are reachable", async ({
     page.getByRole("link", { name: "Back to Risk Monitor" }),
   ).toBeVisible();
 });
+
+test("each primary screen reports analytics-not-ready with a retry action", async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await page.route("**/api/v1/**", (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: {
+          code: "ANALYTICS_NOT_READY",
+          message: "Run analytics before opening the application.",
+          details: {},
+        },
+      }),
+    }),
+  );
+  for (const route of [
+    "/",
+    "/risk",
+    "/positions/1/1",
+    "/suppliers",
+    "/scenarios",
+    "/methodology",
+  ]) {
+    await page.goto(route);
+    await expect(
+      page.getByText("Analytics are not ready", { exact: true }).first(),
+    ).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.getByRole("button", { name: "Retry", exact: true }).first(),
+    ).toBeVisible();
+  }
+});
+
+test("an empty risk search offers a recovery path", async ({ page }) => {
+  await page.goto("/risk?search=NO-SUCH-STOCGAIN-SKU");
+  await expect(
+    page.getByText("No positions match these filters", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Change the scope or reset filters to continue.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+});

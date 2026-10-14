@@ -1,9 +1,9 @@
 {
-  "refresh_seconds": 1.6935977500397712,
-  "model_runs": 0,
+  "refresh_seconds": 2.310419457964599,
+  "model_runs": 13,
   "01_rolling_sales_velocity": {
     "rows": 50,
-    "seconds": 0.576651250012219,
+    "seconds": 0.6283746671397239,
     "columns": [
       "store_code",
       "sku",
@@ -39,7 +39,7 @@
   },
   "02_demand_trends": {
     "rows": 800,
-    "seconds": 1.1836914590094239,
+    "seconds": 1.220818332862109,
     "columns": [
       "week_start_date",
       "category_name",
@@ -78,7 +78,7 @@
   },
   "03_days_of_cover": {
     "rows": 63,
-    "seconds": 0.04560041707009077,
+    "seconds": 0.0480491251219064,
     "columns": [
       "category_name",
       "cover_bucket",
@@ -102,7 +102,7 @@
   },
   "04_supplier_lead_time": {
     "rows": 48,
-    "seconds": 0.04912250000052154,
+    "seconds": 0.05041099991649389,
     "columns": [
       "supplier_code",
       "supplier_name",
@@ -147,7 +147,7 @@
   },
   "05_supplier_reliability": {
     "rows": 48,
-    "seconds": 0.05234354198910296,
+    "seconds": 0.055008749943226576,
     "columns": [
       "supplier_code",
       "supplier_name",
@@ -186,7 +186,7 @@
   },
   "06_stockout_frequency": {
     "rows": 50,
-    "seconds": 0.20613308297470212,
+    "seconds": 0.2055725420359522,
     "columns": [
       "store_code",
       "sku",
@@ -224,8 +224,8 @@
     ]
   },
   "07_high_risk_identification": {
-    "rows": 0,
-    "seconds": 0.005580374971032143,
+    "rows": 60,
+    "seconds": 0.01272895885631442,
     "columns": [
       "store_code",
       "rank_in_store",
@@ -241,11 +241,42 @@
       "margin_at_risk_usd",
       "action_type"
     ],
-    "examples": []
+    "examples": [
+      {
+        "store_code": "S01",
+        "rank_in_store": 1,
+        "sku": "EL-10132",
+        "product_name": "Voltrane 7500-Watt Portable Generator - Variant 4",
+        "category_name": "Electrical",
+        "risk_tier": "critical",
+        "stockout_probability_pct": "100.0",
+        "on_hand_units": 1,
+        "avg_daily_demand_units": "1.4",
+        "days_of_cover": "0.7",
+        "next_receipt_date": null,
+        "margin_at_risk_usd": "3203.95",
+        "action_type": "reorder"
+      },
+      {
+        "store_code": "S01",
+        "rank_in_store": 2,
+        "sku": "PL-10166",
+        "product_name": "Aquaveld Pipe Clamp - Variant 1",
+        "category_name": "Plumbing",
+        "risk_tier": "critical",
+        "stockout_probability_pct": "100.0",
+        "on_hand_units": 52,
+        "avg_daily_demand_units": "19.9",
+        "days_of_cover": "2.6",
+        "next_receipt_date": "2026-10-12",
+        "margin_at_risk_usd": "1548.23",
+        "action_type": "expedite_po"
+      }
+    ]
   },
   "08_margin_exposure": {
-    "rows": 0,
-    "seconds": 0.003688666969537735,
+    "rows": 331,
+    "seconds": 0.015719957882538438,
     "columns": [
       "sku",
       "product_name",
@@ -256,11 +287,32 @@
       "share_of_total",
       "cumulative_share"
     ],
-    "examples": []
+    "examples": [
+      {
+        "sku": "PL-10166",
+        "product_name": "Aquaveld Pipe Clamp - Variant 1",
+        "category_name": "Plumbing",
+        "at_risk_stores": 12,
+        "margin_at_risk_usd": "11291.07",
+        "revenue_at_risk_usd": "31771.64",
+        "share_of_total": "0.0924",
+        "cumulative_share": "0.0924"
+      },
+      {
+        "sku": "PT-10042",
+        "product_name": "Kestrel Pro Random Orbit Sander - Variant 4",
+        "category_name": "Power Tools",
+        "at_risk_stores": 12,
+        "margin_at_risk_usd": "6693.58",
+        "revenue_at_risk_usd": "17929.89",
+        "share_of_total": "0.0548",
+        "cumulative_share": "0.1472"
+      }
+    ]
   },
   "09_regional_risk_comparison": {
-    "rows": 1,
-    "seconds": 0.003393832826986909,
+    "rows": 5,
+    "seconds": 0.012979125138372183,
     "columns": [
       "region_name",
       "positions",
@@ -275,22 +327,34 @@
     ],
     "examples": [
       {
-        "region_name": "Chain total",
-        "positions": 0,
-        "critical": 0,
-        "high": 0,
-        "moderate": 0,
-        "low": 0,
-        "at_risk_share": null,
-        "at_risk_share_vs_chain": null,
-        "margin_at_risk_usd": null,
-        "mean_stockout_probability": null
+        "region_name": "Southeast",
+        "positions": 1200,
+        "critical": 208,
+        "high": 80,
+        "moderate": 74,
+        "low": 838,
+        "at_risk_share": "0.2400",
+        "at_risk_share_vs_chain": "0.0196",
+        "margin_at_risk_usd": "39402.86",
+        "mean_stockout_probability": "0.1899"
+      },
+      {
+        "region_name": "Southwest",
+        "positions": 1200,
+        "critical": 180,
+        "high": 89,
+        "moderate": 85,
+        "low": 846,
+        "at_risk_share": "0.2242",
+        "at_risk_share_vs_chain": "0.0038",
+        "margin_at_risk_usd": "31982.14",
+        "mean_stockout_probability": "0.1729"
       }
     ]
   },
   "10_demand_volatility": {
     "rows": 4800,
-    "seconds": 0.11130900005809963,
+    "seconds": 0.11474829190410674,
     "columns": [
       "store_code",
       "sku",
@@ -335,7 +399,7 @@
   },
   "11_po_fulfillment": {
     "rows": 288,
-    "seconds": 0.08561887498944998,
+    "seconds": 0.08648320799693465,
     "columns": [
       "supplier_code",
       "promised_month",
@@ -376,8 +440,8 @@
     ]
   },
   "12_replenishment_prioritization": {
-    "rows": 0,
-    "seconds": 0.0037003750912845135,
+    "rows": 100,
+    "seconds": 0.01056483294814825,
     "columns": [
       "priority_rank",
       "store_code",
@@ -393,11 +457,42 @@
       "recommended_order_cost_usd",
       "cumulative_order_cost_usd"
     ],
-    "examples": []
+    "examples": [
+      {
+        "priority_rank": 1,
+        "store_code": "S01",
+        "store_rank": 1,
+        "sku": "EL-10132",
+        "product_name": "Voltrane 7500-Watt Portable Generator - Variant 4",
+        "risk_tier": "critical",
+        "action_type": "reorder",
+        "urgency": "urgent",
+        "stockout_probability": "0.9996",
+        "margin_at_risk_usd": "3203.95",
+        "recommended_order_units": 37,
+        "recommended_order_cost_usd": "18134.44",
+        "cumulative_order_cost_usd": "18134.44"
+      },
+      {
+        "priority_rank": 2,
+        "store_code": "S10",
+        "store_rank": 1,
+        "sku": "PL-10166",
+        "product_name": "Aquaveld Pipe Clamp - Variant 1",
+        "risk_tier": "critical",
+        "action_type": "expedite_po",
+        "urgency": "urgent",
+        "stockout_probability": "1.0000",
+        "margin_at_risk_usd": "2183.46",
+        "recommended_order_units": 222,
+        "recommended_order_cost_usd": "5863.02",
+        "cumulative_order_cost_usd": "23997.46"
+      }
+    ]
   },
   "13_inventory_reconciliation": {
     "rows": 61,
-    "seconds": 0.005046916892752051,
+    "seconds": 0.006022041896358132,
     "columns": [
       "store_code",
       "reason_code",
@@ -423,8 +518,8 @@
     ]
   },
   "14_abc_xyz_matrix": {
-    "rows": 0,
-    "seconds": 0.0013152500614523888,
+    "rows": 3,
+    "seconds": 0.11523829190991819,
     "columns": [
       "abc_class",
       "x_products",
@@ -432,11 +527,26 @@
       "z_products",
       "revenue_56d"
     ],
-    "examples": []
+    "examples": [
+      {
+        "abc_class": "A",
+        "x_products": 108,
+        "y_products": 17,
+        "z_products": 0,
+        "revenue_56d": "15584716.92"
+      },
+      {
+        "abc_class": "B",
+        "x_products": 81,
+        "y_products": 26,
+        "z_products": 2,
+        "revenue_56d": "2907497.75"
+      }
+    ]
   },
   "15_in_stock_rate_trend": {
     "rows": 108,
-    "seconds": 0.26891266694292426,
+    "seconds": 0.27350729214958847,
     "columns": [
       "week_start_date",
       "region_name",
@@ -481,19 +591,20 @@
   ],
   "q3_full_history": [
     "  Buffers: shared hit=829274",
-    "Planning Time: 0.042 ms",
-    "Execution Time: 349.751 ms"
+    "Planning Time: 0.043 ms",
+    "Execution Time: 337.756 ms"
   ],
   "q4_risk_positions": [
-    "  Buffers: shared hit=18",
-    "Planning Time: 3.556 ms",
-    "Execution Time: 0.044 ms"
+    "  Buffers: shared hit=7153",
+    "        Buffers: shared hit=7153",
+    "              Buffers: shared hit=7153",
+    "                    Buffers: shared hit=4702"
   ],
   "q5_overview_summary": [
-    "  Buffers: shared hit=272684",
-    "          Buffers: shared hit=839",
-    "                Buffers: shared hit=839",
-    "                      Buffers: shared hit=838"
+    "  Buffers: shared hit=291959",
+    "          Buffers: shared hit=19275",
+    "                  Buffers: shared hit=2",
+    "                        Buffers: shared hit=2"
   ],
   "q6_direct_ops": [
     "  Buffers: shared hit=459",
@@ -508,13 +619,15 @@
     "  Buffers: shared hit=5"
   ],
   "q7_supplier_performance": [
-    "  Buffers: shared hit=23",
-    "Planning Time: 0.438 ms",
-    "Execution Time: 0.064 ms"
+    "  Buffers: shared hit=1248",
+    "        Buffers: shared hit=1248",
+    "                Buffers: shared hit=2",
+    "                      Buffers: shared hit=2"
   ],
   "q8_risk_trend": [
-    "  Buffers: shared hit=17",
-    "Planning Time: 0.173 ms",
-    "Execution Time: 0.020 ms"
+    "  Buffers: shared hit=6910",
+    "        Buffers: shared hit=6910",
+    "              Buffers: shared hit=6910",
+    "                    Buffers: shared hit=6909"
   ]
 }

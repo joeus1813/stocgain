@@ -1,114 +1,114 @@
-Sort  (cost=449802.84..453444.10 rows=1456505 width=86) (actual time=904.637..914.358 rows=268800 loops=1)
+Sort  (cost=449802.84..453444.10 rows=1456505 width=86) (actual time=671.855..681.417 rows=268800 loops=1)
   Sort Key: i.store_id, i.product_id, i.snapshot_date
   Sort Method: quicksort  Memory: 30852kB
   Buffers: shared hit=8830
-  ->  Hash Join  (cost=48880.30..231000.84 rows=1456505 width=86) (actual time=442.435..734.525 rows=268800 loops=1)
+  ->  Hash Join  (cost=48880.30..231000.84 rows=1456505 width=86) (actual time=272.153..523.877 rows=268800 loops=1)
         Hash Cond: (i.product_id = p.product_id)
         Buffers: shared hit=8830
-        ->  Hash Join  (cost=48865.30..227122.01 rows=1456505 width=84) (actual time=417.118..674.724 rows=268800 loops=1)
+        ->  Hash Join  (cost=48865.30..227122.01 rows=1456505 width=84) (actual time=247.851..468.408 rows=268800 loops=1)
               Hash Cond: (i.snapshot_date = c.calendar_date)
               Buffers: shared hit=8824
-              ->  Hash Left Join  (cost=48855.44..223235.70 rows=1456505 width=82) (actual time=417.063..641.711 rows=268800 loops=1)
+              ->  Hash Left Join  (cost=48855.44..223235.70 rows=1456505 width=82) (actual time=247.804..438.047 rows=268800 loops=1)
                     Hash Cond: ((i.store_id = ad.store_id) AND (i.product_id = ad.product_id) AND (i.snapshot_date = ad.position_date))
                     Buffers: shared hit=8821
-                    ->  Hash Left Join  (cost=48679.20..178818.12 rows=1456505 width=40) (actual time=414.282..584.127 rows=268800 loops=1)
+                    ->  Hash Left Join  (cost=48679.20..178818.12 rows=1456505 width=40) (actual time=245.293..387.429 rows=268800 loops=1)
                           Hash Cond: ((i.store_id = rc.store_id) AND (i.product_id = rc.product_id) AND (i.snapshot_date = rc.position_date))
                           Buffers: shared hit=8784
-                          ->  Hash Join  (cost=42584.36..161253.31 rows=1456505 width=36) (actual time=356.099..480.867 rows=268800 loops=1)
+                          ->  Hash Join  (cost=42584.36..161253.31 rows=1456505 width=36) (actual time=198.426..304.253 rows=268800 loops=1)
                                 Hash Cond: ((i.store_id = ds.store_id) AND (i.product_id = ds.product_id) AND (i.snapshot_date = ds.sales_date))
                                 Buffers: shared hit=7947
-                                ->  Hash Right Join  (cost=12824.36..120020.89 rows=1456811 width=22) (actual time=54.535..113.629 rows=268800 loops=1)
+                                ->  Hash Right Join  (cost=12824.36..120020.89 rows=1456811 width=22) (actual time=44.425..92.938 rows=268800 loops=1)
                                       Hash Cond: ((s.store_id = i.store_id) AND (pp.product_id = i.product_id) AND ((gs.d)::date = i.snapshot_date))
                                       Buffers: shared hit=1947
-                                      ->  Nested Loop  (cost=5.37..65881.83 rows=5165000 width=18) (actual time=0.099..11.510 rows=61986 loops=1)
+                                      ->  Nested Loop  (cost=5.37..65881.83 rows=5165000 width=18) (actual time=0.073..8.993 rows=61986 loops=1)
                                             Buffers: shared hit=8
-                                            ->  Nested Loop  (cost=5.35..186.68 rows=5165 width=18) (actual time=0.080..1.851 rows=5877 loops=1)
+                                            ->  Nested Loop  (cost=5.35..186.68 rows=5165 width=18) (actual time=0.057..1.515 rows=5877 loops=1)
                                                   Join Filter: ((p_1.region_id IS NULL) OR (s.region_id = p_1.region_id))
                                                   Rows Removed by Join Filter: 4275
                                                   Buffers: shared hit=8
-                                                  ->  Index Scan using stores_pkey on stores s  (cost=0.14..12.31 rows=12 width=4) (actual time=0.005..0.040 rows=12 loops=1)
+                                                  ->  Index Scan using stores_pkey on stores s  (cost=0.14..12.31 rows=12 width=4) (actual time=0.003..0.016 rows=12 loops=1)
                                                         Buffers: shared hit=2
-                                                  ->  Materialize  (cost=5.22..24.20 rows=846 width=18) (actual time=0.006..0.069 rows=846 loops=12)
+                                                  ->  Materialize  (cost=5.22..24.20 rows=846 width=18) (actual time=0.004..0.055 rows=846 loops=12)
                                                         Buffers: shared hit=6
-                                                        ->  Hash Join  (cost=5.22..19.97 rows=846 width=18) (actual time=0.069..0.260 rows=846 loops=1)
+                                                        ->  Hash Join  (cost=5.22..19.97 rows=846 width=18) (actual time=0.048..0.210 rows=846 loops=1)
                                                               Hash Cond: (pp.promotion_id = p_1.promotion_id)
                                                               Buffers: shared hit=6
-                                                              ->  Seq Scan on promotion_products pp  (cost=0.00..12.46 rows=846 width=8) (actual time=0.012..0.061 rows=846 loops=1)
+                                                              ->  Seq Scan on promotion_products pp  (cost=0.00..12.46 rows=846 width=8) (actual time=0.006..0.048 rows=846 loops=1)
                                                                     Buffers: shared hit=4
-                                                              ->  Hash  (cost=3.43..3.43 rows=143 width=14) (actual time=0.047..0.048 rows=143 loops=1)
+                                                              ->  Hash  (cost=3.43..3.43 rows=143 width=14) (actual time=0.035..0.036 rows=143 loops=1)
                                                                     Buckets: 1024  Batches: 1  Memory Usage: 15kB
                                                                     Buffers: shared hit=2
-                                                                    ->  Seq Scan on promotions p_1  (cost=0.00..3.43 rows=143 width=14) (actual time=0.024..0.034 rows=143 loops=1)
+                                                                    ->  Seq Scan on promotions p_1  (cost=0.00..3.43 rows=143 width=14) (actual time=0.013..0.023 rows=143 loops=1)
                                                                           Buffers: shared hit=2
-                                            ->  Memoize  (cost=0.02..10.02 rows=1000 width=8) (actual time=0.000..0.001 rows=11 loops=5877)
+                                            ->  Memoize  (cost=0.02..10.02 rows=1000 width=8) (actual time=0.000..0.000 rows=11 loops=5877)
                                                   Cache Key: p_1.start_date, p_1.end_date
                                                   Cache Mode: binary
                                                   Hits: 5744  Misses: 133  Evictions: 0  Overflows: 0  Memory Usage: 64kB
-                                                  ->  Function Scan on generate_series gs  (cost=0.01..10.01 rows=1000 width=8) (actual time=0.002..0.002 rows=10 loops=133)
-                                      ->  Hash  (cost=8076.93..8076.93 rows=270975 width=18) (actual time=54.156..54.157 rows=268800 loops=1)
+                                                  ->  Function Scan on generate_series gs  (cost=0.01..10.01 rows=1000 width=8) (actual time=0.001..0.002 rows=10 loops=133)
+                                      ->  Hash  (cost=8076.93..8076.93 rows=270975 width=18) (actual time=44.096..44.097 rows=268800 loops=1)
                                             Buckets: 524288  Batches: 1  Memory Usage: 17746kB
                                             Buffers: shared hit=1939
-                                            ->  Index Scan using ix_inventory_snapshots_date on inventory_snapshots i  (cost=0.42..8076.93 rows=270975 width=18) (actual time=0.011..20.778 rows=268800 loops=1)
+                                            ->  Index Scan using ix_inventory_snapshots_date on inventory_snapshots i  (cost=0.42..8076.93 rows=270975 width=18) (actual time=0.009..17.677 rows=268800 loops=1)
                                                   Index Cond: ((snapshot_date >= '2026-08-06'::date) AND (snapshot_date <= '2026-09-30'::date))
                                                   Buffers: shared hit=1939
-                                ->  Hash  (cost=14640.00..14640.00 rows=864000 width=24) (actual time=301.421..301.421 rows=864000 loops=1)
+                                ->  Hash  (cost=14640.00..14640.00 rows=864000 width=24) (actual time=153.893..153.894 rows=864000 loops=1)
                                       Buckets: 1048576  Batches: 1  Memory Usage: 55602kB
                                       Buffers: shared hit=6000
-                                      ->  Seq Scan on daily_sales ds  (cost=0.00..14640.00 rows=864000 width=24) (actual time=0.005..77.662 rows=864000 loops=1)
+                                      ->  Seq Scan on daily_sales ds  (cost=0.00..14640.00 rows=864000 width=24) (actual time=0.004..50.327 rows=864000 loops=1)
                                             Buffers: shared hit=6000
-                          ->  Hash  (cost=5122.14..5122.14 rows=55583 width=14) (actual time=58.141..58.143 rows=55487 loops=1)
+                          ->  Hash  (cost=5122.14..5122.14 rows=55583 width=14) (actual time=46.849..46.852 rows=55487 loops=1)
                                 Buckets: 65536  Batches: 1  Memory Usage: 3113kB
                                 Buffers: shared hit=837
-                                ->  Subquery Scan on rc  (cost=3871.52..5122.14 rows=55583 width=14) (actual time=39.346..50.339 rows=55487 loops=1)
+                                ->  Subquery Scan on rc  (cost=3871.52..5122.14 rows=55583 width=14) (actual time=32.726..41.466 rows=55487 loops=1)
                                       Buffers: shared hit=837
-                                      ->  HashAggregate  (cost=3871.52..4566.31 rows=55583 width=14) (actual time=39.337..46.266 rows=55487 loops=1)
+                                      ->  HashAggregate  (cost=3871.52..4566.31 rows=55583 width=14) (actual time=32.724..37.871 rows=55487 loops=1)
                                             Group Key: po.store_id, pol.product_id, r.received_date
                                             Batches: 1  Memory Usage: 7185kB
                                             Buffers: shared hit=837
-                                            ->  Hash Join  (cost=2167.00..3315.69 rows=55583 width=14) (actual time=9.417..29.451 rows=55583 loops=1)
+                                            ->  Hash Join  (cost=2167.00..3315.69 rows=55583 width=14) (actual time=8.522..24.876 rows=55583 loops=1)
                                                   Hash Cond: (pol.purchase_order_id = po.purchase_order_id)
                                                   Buffers: shared hit=837
-                                                  ->  Hash Join  (cost=1654.84..2657.58 rows=55583 width=16) (actual time=7.038..19.994 rows=55583 loops=1)
+                                                  ->  Hash Join  (cost=1654.84..2657.58 rows=55583 width=16) (actual time=6.471..16.792 rows=55583 loops=1)
                                                         Hash Cond: (r.po_line_id = pol.po_line_id)
                                                         Buffers: shared hit=709
-                                                        ->  Seq Scan on inventory_receipts r  (cost=0.00..856.83 rows=55583 width=12) (actual time=0.004..2.604 rows=55583 loops=1)
+                                                        ->  Seq Scan on inventory_receipts r  (cost=0.00..856.83 rows=55583 width=12) (actual time=0.002..2.289 rows=55583 loops=1)
                                                               Buffers: shared hit=301
-                                                        ->  Hash  (cost=962.15..962.15 rows=55415 width=12) (actual time=7.016..7.016 rows=55415 loops=1)
+                                                        ->  Hash  (cost=962.15..962.15 rows=55415 width=12) (actual time=6.455..6.455 rows=55415 loops=1)
                                                               Buckets: 65536  Batches: 1  Memory Usage: 2894kB
                                                               Buffers: shared hit=408
-                                                              ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=12) (actual time=0.008..2.899 rows=55415 loops=1)
+                                                              ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=12) (actual time=0.005..2.727 rows=55415 loops=1)
                                                                     Buffers: shared hit=408
-                                                  ->  Hash  (cost=298.74..298.74 rows=17074 width=6) (actual time=2.370..2.371 rows=17074 loops=1)
+                                                  ->  Hash  (cost=298.74..298.74 rows=17074 width=6) (actual time=2.043..2.044 rows=17074 loops=1)
                                                         Buckets: 32768  Batches: 1  Memory Usage: 923kB
                                                         Buffers: shared hit=128
-                                                        ->  Seq Scan on purchase_orders po  (cost=0.00..298.74 rows=17074 width=6) (actual time=0.021..1.036 rows=17074 loops=1)
+                                                        ->  Seq Scan on purchase_orders po  (cost=0.00..298.74 rows=17074 width=6) (actual time=0.008..0.906 rows=17074 loops=1)
                                                               Buffers: shared hit=128
-                    ->  Hash  (cost=166.09..166.09 rows=580 width=14) (actual time=2.756..2.757 rows=5788 loops=1)
+                    ->  Hash  (cost=166.09..166.09 rows=580 width=14) (actual time=2.500..2.501 rows=5788 loops=1)
                           Buckets: 8192 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 336kB
                           Buffers: shared hit=37
-                          ->  Subquery Scan on ad  (cost=153.04..166.09 rows=580 width=14) (actual time=1.259..2.166 rows=5788 loops=1)
+                          ->  Subquery Scan on ad  (cost=153.04..166.09 rows=580 width=14) (actual time=1.135..1.951 rows=5788 loops=1)
                                 Buffers: shared hit=37
-                                ->  HashAggregate  (cost=153.04..160.29 rows=580 width=14) (actual time=1.257..1.757 rows=5788 loops=1)
+                                ->  HashAggregate  (cost=153.04..160.29 rows=580 width=14) (actual time=1.134..1.567 rows=5788 loops=1)
                                       Group Key: inventory_adjustments.store_id, inventory_adjustments.product_id, inventory_adjustments.adjustment_date
                                       Batches: 1  Memory Usage: 721kB
                                       Buffers: shared hit=37
-                                      ->  Seq Scan on inventory_adjustments  (cost=0.00..95.02 rows=5802 width=14) (actual time=0.016..0.289 rows=5802 loops=1)
+                                      ->  Seq Scan on inventory_adjustments  (cost=0.00..95.02 rows=5802 width=14) (actual time=0.005..0.249 rows=5802 loops=1)
                                             Buffers: shared hit=37
-              ->  Hash  (cost=6.05..6.05 rows=305 width=6) (actual time=0.046..0.046 rows=305 loops=1)
+              ->  Hash  (cost=6.05..6.05 rows=305 width=6) (actual time=0.041..0.041 rows=305 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 20kB
                     Buffers: shared hit=3
-                    ->  Seq Scan on calendar c  (cost=0.00..6.05 rows=305 width=6) (actual time=0.008..0.025 rows=305 loops=1)
+                    ->  Seq Scan on calendar c  (cost=0.00..6.05 rows=305 width=6) (actual time=0.005..0.022 rows=305 loops=1)
                           Buffers: shared hit=3
-        ->  Hash  (cost=10.00..10.00 rows=400 width=6) (actual time=25.310..25.310 rows=400 loops=1)
+        ->  Hash  (cost=10.00..10.00 rows=400 width=6) (actual time=24.296..24.296 rows=400 loops=1)
               Buckets: 1024  Batches: 1  Memory Usage: 24kB
               Buffers: shared hit=6
-              ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=6) (actual time=25.241..25.271 rows=400 loops=1)
+              ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=6) (actual time=24.235..24.260 rows=400 loops=1)
                     Buffers: shared hit=6
 Planning:
   Buffers: shared hit=61
-Planning Time: 0.851 ms
+Planning Time: 0.885 ms
 JIT:
   Functions: 120
   Options: Inlining false, Optimization false, Expressions true, Deforming true
-  Timing: Generation 1.722 ms (Deform 0.721 ms), Inlining 0.000 ms, Optimization 0.891 ms, Emission 24.563 ms, Total 27.175 ms
-Execution Time: 925.174 ms
+  Timing: Generation 1.797 ms (Deform 0.755 ms), Inlining 0.000 ms, Optimization 0.838 ms, Emission 23.492 ms, Total 26.127 ms
+Execution Time: 691.935 ms

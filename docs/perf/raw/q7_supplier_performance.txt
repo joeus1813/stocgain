@@ -1,63 +1,109 @@
-Subquery Scan on v_supplier_performance  (cost=6657.27..6662.17 rows=48 width=311) (actual time=0.004..0.006 rows=0 loops=1)
-  ->  WindowAgg  (cost=6657.27..6661.69 rows=48 width=343) (actual time=0.004..0.005 rows=0 loops=1)
+Subquery Scan on v_supplier_performance  (cost=13459.33..13464.23 rows=48 width=311) (actual time=68.120..68.194 rows=48 loops=1)
+  Buffers: shared hit=1248
+  ->  WindowAgg  (cost=13459.33..13463.75 rows=48 width=343) (actual time=68.119..68.189 rows=48 loops=1)
+        Buffers: shared hit=1248
         CTE cr
-          ->  Subquery Scan on v_current_run  (cost=0.01..0.03 rows=1 width=12) (actual time=0.002..0.003 rows=0 loops=1)
-                ->  Limit  (cost=0.01..0.02 rows=1 width=118) (actual time=0.002..0.003 rows=0 loops=1)
-                      ->  Sort  (cost=0.01..0.02 rows=1 width=118) (actual time=0.002..0.002 rows=0 loops=1)
-                            Sort Key: analytics_runs.as_of_date DESC, analytics_runs.completed_at DESC
-                            Sort Method: quicksort  Memory: 25kB
-                            ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=118) (actual time=0.001..0.001 rows=0 loops=1)
-                                  Filter: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
-        ->  Sort  (cost=6657.23..6657.35 rows=48 width=230) (actual time=0.003..0.005 rows=0 loops=1)
+          ->  Subquery Scan on v_current_run  (cost=0.14..8.16 rows=1 width=12) (actual time=0.005..0.006 rows=1 loops=1)
+                Buffers: shared hit=2
+                ->  Limit  (cost=0.14..8.15 rows=1 width=118) (actual time=0.005..0.005 rows=1 loops=1)
+                      Buffers: shared hit=2
+                      ->  Index Scan using ix_runs_status_type_asof on analytics_runs  (cost=0.14..8.15 rows=1 width=118) (actual time=0.004..0.004 rows=1 loops=1)
+                            Index Cond: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+                            Buffers: shared hit=2
+        ->  Sort  (cost=13451.15..13451.27 rows=48 width=230) (actual time=68.107..68.115 rows=48 loops=1)
               Sort Key: ((((count(*) FILTER (WHERE ((po.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (po.promised_delivery_date <= cr_1.as_of_date) AND ((min(r.first_receipt_date)) <= po.promised_delivery_date)))))::numeric / (NULLIF((count(*) FILTER (WHERE ((po.promised_delivery_date >= (cr_1.as_of_date - 89)) AND (po.promised_delivery_date <= cr_1.as_of_date)))), 0))::numeric))
-              Sort Method: quicksort  Memory: 25kB
-              ->  Nested Loop  (cost=5495.49..6655.89 rows=48 width=230) (actual time=0.003..0.004 rows=0 loops=1)
-                    ->  CTE Scan on cr  (cost=0.00..0.02 rows=1 width=0) (actual time=0.003..0.003 rows=0 loops=1)
-                    ->  Hash Join  (cost=5495.49..6654.91 rows=48 width=198) (never executed)
+              Sort Method: quicksort  Memory: 33kB
+              Buffers: shared hit=1248
+              ->  Nested Loop  (cost=12289.28..13449.81 rows=48 width=230) (actual time=64.375..68.096 rows=48 loops=1)
+                    Buffers: shared hit=1248
+                    ->  CTE Scan on cr  (cost=0.00..0.02 rows=1 width=0) (actual time=0.006..0.006 rows=1 loops=1)
+                          Buffers: shared hit=2
+                    ->  Hash Join  (cost=12289.28..13448.83 rows=48 width=198) (actual time=64.367..68.078 rows=48 loops=1)
                           Hash Cond: (s.primary_category_id = c.category_id)
-                          ->  Hash Right Join  (cost=5494.31..6653.53 rows=48 width=189) (never executed)
-                                Hash Cond: (po.supplier_id = s.supplier_id)
-                                ->  GroupAggregate  (cost=5492.01..6648.01 rows=200 width=106) (never executed)
-                                      Group Key: po.supplier_id
-                                      ->  Sort  (cost=5492.01..5534.70 rows=17074 width=19) (never executed)
-                                            Sort Key: po.supplier_id
-                                            ->  Nested Loop  (cost=3736.83..4291.75 rows=17074 width=19) (never executed)
-                                                  ->  CTE Scan on cr cr_1  (cost=0.00..0.02 rows=1 width=4) (never executed)
-                                                  ->  HashAggregate  (cost=3736.83..3950.25 rows=17074 width=25) (never executed)
-                                                        Group Key: po.purchase_order_id
-                                                        ->  Hash Left Join  (cost=2056.59..3459.75 rows=18472 width=42) (never executed)
-                                                              Hash Cond: (pol.po_line_id = r.po_line_id)
-                                                              ->  Hash Join  (cost=583.32..1937.99 rows=18472 width=26) (never executed)
-                                                                    Hash Cond: (pol.purchase_order_id = po.purchase_order_id)
-                                                                    ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=16) (never executed)
-                                                                    ->  Hash  (cost=512.19..512.19 rows=5691 width=14) (never executed)
-                                                                          ->  Nested Loop  (cost=0.00..512.19 rows=5691 width=14) (never executed)
-                                                                                Join Filter: (po.order_date <= cr_2.as_of_date)
-                                                                                ->  CTE Scan on cr cr_2  (cost=0.00..0.02 rows=1 width=4) (never executed)
-                                                                                ->  Seq Scan on purchase_orders po  (cost=0.00..298.74 rows=17074 width=14) (never executed)
-                                                              ->  Hash  (cost=1241.67..1241.67 rows=18528 width=24) (never executed)
-                                                                    ->  Subquery Scan on r  (cost=871.11..1241.67 rows=18528 width=24) (never executed)
-                                                                          ->  HashAggregate  (cost=871.11..1056.39 rows=18528 width=24) (never executed)
-                                                                                Group Key: r_1.po_line_id
-                                                                                ->  Nested Loop  (cost=0.29..685.83 rows=18528 width=12) (never executed)
-                                                                                      ->  CTE Scan on cr cr_3  (cost=0.00..0.02 rows=1 width=4) (never executed)
-                                                                                      ->  Index Scan using ix_receipts_received_date on inventory_receipts r_1  (cost=0.29..500.53 rows=18528 width=12) (never executed)
-                                                                                            Index Cond: (received_date <= cr_3.as_of_date)
-                                ->  Hash  (cost=1.69..1.69 rows=48 width=85) (never executed)
-                                      ->  Hash Left Join  (cost=0.08..1.69 rows=48 width=85) (never executed)
-                                            Hash Cond: (s.supplier_id = e.supplier_id)
-                                            ->  Seq Scan on suppliers s  (cost=0.00..1.48 rows=48 width=45) (never executed)
-                                            ->  Hash  (cost=0.07..0.07 rows=1 width=42) (never executed)
-                                                  ->  Subquery Scan on e  (cost=0.04..0.07 rows=1 width=42) (never executed)
-                                                        ->  HashAggregate  (cost=0.04..0.06 rows=1 width=42) (never executed)
-                                                              Group Key: r_2.supplier_id
-                                                              ->  Nested Loop  (cost=0.00..0.03 rows=1 width=22) (never executed)
-                                                                    Join Filter: (r_2.run_id = cr_4.run_id)
-                                                                    ->  Seq Scan on inventory_risk_snapshots r_2  (cost=0.00..0.00 rows=1 width=30) (never executed)
-                                                                    ->  CTE Scan on cr cr_4  (cost=0.00..0.02 rows=1 width=8) (never executed)
-                          ->  Hash  (cost=1.08..1.08 rows=8 width=13) (never executed)
-                                ->  Seq Scan on product_categories c  (cost=0.00..1.08 rows=8 width=13) (never executed)
+                          Buffers: shared hit=1246
+                          ->  Hash Left Join  (cost=12288.10..13447.46 rows=48 width=189) (actual time=64.361..68.064 rows=48 loops=1)
+                                Hash Cond: (s.supplier_id = e.supplier_id)
+                                Buffers: shared hit=1245
+                                ->  Merge Left Join  (cost=5494.83..6654.05 rows=48 width=149) (actual time=62.308..66.001 rows=48 loops=1)
+                                      Merge Cond: (s.supplier_id = po.supplier_id)
+                                      Buffers: shared hit=888
+                                      ->  Sort  (cost=2.82..2.94 rows=48 width=45) (actual time=0.010..0.012 rows=48 loops=1)
+                                            Sort Key: s.supplier_id
+                                            Sort Method: quicksort  Memory: 28kB
+                                            Buffers: shared hit=1
+                                            ->  Seq Scan on suppliers s  (cost=0.00..1.48 rows=48 width=45) (actual time=0.002..0.005 rows=48 loops=1)
+                                                  Buffers: shared hit=1
+                                      ->  GroupAggregate  (cost=5492.01..6648.01 rows=200 width=106) (actual time=62.296..65.974 rows=48 loops=1)
+                                            Group Key: po.supplier_id
+                                            Buffers: shared hit=887
+                                            ->  Sort  (cost=5492.01..5534.70 rows=17074 width=19) (actual time=62.184..62.797 rows=17074 loops=1)
+                                                  Sort Key: po.supplier_id
+                                                  Sort Method: quicksort  Memory: 1430kB
+                                                  Buffers: shared hit=887
+                                                  ->  Nested Loop  (cost=3736.83..4291.75 rows=17074 width=19) (actual time=57.085..60.486 rows=17074 loops=1)
+                                                        Buffers: shared hit=887
+                                                        ->  CTE Scan on cr cr_1  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.001 rows=1 loops=1)
+                                                        ->  HashAggregate  (cost=3736.83..3950.25 rows=17074 width=25) (actual time=57.084..59.256 rows=17074 loops=1)
+                                                              Group Key: po.purchase_order_id
+                                                              Batches: 1  Memory Usage: 2833kB
+                                                              Buffers: shared hit=887
+                                                              ->  Hash Left Join  (cost=2056.59..3459.75 rows=18472 width=42) (actual time=32.305..49.762 rows=55415 loops=1)
+                                                                    Hash Cond: (pol.po_line_id = r.po_line_id)
+                                                                    Buffers: shared hit=887
+                                                                    ->  Hash Join  (cost=583.32..1937.99 rows=18472 width=26) (actual time=3.787..13.860 rows=55415 loops=1)
+                                                                          Hash Cond: (pol.purchase_order_id = po.purchase_order_id)
+                                                                          Buffers: shared hit=536
+                                                                          ->  Seq Scan on purchase_order_lines pol  (cost=0.00..962.15 rows=55415 width=16) (actual time=0.001..2.397 rows=55415 loops=1)
+                                                                                Buffers: shared hit=408
+                                                                          ->  Hash  (cost=512.19..512.19 rows=5691 width=14) (actual time=3.784..3.785 rows=17074 loops=1)
+                                                                                Buckets: 32768 (originally 8192)  Batches: 1 (originally 1)  Memory Usage: 1057kB
+                                                                                Buffers: shared hit=128
+                                                                                ->  Nested Loop  (cost=0.00..512.19 rows=5691 width=14) (actual time=0.003..2.404 rows=17074 loops=1)
+                                                                                      Join Filter: (po.order_date <= cr_2.as_of_date)
+                                                                                      Buffers: shared hit=128
+                                                                                      ->  CTE Scan on cr cr_2  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.001 rows=1 loops=1)
+                                                                                      ->  Seq Scan on purchase_orders po  (cost=0.00..298.74 rows=17074 width=14) (actual time=0.002..0.792 rows=17074 loops=1)
+                                                                                            Buffers: shared hit=128
+                                                                    ->  Hash  (cost=1241.67..1241.67 rows=18528 width=24) (actual time=28.514..28.515 rows=53074 loops=1)
+                                                                          Buckets: 65536 (originally 32768)  Batches: 1 (originally 1)  Memory Usage: 3622kB
+                                                                          Buffers: shared hit=351
+                                                                          ->  Subquery Scan on r  (cost=871.11..1241.67 rows=18528 width=24) (actual time=15.036..24.402 rows=53074 loops=1)
+                                                                                Buffers: shared hit=351
+                                                                                ->  HashAggregate  (cost=871.11..1056.39 rows=18528 width=24) (actual time=15.035..20.880 rows=53074 loops=1)
+                                                                                      Group Key: r_1.po_line_id
+                                                                                      Batches: 1  Memory Usage: 9233kB
+                                                                                      Buffers: shared hit=351
+                                                                                      ->  Nested Loop  (cost=0.29..685.83 rows=18528 width=12) (actual time=0.006..7.546 rows=55583 loops=1)
+                                                                                            Buffers: shared hit=351
+                                                                                            ->  CTE Scan on cr cr_3  (cost=0.00..0.02 rows=1 width=4) (actual time=0.000..0.000 rows=1 loops=1)
+                                                                                            ->  Index Scan using ix_receipts_received_date on inventory_receipts r_1  (cost=0.29..500.53 rows=18528 width=12) (actual time=0.005..3.678 rows=55583 loops=1)
+                                                                                                  Index Cond: (received_date <= cr_3.as_of_date)
+                                                                                                  Buffers: shared hit=351
+                                ->  Hash  (cost=6792.67..6792.67 rows=48 width=42) (actual time=2.049..2.050 rows=48 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                                      Buffers: shared hit=357
+                                      ->  Subquery Scan on e  (cost=6791.59..6792.67 rows=48 width=42) (actual time=2.033..2.044 rows=48 loops=1)
+                                            Buffers: shared hit=357
+                                            ->  HashAggregate  (cost=6791.59..6792.19 rows=48 width=42) (actual time=2.032..2.040 rows=48 loops=1)
+                                                  Group Key: r_2.supplier_id
+                                                  Batches: 1  Memory Usage: 48kB
+                                                  Buffers: shared hit=357
+                                                  ->  Nested Loop  (cost=69.49..6743.59 rows=4800 width=10) (actual time=0.101..1.495 rows=4800 loops=1)
+                                                        Buffers: shared hit=357
+                                                        ->  CTE Scan on cr cr_4  (cost=0.00..0.02 rows=1 width=8) (actual time=0.000..0.001 rows=1 loops=1)
+                                                        ->  Bitmap Heap Scan on inventory_risk_snapshots r_2  (cost=69.49..6695.57 rows=4800 width=18) (actual time=0.098..0.589 rows=4800 loops=1)
+                                                              Recheck Cond: (run_id = cr_4.run_id)
+                                                              Heap Blocks: exact=351
+                                                              Buffers: shared hit=357
+                                                              ->  Bitmap Index Scan on ix_risk_run_supplier  (cost=0.00..68.29 rows=4800 width=0) (actual time=0.066..0.066 rows=4800 loops=1)
+                                                                    Index Cond: (run_id = cr_4.run_id)
+                                                                    Buffers: shared hit=6
+                          ->  Hash  (cost=1.08..1.08 rows=8 width=13) (actual time=0.004..0.004 rows=8 loops=1)
+                                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                Buffers: shared hit=1
+                                ->  Seq Scan on product_categories c  (cost=0.00..1.08 rows=8 width=13) (actual time=0.002..0.003 rows=8 loops=1)
+                                      Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=23
-Planning Time: 0.438 ms
-Execution Time: 0.064 ms
+  Buffers: shared hit=16
+Planning Time: 0.513 ms
+Execution Time: 68.295 ms

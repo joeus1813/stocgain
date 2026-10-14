@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 :root {
+  --text-body: 15px;
+  --text-small: 13px;
+  --text-caption: 12px;
+  --text-heading: 18px;
+  --text-title: 28px;
   --color-canvas: #f6f7f9;
   --color-surface: #fff;
   --color-muted: #f2f4f7;
@@ -51,7 +56,7 @@ body {
   background: var(--color-canvas);
   color: var(--color-ink-900);
   font-family: var(--font-inter), sans-serif;
-  font-size: 14px;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 a {
@@ -117,27 +122,27 @@ p {
   margin: 0;
 }
 h1 {
-  font-size: 24px;
-  line-height: 32px;
+  font-size: var(--text-title);
+  line-height: 1.25;
   font-weight: 600;
   letter-spacing: -0.6px;
 }
 h2 {
-  font-size: 16px;
+  font-size: var(--text-heading);
   font-weight: 600;
   letter-spacing: -0.2px;
 }
 h3 {
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 600;
 }
 small {
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 code,
 .mono {
   font-family: var(--font-mono), monospace;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 p {
   color: var(--color-ink-500);
@@ -146,7 +151,7 @@ p {
   color: var(--color-ink-500);
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: var(--text-caption);
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--color-ink-500);
@@ -207,10 +212,10 @@ p {
   font-size: 29px;
 }
 .nav-caption {
-  font-size: 10px;
+  font-size: var(--text-caption);
   letter-spacing: 1.4px;
   padding: 12px;
-  color: var(--color-ink-400);
+  color: var(--color-ink-500);
   font-weight: 600;
 }
 .sidebar nav {
@@ -238,14 +243,14 @@ p {
   margin-top: auto;
   padding: 16px 12px;
   border-top: 1px solid var(--color-border);
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .sidebar-bottom p {
   line-height: 1.7;
   margin-bottom: 16px;
 }
 .sidebar-bottom small {
-  color: var(--color-ink-400);
+  color: var(--color-ink-500);
 }
 .collapse-button {
   display: block;
@@ -268,10 +273,10 @@ p {
   justify-content: space-between;
 }
 .topbar strong {
-  font-size: 14px;
+  font-size: var(--text-body);
 }
 .topbar p {
-  font-size: 12px;
+  font-size: var(--text-small);
   margin-top: 4px;
 }
 .dataset-badge {
@@ -282,7 +287,7 @@ p {
   background: var(--color-teal-50);
   border: 1px solid var(--color-teal-100);
   border-radius: 6px;
-  font-size: 11px;
+  font-size: var(--text-caption);
   color: var(--color-teal-700);
   font-weight: 500;
   list-style: none;
@@ -339,12 +344,12 @@ main {
 footer {
   padding: 16px 32px;
   border-top: 1px solid var(--color-border);
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-ink-500);
 }
 footer span {
   float: right;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .filter-bar {
   display: flex;
@@ -360,11 +365,11 @@ footer span {
 }
 .filter-bar input,
 .filter-bar select {
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .select-menu {
   position: relative;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .select-menu > summary {
   list-style: none;
@@ -409,7 +414,7 @@ footer span {
   border: 0;
   background: transparent;
   color: var(--color-ink-500);
-  font-size: 12px;
+  font-size: var(--text-small);
   padding: 6px;
 }
 .page-heading {
@@ -439,7 +444,7 @@ footer span {
   margin-bottom: 20px;
 }
 .card-heading p {
-  font-size: 12px;
+  font-size: var(--text-small);
   margin-top: 4px;
 }
 .kpi-grid {
@@ -456,12 +461,12 @@ footer span {
   min-width: 0;
 }
 .kpi dt {
-  font-size: 10px;
+  font-size: var(--text-caption);
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--color-ink-500);
   font-weight: 600;
-  min-height: 30px;
+  min-height: 36px;
 }
 .kpi dd {
   margin: 8px 0;
@@ -473,11 +478,11 @@ footer span {
   white-space: nowrap;
 }
 .kpi p {
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .info {
-  font-size: 10px;
-  color: var(--color-ink-400);
+  font-size: var(--text-caption);
+  color: var(--color-ink-500);
 }
 .grid-main {
   display: grid;
@@ -501,7 +506,7 @@ footer span {
 }
 .chart text {
   font-family: var(--font-inter), sans-serif;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .table-scroll {
   overflow: auto;
@@ -511,7 +516,7 @@ footer span {
 .data-table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 12px;
+  font-size: var(--text-small);
   white-space: nowrap;
 }
 .data-table th {
@@ -522,10 +527,10 @@ footer span {
   background: var(--color-muted);
   padding: 8px 12px;
   border-bottom: 1px solid var(--color-border);
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .data-table th button {
-  font-size: 11px;
+  font-size: var(--text-caption);
   border: 0;
   background: none;
   padding: 0;
@@ -566,7 +571,7 @@ footer span {
   color: var(--color-ink-500);
   margin-top: 2px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--text-caption);
 }
 .sticky-table td:first-child,
 .sticky-table th:first-child {
@@ -586,7 +591,7 @@ footer span {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10px;
+  font-size: var(--text-caption);
   padding: 2px 6px;
   border: 1px solid var(--tier-border);
   border-radius: 20px;
@@ -627,7 +632,7 @@ footer span {
   gap: 6px;
   align-items: center;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
 }
 .meter {
@@ -643,7 +648,7 @@ footer span {
   background: var(--tier, var(--low));
 }
 .action-chip {
-  font-size: 11px;
+  font-size: var(--text-caption);
   white-space: nowrap;
 }
 .segmented {
@@ -654,7 +659,7 @@ footer span {
 }
 .segmented button {
   border: 0;
-  font-size: 11px;
+  font-size: var(--text-caption);
   padding: 4px 8px;
 }
 .segmented button[aria-pressed="true"] {
@@ -705,10 +710,10 @@ footer span {
 .ranked-list small {
   color: var(--color-ink-500);
   display: block;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .ranked-list .rank {
-  color: var(--color-ink-400);
+  color: var(--color-ink-500);
   min-width: 15px;
 }
 .loading,
@@ -720,7 +725,7 @@ footer span {
 }
 .loading {
   color: var(--color-ink-500);
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .skeleton {
   height: 24px;
@@ -748,7 +753,7 @@ footer span {
   align-items: center;
   justify-content: space-between;
   margin-top: 16px;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .pagination div {
   display: flex;
@@ -781,7 +786,7 @@ footer span {
   background: var(--color-amber-50);
   border: 1px solid var(--high-border);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-amber-700);
 }
 .callout {
@@ -802,7 +807,7 @@ footer span {
   margin-top: 16px;
 }
 .driver-list span {
-  font-size: 11px;
+  font-size: var(--text-caption);
   padding: 4px 8px;
   border-radius: 4px;
   background: var(--color-muted);
@@ -811,7 +816,7 @@ footer span {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .breakdown dt {
   color: var(--color-ink-500);
@@ -823,14 +828,14 @@ footer span {
 }
 .breakdown h3 {
   margin: 18px 0 10px;
-  font-size: 11px;
+  font-size: var(--text-caption);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .breadcrumbs {
   display: flex;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-ink-500);
   margin-bottom: 16px;
 }
@@ -842,16 +847,16 @@ footer span {
   min-width: 32px;
   border: 0;
   padding: 8px 3px;
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .heatmap th {
   padding: 8px 4px;
 }
 .heatmap th:first-child {
-  font-size: 10px;
+  font-size: var(--text-caption);
 }
 .chart-note {
-  font-size: 11px;
+  font-size: var(--text-caption);
   margin-top: 12px;
 }
 .methodology {
@@ -897,7 +902,7 @@ footer span {
 }
 .control label {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 500;
   margin-bottom: 10px;
 }
@@ -914,7 +919,7 @@ footer span {
   font-variant-numeric: tabular-nums;
 }
 .control small {
-  font-size: 10px;
+  font-size: var(--text-caption);
   display: block;
   color: var(--color-ink-500);
   margin-top: 4px;
@@ -929,7 +934,7 @@ footer span {
   margin: 24px 0 16px;
 }
 .presets button {
-  font-size: 10px;
+  font-size: var(--text-caption);
   padding: 5px 8px;
 }
 .changed {
@@ -1036,7 +1041,7 @@ footer span {
     flex: 1;
   }
   .topbar p {
-    font-size: 10px;
+    font-size: var(--text-caption);
   }
   .dataset-badge span {
     display: none;
@@ -1113,7 +1118,7 @@ footer span {
   }
 }
 .button-link {
-  font-size: 12px;
+  font-size: var(--text-small);
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: var(--color-surface);
@@ -1126,12 +1131,12 @@ footer span {
   gap: 4px;
 }
 .store-links button {
-  font-size: 10px;
+  font-size: var(--text-caption);
   padding: 3px 6px;
 }
 .service-health {
   margin-top: 24px;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-ink-500);
 }
 .service-health > div {
@@ -1143,7 +1148,7 @@ footer span {
   gap: 12px;
 }
 .detail-actions button {
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .explanation {
   color: var(--color-ink-700);
@@ -1189,7 +1194,7 @@ footer span {
   font-size: 9px;
 }
 .model-label {
-  font-size: 11px;
+  font-size: var(--text-caption);
   color: var(--color-ink-500);
   padding-top: 8px;
 }
@@ -1206,10 +1211,10 @@ footer span {
   text-align: center;
 }
 .comparison th {
-  font-size: 10px;
+  font-size: var(--text-caption);
 }
 .comparison td {
-  font-size: 11px;
+  font-size: var(--text-caption);
 }
 .comparison td:first-child {
   white-space: normal;
@@ -1226,7 +1231,7 @@ footer span {
   align-self: start;
   display: grid;
   gap: 12px;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .methodology-layout > nav a {
   color: var(--color-ink-500);
@@ -1235,8 +1240,8 @@ footer span {
 }
 .methodology-layout > nav span {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-ink-400);
+  font-size: var(--text-caption);
+  color: var(--color-ink-500);
 }
 .methodology section:first-child {
   margin-top: 0;
@@ -1306,4 +1311,8 @@ footer span {
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
   }
+}
+
+.kpi dl {
+  margin: 0;
 }

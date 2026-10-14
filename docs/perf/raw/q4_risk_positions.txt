@@ -1,41 +1,83 @@
-Limit  (cost=20.78..20.79 rows=1 width=429) (actual time=0.007..0.008 rows=0 loops=1)
-  ->  Sort  (cost=20.78..20.79 rows=1 width=429) (actual time=0.007..0.008 rows=0 loops=1)
+Limit  (cost=4821.78..4821.90 rows=50 width=299) (actual time=4.648..4.655 rows=50 loops=1)
+  Buffers: shared hit=7153
+  ->  Sort  (cost=4821.78..4824.46 rows=1073 width=299) (actual time=4.648..4.652 rows=50 loops=1)
         Sort Key: r.margin_at_risk_usd DESC, r.store_id, r.product_id
-        Sort Method: quicksort  Memory: 25kB
-        ->  Nested Loop Left Join  (cost=0.59..20.77 rows=1 width=429) (actual time=0.004..0.006 rows=0 loops=1)
-              ->  Nested Loop  (cost=0.30..12.47 rows=1 width=419) (actual time=0.004..0.005 rows=0 loops=1)
-                    ->  Nested Loop  (cost=0.17..12.28 rows=1 width=408) (actual time=0.004..0.005 rows=0 loops=1)
-                          Join Filter: (r.product_id = p.product_id)
-                          ->  Nested Loop  (cost=0.02..4.10 rows=1 width=352) (actual time=0.004..0.005 rows=0 loops=1)
-                                Join Filter: ((analytics_runs.run_id = rr.run_id) AND (st.store_id = rr.store_id) AND (r.product_id = rr.product_id))
-                                ->  Nested Loop  (cost=0.02..4.08 rows=1 width=288) (actual time=0.004..0.005 rows=0 loops=1)
-                                      Join Filter: (st.region_id = rg.region_id)
-                                      ->  Nested Loop  (cost=0.02..2.99 rows=1 width=279) (actual time=0.004..0.005 rows=0 loops=1)
-                                            Join Filter: (r.store_id = st.store_id)
-                                            ->  Nested Loop  (cost=0.02..1.72 rows=1 width=254) (actual time=0.004..0.005 rows=0 loops=1)
-                                                  Join Filter: (r.run_id = analytics_runs.run_id)
-                                                  ->  Hash Join  (cost=0.01..1.68 rows=1 width=246) (actual time=0.004..0.004 rows=0 loops=1)
-                                                        Hash Cond: (su.supplier_id = r.supplier_id)
-                                                        ->  Seq Scan on suppliers su  (cost=0.00..1.48 rows=48 width=35) (never executed)
-                                                        ->  Hash  (cost=0.00..0.00 rows=1 width=213) (actual time=0.003..0.003 rows=0 loops=1)
-                                                              Buckets: 1024  Batches: 1  Memory Usage: 8kB
-                                                              ->  Seq Scan on inventory_risk_snapshots r  (cost=0.00..0.00 rows=1 width=213) (actual time=0.002..0.002 rows=0 loops=1)
-                                                                    Filter: (risk_tier = ANY ('{high,critical}'::analytics.risk_tier[]))
-                                                  ->  Limit  (cost=0.01..0.02 rows=1 width=118) (never executed)
-                                                        ->  Sort  (cost=0.01..0.02 rows=1 width=118) (never executed)
-                                                              Sort Key: analytics_runs.as_of_date DESC, analytics_runs.completed_at DESC
-                                                              ->  Seq Scan on analytics_runs  (cost=0.00..0.00 rows=1 width=118) (never executed)
-                                                                    Filter: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
-                                            ->  Seq Scan on stores st  (cost=0.00..1.12 rows=12 width=25) (never executed)
-                                      ->  Seq Scan on regions rg  (cost=0.00..1.04 rows=4 width=11) (never executed)
-                                ->  Seq Scan on replenishment_recommendations rr  (cost=0.00..0.00 rows=1 width=84) (never executed)
-                          ->  Index Scan using products_pkey on products p  (cost=0.15..8.17 rows=1 width=64) (never executed)
-                                Index Cond: (product_id = rr.product_id)
-                    ->  Index Scan using product_categories_pkey on product_categories pc  (cost=0.13..0.18 rows=1 width=13) (never executed)
-                          Index Cond: (category_id = p.category_id)
-              ->  Index Scan using purchase_orders_pkey on purchase_orders npo  (cost=0.29..8.30 rows=1 width=14) (never executed)
+        Sort Method: top-N heapsort  Memory: 65kB
+        Buffers: shared hit=7153
+        ->  Nested Loop Left Join  (cost=76.25..4786.13 rows=1073 width=299) (actual time=0.176..4.094 rows=1058 loops=1)
+              Buffers: shared hit=7153
+              ->  Nested Loop  (cost=75.97..4404.42 rows=1073 width=289) (actual time=0.172..3.376 rows=1058 loops=1)
+                    Buffers: shared hit=4702
+                    ->  Nested Loop  (cost=75.82..4370.18 rows=1073 width=256) (actual time=0.170..3.023 rows=1058 loops=1)
+                          Buffers: shared hit=4610
+                          ->  Hash Join  (cost=75.67..4343.34 rows=1073 width=245) (actual time=0.168..2.709 rows=1058 loops=1)
+                                Hash Cond: (r.product_id = p.product_id)
+                                Buffers: shared hit=4594
+                                ->  Nested Loop  (cost=60.67..4325.49 rows=1073 width=189) (actual time=0.086..2.447 rows=1058 loops=1)
+                                      Buffers: shared hit=4588
+                                      ->  Nested Loop  (cost=60.53..4295.96 rows=1073 width=180) (actual time=0.084..2.160 rows=1058 loops=1)
+                                            Buffers: shared hit=4580
+                                            ->  Nested Loop  (cost=60.39..4268.29 rows=1073 width=159) (actual time=0.080..1.847 rows=1058 loops=1)
+                                                  Join Filter: (analytics_runs.run_id = rr.run_id)
+                                                  Buffers: shared hit=4556
+                                                  ->  Nested Loop  (cost=59.97..2943.10 rows=1073 width=132) (actual time=0.075..0.581 rows=1058 loops=1)
+                                                        Buffers: shared hit=324
+                                                        ->  Limit  (cost=0.14..8.15 rows=1 width=118) (actual time=0.005..0.005 rows=1 loops=1)
+                                                              Buffers: shared hit=2
+                                                              ->  Index Scan using ix_runs_status_type_asof on analytics_runs  (cost=0.14..8.15 rows=1 width=118) (actual time=0.004..0.005 rows=1 loops=1)
+                                                                    Index Cond: ((status = 'succeeded'::analytics.run_status) AND (run_type = 'current'::analytics.run_type))
+                                                                    Buffers: shared hit=2
+                                                        ->  Bitmap Heap Scan on inventory_risk_snapshots r  (cost=59.84..2924.20 rows=1073 width=124) (actual time=0.069..0.296 rows=1058 loops=1)
+                                                              Recheck Cond: ((run_id = analytics_runs.run_id) AND (risk_tier = ANY ('{high,critical}'::analytics.risk_tier[])))
+                                                              Heap Blocks: exact=313
+                                                              Buffers: shared hit=322
+                                                              ->  Bitmap Index Scan on ix_risk_run_tier_margin  (cost=0.00..59.57 rows=1073 width=0) (actual time=0.048..0.048 rows=1058 loops=1)
+                                                                    Index Cond: ((run_id = analytics_runs.run_id) AND (risk_tier = ANY ('{high,critical}'::analytics.risk_tier[])))
+                                                                    Buffers: shared hit=9
+                                                  ->  Index Scan using replenishment_recommendations_run_id_store_id_product_id_key on replenishment_recommendations rr  (cost=0.41..1.22 rows=1 width=43) (actual time=0.001..0.001 rows=1 loops=1058)
+                                                        Index Cond: ((run_id = r.run_id) AND (store_id = r.store_id) AND (product_id = r.product_id))
+                                                        Buffers: shared hit=4232
+                                            ->  Memoize  (cost=0.15..0.16 rows=1 width=25) (actual time=0.000..0.000 rows=1 loops=1058)
+                                                  Cache Key: r.store_id
+                                                  Cache Mode: logical
+                                                  Hits: 1046  Misses: 12  Evictions: 0  Overflows: 0  Memory Usage: 2kB
+                                                  Buffers: shared hit=24
+                                                  ->  Index Scan using stores_pkey on stores st  (cost=0.14..0.15 rows=1 width=25) (actual time=0.000..0.000 rows=1 loops=12)
+                                                        Index Cond: (store_id = r.store_id)
+                                                        Buffers: shared hit=24
+                                      ->  Memoize  (cost=0.14..1.16 rows=1 width=11) (actual time=0.000..0.000 rows=1 loops=1058)
+                                            Cache Key: st.region_id
+                                            Cache Mode: logical
+                                            Hits: 1054  Misses: 4  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                            Buffers: shared hit=8
+                                            ->  Index Scan using regions_pkey on regions rg  (cost=0.13..1.15 rows=1 width=11) (actual time=0.001..0.001 rows=1 loops=4)
+                                                  Index Cond: (region_id = st.region_id)
+                                                  Buffers: shared hit=8
+                                ->  Hash  (cost=10.00..10.00 rows=400 width=64) (actual time=0.079..0.079 rows=400 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 47kB
+                                      Buffers: shared hit=6
+                                      ->  Seq Scan on products p  (cost=0.00..10.00 rows=400 width=64) (actual time=0.008..0.037 rows=400 loops=1)
+                                            Buffers: shared hit=6
+                          ->  Memoize  (cost=0.14..0.19 rows=1 width=13) (actual time=0.000..0.000 rows=1 loops=1058)
+                                Cache Key: p.category_id
+                                Cache Mode: logical
+                                Hits: 1050  Misses: 8  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                Buffers: shared hit=16
+                                ->  Index Scan using product_categories_pkey on product_categories pc  (cost=0.13..0.18 rows=1 width=13) (actual time=0.001..0.001 rows=1 loops=8)
+                                      Index Cond: (category_id = p.category_id)
+                                      Buffers: shared hit=16
+                    ->  Memoize  (cost=0.15..0.17 rows=1 width=35) (actual time=0.000..0.000 rows=1 loops=1058)
+                          Cache Key: r.supplier_id
+                          Cache Mode: logical
+                          Hits: 1012  Misses: 46  Evictions: 0  Overflows: 0  Memory Usage: 7kB
+                          Buffers: shared hit=92
+                          ->  Index Scan using suppliers_pkey on suppliers su  (cost=0.14..0.16 rows=1 width=35) (actual time=0.001..0.001 rows=1 loops=46)
+                                Index Cond: (supplier_id = r.supplier_id)
+                                Buffers: shared hit=92
+              ->  Index Scan using purchase_orders_pkey on purchase_orders npo  (cost=0.29..0.36 rows=1 width=14) (actual time=0.000..0.000 rows=1 loops=1058)
                     Index Cond: (purchase_order_id = r.next_receipt_po_id)
+                    Buffers: shared hit=2451
 Planning:
-  Buffers: shared hit=18
-Planning Time: 3.556 ms
-Execution Time: 0.044 ms
+  Buffers: shared hit=31
+Planning Time: 14.309 ms
+Execution Time: 4.706 ms

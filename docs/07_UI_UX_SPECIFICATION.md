@@ -97,10 +97,10 @@ Fonts via `next/font/google`: **Inter** (variable) for UI; **JetBrains Mono** fo
 
 | Token | Size / line height | Weight | Usage |
 |-------|--------------------|--------|-------|
-| `text-page-title` | 24 / 32 | 600 | Page H1 |
-| `text-section` | 16 / 24 | 600 | Card titles |
-| `text-subsection` | 14 / 20 | 600 | Sub-headings inside cards |
-| `text-body` | 14 / 20 | 400 | Default body |
+| `text-page-title` | 28 / 35 | 600 | Page H1 |
+| `text-section` | 18 / 27 | 600 | Card titles |
+| `text-subsection` | 15 / 22.5 | 600 | Sub-headings inside cards |
+| `text-body` | 15 / 22.5 | 400 | Default body |
 | `text-table` | 13 / 20 | 400 | Table cells |
 | `text-small` | 13 / 18 | 400 | Helper text, subtitles |
 | `text-caption` | 12 / 16 | 500, uppercase, letter-spacing 0.04em | KPI labels, table headers |
@@ -108,7 +108,7 @@ Fonts via `next/font/google`: **Inter** (variable) for UI; **JetBrains Mono** fo
 | `text-kpi-sm` | 20 / 28 | 600, tabular | Secondary key numbers |
 | `text-mono` | 12.5 / 18 | 500 | SKU, PO numbers |
 
-Base font size 14px. Minimum text size 12px.
+Base font size 15px (owner-requested Stage 4 readability refinement). Minimum text size 12px.
 
 ### 3.5 Spacing, layout, radii, shadows, motion
 
